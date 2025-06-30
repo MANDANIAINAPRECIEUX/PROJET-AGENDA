@@ -1,7 +1,7 @@
 // backend/models/Patient.js
 const mongoose = require("mongoose");
 
-const dentistSchema = mongoose.Schema(
+const dentisteSchema = mongoose.Schema(
   {
     nom: {
       type: String,
