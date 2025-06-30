@@ -45,7 +45,7 @@ const getRendezVousById = asyncHandler(async (req, res) => {
 // @route   POST /api/rendezvous
 // @access  Public
 const createRendezVous = asyncHandler(async (req, res) => {
-  const { patient, dentiste, dateHeure, dureeMinutes, motif, statut } =
+  const { patient, dentiste, dateHeure, dureeMinutes, motif, statut, notes } =
     req.body;
 
   // Validation des champs obligatoires
@@ -88,7 +88,8 @@ const createRendezVous = asyncHandler(async (req, res) => {
     dateHeure,
     dureeMinutes,
     motif,
-    statut, // Utilise la valeur par défaut du schéma si non fournie
+    statut,
+    notes, // Utilise la valeur par défaut du schéma si non fournie
   });
 
   if (rendezVous) {
@@ -103,7 +104,7 @@ const createRendezVous = asyncHandler(async (req, res) => {
 // @route   PUT /api/rendezvous/:id
 // @access  Public
 const updateRendezVous = asyncHandler(async (req, res) => {
-  const { patient, dentiste, dateHeure, dureeMinutes, motif, statut } =
+  const { patient, dentiste, dateHeure, dureeMinutes, motif, statut, notes } =
     req.body;
 
   const rendezVous = await RendezVous.findById(req.params.id);
@@ -116,6 +117,7 @@ const updateRendezVous = asyncHandler(async (req, res) => {
     rendezVous.dureeMinutes = dureeMinutes || rendezVous.dureeMinutes;
     rendezVous.motif = motif || rendezVous.motif;
     rendezVous.statut = statut || rendezVous.statut;
+    rendezVous.notes = notes !== undefined ? notes : rendezVous.notes;
 
     const updatedRendezVous = await rendezVous.save();
     res.status(200).json(updatedRendezVous);
