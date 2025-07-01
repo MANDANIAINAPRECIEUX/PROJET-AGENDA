@@ -12,17 +12,21 @@ const {
 } = require("../controllers/DentisteController"); // Notez 'DentisteController'
 
 const { protect } = require("../middlewares/authMiddleware");
+const authorize = require("../middlewares/authorize");
 
 // Définir les routes pour les dentistes
 
 // Route GET pour obtenir tous les dentistes et POST pour en créer un nouveau
-router.route("/").get(getDentistes).post(createDentiste);
+router
+  .route("/")
+  .get(protect, authorize("admin", "dentiste", "patient"), getDentistes)
+  .post(protect, authorize("admin"), createDentiste);
 
 // Route GET pour obtenir un dentiste par ID, PUT pour le mettre à jour, DELETE pour le supprimer
 router
   .route("/:id")
-  .get(getDentisteById)
-  .put(updateDentiste)
-  .delete(deleteDentiste);
+  .get(protect, authorize("admin", "dentiste", "patient"), getDentisteById)
+  .put(protect, authorize("admin", "dentiste"), updateDentiste)
+  .delete(protect, authorize("admin"), deleteDentiste);
 
 module.exports = router;
