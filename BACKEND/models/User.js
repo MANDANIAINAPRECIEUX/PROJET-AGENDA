@@ -1,0 +1,64 @@
+// backend/models/User.js
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs"); // Pour le hachage des mots de passe
+const jwt = require("jsonwebtoken"); // Pour les JSON Web Tokens
+
+const userSchema = mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: [true, "Veuillez ajouter une adresse email"],
+      unique: true, // L'email doit être unique pour chaque utilisateur
+      trim: true,
+      lowercase: true, // Stocke l'email en minuscules pour la cohérence
+      match: [
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+        "Veuillez ajouter une adresse email valide",
+      ],
+    },
+    password: {
+      type: String,
+      required: [true, "Veuillez ajouter un mot de passe"],
+      minlength: [6, "Le mot de passe doit contenir au moins 6 caractères"],
+      select: false, // Ne pas renvoyer le mot de passe par défaut dans les requêtes de lecture
+    },
+    role: {
+      type: String,
+      enum: ["admin", "dentiste", "patient"], // Les rôles possibles
+      default: "patient", // Rôle par défaut si non spécifié
+    },
+  },
+  {
+    timestamps: true, // Ajoute createdAt et updatedAt
+  }
+);
+
+// --- Méthodes du Schéma ---
+
+// Crypter le mot de passe avant de le sauvegarder (middleware Mongoose 'pre-save')
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    next(); // Passe au middleware suivant si le mot de passe n'est pas modifié
+  }
+  const salt = await bcrypt.genSalt(10); // Génère un "salt" pour le hachage
+  this.password = await bcrypt.hash(this.password, salt); // Hache le mot de passe
+  next();
+});
+
+// Générer un JWT pour l'utilisateur
+userSchema.methods.getSignedJwtToken = function () {
+  console.log(
+    "User.js JWT_SECRET utilisé pour la signature :",
+    process.env.JWT_SECRET
+  );
+  return jwt.sign({ id: this._id, role: this.role }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE,
+  });
+};
+
+// Comparer le mot de passe entré par l'utilisateur avec le mot de passe haché dans la base de données
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+module.exports = mongoose.model("User", userSchema);

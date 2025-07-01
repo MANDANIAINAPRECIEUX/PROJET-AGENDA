@@ -10,6 +10,7 @@ const {
   updateSymptome,
   deleteSymptome,
 } = require("../controllers/SymptomeController"); // Notez 'SymptomeController'
+const { protect } = require("../middlewares/authMiddleware");
 
 // Définir les routes pour les symptômes
 

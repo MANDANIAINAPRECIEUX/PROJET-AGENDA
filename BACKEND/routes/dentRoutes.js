@@ -10,6 +10,7 @@ const {
   updateDent,
   deleteDent,
 } = require("../controllers/DentController"); // Notez 'DentController'
+const { protect } = require("../middlewares/authMiddleware");
 
 // Définir les routes pour les dents
 
