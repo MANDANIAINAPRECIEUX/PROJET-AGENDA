@@ -28,10 +28,10 @@ const getDentById = asyncHandler(async (req, res) => {
 // @route   POST /api/dents
 // @access  Public
 const createDent = asyncHandler(async (req, res) => {
-  const { nomDent, typeDent, numero } = req.body;
+  const { patient, nomDent, typeDent, secteurDentaire, numero } = req.body;
 
   // Validation des champs obligatoires
-  if (!nomDent || !typeDent || !numero) {
+  if (!patient || !nomDent || !typeDent || !numero || !secteurDentaire) {
     res.status(400);
     throw new Error(
       "Veuillez ajouter tous les champs obligatoires : nomDent, typeDent, numero"
@@ -49,6 +49,8 @@ const createDent = asyncHandler(async (req, res) => {
     nomDent,
     typeDent,
     numero,
+    patient,
+    secteurDentaire,
   });
 
   if (dent) {

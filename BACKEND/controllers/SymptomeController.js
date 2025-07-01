@@ -1,22 +1,27 @@
 // backend/controllers/SymptomeController.js
 const Symptome = require("../models/Symptome"); // Importer le modèle Symptome
-const Patient = require("../models/Patient"); // Pour la validation et population
+const Dent = require("../models/Dent"); // Importer le modèle Dent (nécessaire pour la validation et la population)
 const asyncHandler = require("express-async-handler"); // Pour gérer les erreurs asynchrones
 
 // @desc    Obtenir tous les symptômes
 // @route   GET /api/symptomes
 // @access  Public (pour l'instant)
 const getSymptomes = asyncHandler(async (req, res) => {
-  // Optionnel: Filtrer par patient si ID passé en query
   const query = {};
-  if (req.query.patientId) {
-    query.patient = req.query.patientId;
+  // Si vous voulez filtrer les symptômes par l'ID d'un patient,
+  // il faudrait une logique plus complexe car le lien est Symptome -> Dent -> Patient.
+  // Pour l'instant, on filtre par l'ID de la dent si fourni.
+  if (req.query.dentId) {
+    // Exemple de filtrage par ID de dent
+    query.dent = req.query.dentId;
   }
 
+  // Population : Inclure les détails de la dent liée au symptôme.
+  // Si vous avez aussi besoin du patient, il faudra une population imbriquée.
   const symptomes = await Symptome.find(query).populate(
-    "patient",
-    "nom prenom"
-  ); // Inclure nom, prenom du patient lié
+    "dent",
+    "nomDent typeDent numero patient"
+  ); // Popule la dent, et inclut l'ID du patient de la dent
 
   res.status(200).json(symptomes);
 });
@@ -25,10 +30,11 @@ const getSymptomes = asyncHandler(async (req, res) => {
 // @route   GET /api/symptomes/:id
 // @access  Public
 const getSymptomeById = asyncHandler(async (req, res) => {
+  // Population : Inclure les détails de la dent liée au symptôme.
   const symptome = await Symptome.findById(req.params.id).populate(
-    "patient",
-    "nom prenom"
-  );
+    "dent",
+    "nomDent typeDent numero patient"
+  ); // Popule la dent, et inclut l'ID du patient de la dent
 
   if (symptome) {
     res.status(200).json(symptome);
@@ -42,29 +48,29 @@ const getSymptomeById = asyncHandler(async (req, res) => {
 // @route   POST /api/symptomes
 // @access  Public
 const createSymptome = asyncHandler(async (req, res) => {
-  const { typeSymptome, descriptionSymptome, dateApparition, patient } =
-    req.body;
+  // Déstructuration : Utilisez les noms de champs EXACTS de votre modèle Symptome.js
+  const { dent, typeSymptome, niveauSymptome, description } = req.body;
 
-  // Validation des champs obligatoires
-  if (!typeSymptome || !dateApparition || !patient) {
+  // Validation des champs obligatoires (selon le modèle Symptome.js)
+  if (!dent || !typeSymptome || !niveauSymptome) {
     res.status(400);
     throw new Error(
-      "Veuillez ajouter tous les champs obligatoires : typeSymptome, dateApparition, patient"
+      "Veuillez ajouter tous les champs obligatoires : dent, typeSymptome, niveauSymptome"
     );
   }
 
-  // Vérifier si le patient existe
-  const patientExists = await Patient.findById(patient);
-  if (!patientExists) {
-    res.status(404);
-    throw new Error("Patient associé non trouvé");
+  // Vérifier si la DENT associée existe
+  const dentExists = await Dent.findById(dent);
+  if (!dentExists) {
+    res.status(404); // Ou 400 Bad Request, selon votre préférence pour ce type d'erreur de FK
+    throw new Error("Dent associée non trouvée");
   }
 
   const symptome = await Symptome.create({
+    dent,
     typeSymptome,
-    descriptionSymptome,
-    dateApparition,
-    patient,
+    niveauSymptome,
+    description, // Le champ est 'description' dans le modèle, pas 'descriptionSymptome'
   });
 
   if (symptome) {
@@ -79,29 +85,36 @@ const createSymptome = asyncHandler(async (req, res) => {
 // @route   PUT /api/symptomes/:id
 // @access  Public
 const updateSymptome = asyncHandler(async (req, res) => {
-  const { typeSymptome, descriptionSymptome, dateApparition, patient } =
-    req.body;
+  // Déstructuration : Utilisez les noms de champs EXACTS de votre modèle Symptome.js
+  const { dent, typeSymptome, niveauSymptome, description } = req.body;
 
   const symptome = await Symptome.findById(req.params.id);
 
-  if (symptome) {
-    // Mettre à jour les champs si fournis
-    symptome.typeSymptome =
-      typeSymptome !== undefined ? typeSymptome : symptome.typeSymptome;
-    symptome.descriptionSymptome =
-      descriptionSymptome !== undefined
-        ? descriptionSymptome
-        : symptome.descriptionSymptome;
-    symptome.dateApparition =
-      dateApparition !== undefined ? dateApparition : symptome.dateApparition;
-    symptome.patient = patient !== undefined ? patient : symptome.patient;
-
-    const updatedSymptome = await symptome.save();
-    res.status(200).json(updatedSymptome);
-  } else {
+  if (!symptome) {
     res.status(404);
     throw new Error("Symptôme non trouvé");
   }
+
+  // Si 'dent' est mis à jour, vérifiez si la nouvelle dent existe
+  if (dent !== undefined && dent.toString() !== symptome.dent.toString()) {
+    const newDentExists = await Dent.findById(dent);
+    if (!newDentExists) {
+      res.status(404);
+      throw new Error("Nouvelle dent associée non trouvée");
+    }
+    symptome.dent = dent;
+  }
+
+  // Mettre à jour les champs si fournis
+  symptome.typeSymptome =
+    typeSymptome !== undefined ? typeSymptome : symptome.typeSymptome;
+  symptome.niveauSymptome =
+    niveauSymptome !== undefined ? niveauSymptome : symptome.niveauSymptome;
+  symptome.description =
+    description !== undefined ? description : symptome.description;
+
+  const updatedSymptome = await symptome.save();
+  res.status(200).json(updatedSymptome);
 });
 
 // @desc    Supprimer un symptôme
