@@ -5,7 +5,7 @@ import React from "react";
 function App() {
   return (
     <div className="App">
-      <h1>Bienvenue sur l'Agenda Dentaire !</h1>
+      <h1>Bienvenue sur l'Agenda Dentaire en cours!</h1>
       <p>Le frontend est prêt à être développé.</p>
     </div>
   );
