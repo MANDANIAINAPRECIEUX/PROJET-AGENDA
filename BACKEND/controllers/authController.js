@@ -11,7 +11,9 @@ const registerUser = asyncHandler(async (req, res) => {
   // 1. Validation des champs d'entrée
   if (!email || !password) {
     res.status(400);
-    throw new Error("Veuillez entrer tous les champs obligatoires : email et mot de passe.");
+    throw new Error(
+      "Veuillez entrer tous les champs obligatoires : email et mot de passe."
+    );
   }
 
   // 2. Vérifier si l'utilisateur existe déjà
@@ -102,8 +104,17 @@ const getMe = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Obtenir tous les utilisateurs
+// @route   GET /api/users (ou /api/auth/users)
+// @access  Privé (Admin seulement)
+const getUsers = asyncHandler(async (req, res) => {
+  const users = await User.find({}).select("-password"); // Exclut les mots de passe
+  res.status(200).json(users);
+});
+
 module.exports = {
   registerUser,
   loginUser,
   getMe,
+  getUsers,
 };
