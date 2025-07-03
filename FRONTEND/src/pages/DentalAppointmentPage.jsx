@@ -512,7 +512,7 @@ export default function DentalAppointmentPage() {
                   Annuler
                 </Button>
                 <Button type="submit" className="flex-1">
-                  Confirmer le rendez-vous
+                  Confirmer le rendez-vous!!!
                 </Button>
               </div>
             </form>
