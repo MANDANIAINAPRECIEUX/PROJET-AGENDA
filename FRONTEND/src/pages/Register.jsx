@@ -772,6 +772,438 @@
 // }
 
 
+// "use client"
+
+// import { useState } from "react"
+// import {
+//   Eye,
+//   EyeOff,
+//   UserPlus,
+//   Stethoscope,
+//   Mail,
+//   Lock,
+//   User,
+//   Phone,
+//   Calendar,
+//   Shield,
+//   CheckCircle,
+// } from "lucide-react"
+
+// import { Button } from "@/components/ui/button"
+// import { Input } from "@/components/ui/input"
+// import { Label } from "@/components/ui/label"
+// import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+
+// export default function Register() {
+//   const [showPassword, setShowPassword] = useState(false)
+//   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+//   const [formData, setFormData] = useState({
+//     firstName: "",
+//     lastName: "",
+//     email: "",
+//     phone: "",
+//     age: "",
+//     password: "",
+//     confirmPassword: "",
+//   })
+//   const [errors, setErrors] = useState({})
+//   const [isLoading, setIsLoading] = useState(false)
+
+//   const handleInputChange = (e) => {
+//     const { name, value } = e.target
+//     setFormData((prev) => ({
+//       ...prev,
+//       [name]: value,
+//     }))
+//     // Clear error when user starts typing
+//     if (errors[name]) {
+//       setErrors((prev) => ({
+//         ...prev,
+//         [name]: "",
+//       }))
+//     }
+//   }
+
+//   const validateForm = () => {
+//     const newErrors = {}
+
+//     if (!formData.firstName.trim()) {
+//       newErrors.firstName = "Le prénom est requis"
+//     }
+
+//     if (!formData.lastName.trim()) {
+//       newErrors.lastName = "Le nom est requis"
+//     }
+
+//     // Validation email selon votre schéma Mongoose
+//     if (!formData.email.trim()) {
+//       newErrors.email = "Veuillez ajouter une adresse email"
+//     } else if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) {
+//       newErrors.email = "Veuillez ajouter une adresse email valide"
+//     }
+
+//     if (!formData.phone.trim()) {
+//       newErrors.phone = "Le téléphone est requis"
+//     }
+
+//     // Validation de l'âge
+//     if (!formData.age.trim()) {
+//       newErrors.age = "L'âge est requis"
+//     } else {
+//       const age = Number.parseInt(formData.age)
+//       if (isNaN(age) || age < 16 || age > 120) {
+//         newErrors.age = "L'âge doit être entre 16 et 120 ans"
+//       }
+//     }
+
+//     // Validation mot de passe selon votre schéma
+//     if (!formData.password) {
+//       newErrors.password = "Veuillez ajouter un mot de passe"
+//     } else if (formData.password.length < 6) {
+//       newErrors.password = "Le mot de passe doit contenir au moins 6 caractères"
+//     }
+
+//     if (!formData.confirmPassword) {
+//       newErrors.confirmPassword = "Veuillez confirmer votre mot de passe"
+//     } else if (formData.password !== formData.confirmPassword) {
+//       newErrors.confirmPassword = "Les mots de passe ne correspondent pas"
+//     }
+
+//     setErrors(newErrors)
+//     return Object.keys(newErrors).length === 0
+//   }
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault()
+
+//     if (!validateForm()) {
+//       return
+//     }
+
+//     setIsLoading(true)
+
+//     try {
+//       await new Promise((resolve) => setTimeout(resolve, 2000))
+
+//       // Préparer les données pour l'API (email en minuscules selon votre schéma)
+//       const registrationData = {
+//         ...formData,
+//         email: formData.email.toLowerCase().trim(),
+//         age: Number.parseInt(formData.age),
+//       }
+
+//       console.log("Données d'inscription:", registrationData)
+//       // Ici vous ajouteriez votre logique d'inscription
+//     } catch (error) {
+//       console.error("Erreur lors de l'inscription:", error)
+//     } finally {
+//       setIsLoading(false)
+//     }
+//   }
+
+//   // Fonction pour vérifier si un champ est valide
+//   const isFieldValid = (fieldName) => {
+//     return formData[fieldName] && !errors[fieldName]
+//   }
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-white flex items-center justify-center p-4">
+//       <div className="w-full max-w-md">
+//         {/* Header avec logo animé */}
+//         <div className="text-center mb-8">
+//           <div className="flex justify-center mb-4">
+//             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg transform transition-all duration-300 hover:scale-110 hover:shadow-xl">
+//               <Stethoscope className="h-8 w-8 text-white animate-pulse" />
+//             </div>
+//           </div>
+//           <h1 className="text-2xl font-bold text-slate-900 mb-2 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+//             Agenda Dentaire
+//           </h1>
+//           <p className="text-slate-600">Créez votre compte professionnel</p>
+//         </div>
+
+//         <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm transform transition-all duration-300 hover:shadow-3xl">
+//           <CardHeader className="space-y-1 pb-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg">
+//             <CardTitle className="text-2xl font-bold text-center text-slate-900 flex items-center justify-center gap-2">
+//               <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full">
+//                 <UserPlus className="h-5 w-5 text-white" />
+//               </div>
+//               Inscription
+//             </CardTitle>
+//             <CardDescription className="text-center text-slate-600">
+//               Rejoignez notre plateforme de gestion dentaire
+//             </CardDescription>
+//           </CardHeader>
+
+//           <CardContent className="p-6">
+//             <form onSubmit={handleSubmit} className="space-y-5">
+//               {/* Nom et Prénom */}
+//               <div className="grid grid-cols-2 gap-4">
+//                 <div className="space-y-2">
+//                   <Label htmlFor="firstName" className="text-slate-700 font-medium flex items-center gap-1">
+//                     Prénom *{isFieldValid("firstName") && <CheckCircle className="h-3 w-3 text-green-500" />}
+//                   </Label>
+//                   <div className="relative group">
+//                     <User className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+//                     <Input
+//                       id="firstName"
+//                       name="firstName"
+//                       type="text"
+//                       placeholder="Votre prénom"
+//                       value={formData.firstName}
+//                       onChange={handleInputChange}
+//                       className={`pl-10 h-11 transition-all duration-200 ${
+//                         errors.firstName
+//                           ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
+//                           : isFieldValid("firstName")
+//                             ? "border-green-500 focus-visible:ring-green-500 bg-green-50"
+//                             : "border-slate-300 focus-visible:ring-blue-500 hover:border-blue-400"
+//                       }`}
+//                     />
+//                   </div>
+//                   {errors.firstName && <p className="text-sm text-red-600 animate-pulse">{errors.firstName}</p>}
+//                 </div>
+
+//                 <div className="space-y-2">
+//                   <Label htmlFor="lastName" className="text-slate-700 font-medium flex items-center gap-1">
+//                     Nom *{isFieldValid("lastName") && <CheckCircle className="h-3 w-3 text-green-500" />}
+//                   </Label>
+//                   <div className="relative group">
+//                     <User className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+//                     <Input
+//                       id="lastName"
+//                       name="lastName"
+//                       type="text"
+//                       placeholder="Votre nom"
+//                       value={formData.lastName}
+//                       onChange={handleInputChange}
+//                       className={`pl-10 h-11 transition-all duration-200 ${
+//                         errors.lastName
+//                           ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
+//                           : isFieldValid("lastName")
+//                             ? "border-green-500 focus-visible:ring-green-500 bg-green-50"
+//                             : "border-slate-300 focus-visible:ring-blue-500 hover:border-blue-400"
+//                       }`}
+//                     />
+//                   </div>
+//                   {errors.lastName && <p className="text-sm text-red-600 animate-pulse">{errors.lastName}</p>}
+//                 </div>
+//               </div>
+
+//               {/* Email */}
+//               <div className="space-y-2">
+//                 <Label htmlFor="email" className="text-slate-700 font-medium flex items-center gap-1">
+//                   Email professionnel *{isFieldValid("email") && <CheckCircle className="h-3 w-3 text-green-500" />}
+//                 </Label>
+//                 <div className="relative group">
+//                   <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+//                   <Input
+//                     id="email"
+//                     name="email"
+//                     type="email"
+//                     placeholder="votre.email@exemple.com"
+//                     value={formData.email}
+//                     onChange={handleInputChange}
+//                     className={`pl-10 h-11 transition-all duration-200 ${
+//                       errors.email
+//                         ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
+//                         : isFieldValid("email")
+//                           ? "border-green-500 focus-visible:ring-green-500 bg-green-50"
+//                           : "border-slate-300 focus-visible:ring-blue-500 hover:border-blue-400"
+//                     }`}
+//                   />
+//                 </div>
+//                 {errors.email && <p className="text-sm text-red-600 animate-pulse">{errors.email}</p>}
+//               </div>
+
+//               {/* Téléphone et Âge */}
+//               <div className="grid grid-cols-2 gap-4">
+//                 <div className="space-y-2">
+//                   <Label htmlFor="phone" className="text-slate-700 font-medium flex items-center gap-1">
+//                     Téléphone *{isFieldValid("phone") && <CheckCircle className="h-3 w-3 text-green-500" />}
+//                   </Label>
+//                   <div className="relative group">
+//                     <Phone className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+//                     <Input
+//                       id="phone"
+//                       name="phone"
+//                       type="tel"
+//                       placeholder="01 23 45 67 89"
+//                       value={formData.phone}
+//                       onChange={handleInputChange}
+//                       className={`pl-10 h-11 transition-all duration-200 ${
+//                         errors.phone
+//                           ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
+//                           : isFieldValid("phone")
+//                             ? "border-green-500 focus-visible:ring-green-500 bg-green-50"
+//                             : "border-slate-300 focus-visible:ring-blue-500 hover:border-blue-400"
+//                       }`}
+//                     />
+//                   </div>
+//                   {errors.phone && <p className="text-sm text-red-600 animate-pulse">{errors.phone}</p>}
+//                 </div>
+
+//                 <div className="space-y-2">
+//                   <Label htmlFor="age" className="text-slate-700 font-medium flex items-center gap-1">
+//                     Âge *{isFieldValid("age") && <CheckCircle className="h-3 w-3 text-green-500" />}
+//                   </Label>
+//                   <div className="relative group">
+//                     <Calendar className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+//                     <Input
+//                       id="age"
+//                       name="age"
+//                       type="number"
+//                       placeholder="Votre âge"
+//                       min="16"
+//                       max="120"
+//                       value={formData.age}
+//                       onChange={handleInputChange}
+//                       className={`pl-10 h-11 transition-all duration-200 ${
+//                         errors.age
+//                           ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
+//                           : isFieldValid("age")
+//                             ? "border-green-500 focus-visible:ring-green-500 bg-green-50"
+//                             : "border-slate-300 focus-visible:ring-blue-500 hover:border-blue-400"
+//                       }`}
+//                     />
+//                   </div>
+//                   {errors.age && <p className="text-sm text-red-600 animate-pulse">{errors.age}</p>}
+//                 </div>
+//               </div>
+
+//               {/* Mot de passe */}
+//               <div className="space-y-2">
+//                 <Label htmlFor="password" className="text-slate-700 font-medium flex items-center gap-1">
+//                   Mot de passe *{isFieldValid("password") && <CheckCircle className="h-3 w-3 text-green-500" />}
+//                 </Label>
+//                 <div className="relative group">
+//                   <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+//                   <Input
+//                     id="password"
+//                     name="password"
+//                     type={showPassword ? "text" : "password"}
+//                     placeholder="Minimum 6 caractères"
+//                     value={formData.password}
+//                     onChange={handleInputChange}
+//                     className={`pl-10 pr-10 h-11 transition-all duration-200 ${
+//                       errors.password
+//                         ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
+//                         : isFieldValid("password")
+//                           ? "border-green-500 focus-visible:ring-green-500 bg-green-50"
+//                           : "border-slate-300 focus-visible:ring-blue-500 hover:border-blue-400"
+//                     }`}
+//                   />
+//                   <button
+//                     type="button"
+//                     onClick={() => setShowPassword(!showPassword)}
+//                     className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 transition-colors"
+//                   >
+//                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+//                   </button>
+//                 </div>
+//                 {errors.password && <p className="text-sm text-red-600 animate-pulse">{errors.password}</p>}
+//               </div>
+
+//               {/* Confirmation mot de passe */}
+//               <div className="space-y-2">
+//                 <Label htmlFor="confirmPassword" className="text-slate-700 font-medium flex items-center gap-1">
+//                   Confirmer le mot de passe *
+//                   {isFieldValid("confirmPassword") && <CheckCircle className="h-3 w-3 text-green-500" />}
+//                 </Label>
+//                 <div className="relative group">
+//                   <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+//                   <Input
+//                     id="confirmPassword"
+//                     name="confirmPassword"
+//                     type={showConfirmPassword ? "text" : "password"}
+//                     placeholder="Confirmez votre mot de passe"
+//                     value={formData.confirmPassword}
+//                     onChange={handleInputChange}
+//                     className={`pl-10 pr-10 h-11 transition-all duration-200 ${
+//                       errors.confirmPassword
+//                         ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
+//                         : isFieldValid("confirmPassword")
+//                           ? "border-green-500 focus-visible:ring-green-500 bg-green-50"
+//                           : "border-slate-300 focus-visible:ring-blue-500 hover:border-blue-400"
+//                     }`}
+//                   />
+//                   <button
+//                     type="button"
+//                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+//                     className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 transition-colors"
+//                   >
+//                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+//                   </button>
+//                 </div>
+//                 {errors.confirmPassword && (
+//                   <p className="text-sm text-red-600 animate-pulse">{errors.confirmPassword}</p>
+//                 )}
+//               </div>
+
+//               {/* Bouton d'inscription */}
+//               <Button
+//                 type="submit"
+//                 disabled={isLoading}
+//                 className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl"
+//               >
+//                 {isLoading ? (
+//                   <div className="flex items-center gap-2">
+//                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+//                     Création en cours...
+//                   </div>
+//                 ) : (
+//                   <div className="flex items-center gap-2">
+//                     <UserPlus className="h-4 w-4" />
+//                     Créer mon compte
+//                   </div>
+//                 )}
+//               </Button>
+
+//               {/* Sécurité */}
+//               <div className="flex items-center justify-center gap-2 text-sm text-slate-500 bg-slate-50 p-3 rounded-lg">
+//                 <Shield className="h-4 w-4 text-green-600" />
+//                 <span>Vos données sont sécurisées et chiffrées</span>
+//               </div>
+
+//               {/* Lien vers connexion */}
+//               <div className="text-center pt-4 border-t border-slate-200">
+//                 <p className="text-sm text-slate-600">
+//                   Vous avez déjà un compte ?{" "}
+//                   <a
+//                     href="/login"
+//                     className="font-medium text-blue-600 hover:text-blue-700 transition-colors hover:underline"
+//                   >
+//                     Se connecter
+//                   </a>
+//                 </p>
+//               </div>
+//             </form>
+//           </CardContent>
+//         </Card>
+
+//         {/* Footer amélioré */}
+//         <div className="text-center mt-8 text-sm text-slate-500 space-y-2">
+//           <p>En créant un compte, vous acceptez nos conditions d'utilisation</p>
+//           <div className="flex justify-center items-center gap-4">
+//             <a href="/terms" className="hover:text-slate-700 transition-colors">
+//               Conditions
+//             </a>
+//             <span>•</span>
+//             <a href="/privacy" className="hover:text-slate-700 transition-colors">
+//               Confidentialité
+//             </a>
+//             <span>•</span>
+//             <a href="/support" className="hover:text-slate-700 transition-colors">
+//               Support
+//             </a>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   )
+// }
+
+
 "use client"
 
 import { useState } from "react"
@@ -787,6 +1219,9 @@ import {
   Calendar,
   Shield,
   CheckCircle,
+  GraduationCap,
+  Crown,
+  ChevronDown,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -797,23 +1232,38 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [isPersonnelMedical, setIsPersonnelMedical] = useState(false)
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    prenom: "",
+    nom: "",
     email: "",
-    phone: "",
+    telephone: "",
     age: "",
+    specialite: "",
+    isAdmin: false,
     password: "",
     confirmPassword: "",
   })
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
 
+  // Spécialités médicales selon votre schéma
+  const specialites = [
+    { value: "", label: "Sélectionnez une spécialité" },
+    { value: "Généraliste", label: "Dentiste Généraliste" },
+    { value: "Orthodontiste", label: "Orthodontiste" },
+    { value: "Parodontiste", label: "Parodontiste" },
+    { value: "Endodontiste", label: "Endodontiste" },
+    { value: "Pédodontiste", label: "Pédodontiste" },
+    { value: "Chirurgien-dentiste", label: "Chirurgien-dentiste" },
+    { value: "Implantologue", label: "Implantologue" },
+  ]
+
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value, type, checked } = e.target
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }))
     // Clear error when user starts typing
     if (errors[name]) {
@@ -824,39 +1274,66 @@ export default function Register() {
     }
   }
 
+  const handlePersonnelMedicalChange = (e) => {
+    const isChecked = e.target.checked
+    setIsPersonnelMedical(isChecked)
+
+    // Reset relevant fields when switching
+    if (!isChecked) {
+      setFormData((prev) => ({
+        ...prev,
+        specialite: "",
+        isAdmin: false,
+      }))
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        age: "",
+      }))
+    }
+  }
+
   const validateForm = () => {
     const newErrors = {}
 
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = "Le prénom est requis"
+    if (!formData.prenom.trim()) {
+      newErrors.prenom = "Le prénom est requis"
     }
 
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = "Le nom est requis"
+    if (!formData.nom.trim()) {
+      newErrors.nom = "Le nom est requis"
     }
 
-    // Validation email selon votre schéma Mongoose
+    // Validation email selon vos schémas Mongoose
     if (!formData.email.trim()) {
       newErrors.email = "Veuillez ajouter une adresse email"
     } else if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) {
       newErrors.email = "Veuillez ajouter une adresse email valide"
     }
 
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Le téléphone est requis"
+    if (!formData.telephone.trim()) {
+      newErrors.telephone = "Le téléphone est requis"
     }
 
-    // Validation de l'âge
-    if (!formData.age.trim()) {
-      newErrors.age = "L'âge est requis"
+    // Validation conditionnelle selon le type d'utilisateur
+    if (!isPersonnelMedical) {
+      // Validation de l'âge pour les patients
+      if (!formData.age.trim()) {
+        newErrors.age = "L'âge est requis"
+      } else {
+        const age = Number.parseInt(formData.age)
+        if (isNaN(age) || age < 16 || age > 120) {
+          newErrors.age = "L'âge doit être entre 16 et 120 ans"
+        }
+      }
     } else {
-      const age = Number.parseInt(formData.age)
-      if (isNaN(age) || age < 16 || age > 120) {
-        newErrors.age = "L'âge doit être entre 16 et 120 ans"
+      // Validation pour le personnel médical
+      if (!formData.specialite.trim()) {
+        newErrors.specialite = "Veuillez sélectionner une spécialité"
       }
     }
 
-    // Validation mot de passe selon votre schéma
+    // Validation mot de passe selon vos schémas
     if (!formData.password) {
       newErrors.password = "Veuillez ajouter un mot de passe"
     } else if (formData.password.length < 6) {
@@ -885,15 +1362,37 @@ export default function Register() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000))
 
-      // Préparer les données pour l'API (email en minuscules selon votre schéma)
-      const registrationData = {
-        ...formData,
-        email: formData.email.toLowerCase().trim(),
-        age: Number.parseInt(formData.age),
+      // Préparer les données selon le type d'utilisateur
+      let registrationData
+
+      if (isPersonnelMedical) {
+        // Données pour dentisteSchema
+        registrationData = {
+          nom: formData.nom.trim(),
+          prenom: formData.prenom.trim(),
+          specialite: formData.specialite,
+          email: formData.email.toLowerCase().trim(),
+          telephone: formData.telephone.trim(),
+          isAdmin: formData.isAdmin,
+          password: formData.password,
+          role: "dentiste", // Pour userSchema
+        }
+      } else {
+        // Données pour userSchema (patient)
+        registrationData = {
+          email: formData.email.toLowerCase().trim(),
+          password: formData.password,
+          role: "patient",
+          // Données supplémentaires du patient
+          prenom: formData.prenom.trim(),
+          nom: formData.nom.trim(),
+          telephone: formData.telephone.trim(),
+          age: Number.parseInt(formData.age),
+        }
       }
 
       console.log("Données d'inscription:", registrationData)
-      // Ici vous ajouteriez votre logique d'inscription
+      console.log("Type d'utilisateur:", isPersonnelMedical ? "Personnel médical" : "Patient")
     } catch (error) {
       console.error("Erreur lors de l'inscription:", error)
     } finally {
@@ -912,88 +1411,135 @@ export default function Register() {
         {/* Header avec logo animé */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg transform transition-all duration-300 hover:scale-110 hover:shadow-xl">
-              <Stethoscope className="h-8 w-8 text-white animate-pulse" />
+            <div
+              className={`flex h-16 w-16 items-center justify-center rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 hover:shadow-xl ${
+                isPersonnelMedical
+                  ? "bg-gradient-to-br from-blue-600 to-blue-700"
+                  : "bg-gradient-to-br from-green-600 to-green-700"
+              }`}
+            >
+              {isPersonnelMedical ? (
+                <Stethoscope className="h-8 w-8 text-white animate-pulse" />
+              ) : (
+                <User className="h-8 w-8 text-white animate-pulse" />
+              )}
             </div>
           </div>
           <h1 className="text-2xl font-bold text-slate-900 mb-2 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
             Agenda Dentaire
           </h1>
-          <p className="text-slate-600">Créez votre compte professionnel</p>
+          {isPersonnelMedical ? (
+            <p className="text-blue-700 font-medium text-lg">🩺 Bienvenue Docteur</p>
+          ) : (
+            <p className="text-slate-600">Créez votre compte patient</p>
+          )}
         </div>
 
         <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm transform transition-all duration-300 hover:shadow-3xl">
-          <CardHeader className="space-y-1 pb-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg">
+          <CardHeader
+            className={`space-y-1 pb-4 rounded-t-lg ${
+              isPersonnelMedical
+                ? "bg-gradient-to-r from-blue-50 to-indigo-50"
+                : "bg-gradient-to-r from-green-50 to-emerald-50"
+            }`}
+          >
             <CardTitle className="text-2xl font-bold text-center text-slate-900 flex items-center justify-center gap-2">
-              <div className="p-2 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full">
+              <div
+                className={`p-2 rounded-full ${
+                  isPersonnelMedical
+                    ? "bg-gradient-to-r from-blue-600 to-blue-700"
+                    : "bg-gradient-to-r from-green-600 to-green-700"
+                }`}
+              >
                 <UserPlus className="h-5 w-5 text-white" />
               </div>
               Inscription
             </CardTitle>
             <CardDescription className="text-center text-slate-600">
-              Rejoignez notre plateforme de gestion dentaire
+              {isPersonnelMedical
+                ? "Rejoignez notre équipe médicale"
+                : "Rejoignez notre plateforme de gestion dentaire"}
             </CardDescription>
           </CardHeader>
 
           <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Case à cocher Personnel Médical */}
+              <div className="flex items-center space-x-3 p-4 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
+                <input
+                  id="personnelMedical"
+                  type="checkbox"
+                  checked={isPersonnelMedical}
+                  onChange={handlePersonnelMedicalChange}
+                  className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
+                />
+                <Label
+                  htmlFor="personnelMedical"
+                  className="text-slate-700 font-medium cursor-pointer flex items-center gap-2"
+                >
+                  <GraduationCap className="h-4 w-4 text-blue-600" />
+                  Je suis un personnel médical
+                </Label>
+              </div>
+
               {/* Nom et Prénom */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-slate-700 font-medium flex items-center gap-1">
-                    Prénom *{isFieldValid("firstName") && <CheckCircle className="h-3 w-3 text-green-500" />}
+                  <Label htmlFor="prenom" className="text-slate-700 font-medium flex items-center gap-1">
+                    Prénom *{isFieldValid("prenom") && <CheckCircle className="h-3 w-3 text-green-500" />}
                   </Label>
                   <div className="relative group">
                     <User className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                     <Input
-                      id="firstName"
-                      name="firstName"
+                      id="prenom"
+                      name="prenom"
                       type="text"
                       placeholder="Votre prénom"
-                      value={formData.firstName}
+                      value={formData.prenom}
                       onChange={handleInputChange}
                       className={`pl-10 h-11 transition-all duration-200 ${
-                        errors.firstName
+                        errors.prenom
                           ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
-                          : isFieldValid("firstName")
+                          : isFieldValid("prenom")
                             ? "border-green-500 focus-visible:ring-green-500 bg-green-50"
                             : "border-slate-300 focus-visible:ring-blue-500 hover:border-blue-400"
                       }`}
                     />
                   </div>
-                  {errors.firstName && <p className="text-sm text-red-600 animate-pulse">{errors.firstName}</p>}
+                  {errors.prenom && <p className="text-sm text-red-600 animate-pulse">{errors.prenom}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-slate-700 font-medium flex items-center gap-1">
-                    Nom *{isFieldValid("lastName") && <CheckCircle className="h-3 w-3 text-green-500" />}
+                  <Label htmlFor="nom" className="text-slate-700 font-medium flex items-center gap-1">
+                    Nom *{isFieldValid("nom") && <CheckCircle className="h-3 w-3 text-green-500" />}
                   </Label>
                   <div className="relative group">
                     <User className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                     <Input
-                      id="lastName"
-                      name="lastName"
+                      id="nom"
+                      name="nom"
                       type="text"
                       placeholder="Votre nom"
-                      value={formData.lastName}
+                      value={formData.nom}
                       onChange={handleInputChange}
                       className={`pl-10 h-11 transition-all duration-200 ${
-                        errors.lastName
+                        errors.nom
                           ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
-                          : isFieldValid("lastName")
+                          : isFieldValid("nom")
                             ? "border-green-500 focus-visible:ring-green-500 bg-green-50"
                             : "border-slate-300 focus-visible:ring-blue-500 hover:border-blue-400"
                       }`}
                     />
                   </div>
-                  {errors.lastName && <p className="text-sm text-red-600 animate-pulse">{errors.lastName}</p>}
+                  {errors.nom && <p className="text-sm text-red-600 animate-pulse">{errors.nom}</p>}
                 </div>
               </div>
 
               {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-slate-700 font-medium flex items-center gap-1">
-                  Email professionnel *{isFieldValid("email") && <CheckCircle className="h-3 w-3 text-green-500" />}
+                  Email {isPersonnelMedical ? "professionnel" : ""} *
+                  {isFieldValid("email") && <CheckCircle className="h-3 w-3 text-green-500" />}
                 </Label>
                 <div className="relative group">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
@@ -1016,60 +1562,114 @@ export default function Register() {
                 {errors.email && <p className="text-sm text-red-600 animate-pulse">{errors.email}</p>}
               </div>
 
-              {/* Téléphone et Âge */}
+              {/* Téléphone et Âge/Spécialité */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-slate-700 font-medium flex items-center gap-1">
-                    Téléphone *{isFieldValid("phone") && <CheckCircle className="h-3 w-3 text-green-500" />}
+                  <Label htmlFor="telephone" className="text-slate-700 font-medium flex items-center gap-1">
+                    Téléphone *{isFieldValid("telephone") && <CheckCircle className="h-3 w-3 text-green-500" />}
                   </Label>
                   <div className="relative group">
                     <Phone className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                     <Input
-                      id="phone"
-                      name="phone"
+                      id="telephone"
+                      name="telephone"
                       type="tel"
                       placeholder="01 23 45 67 89"
-                      value={formData.phone}
+                      value={formData.telephone}
                       onChange={handleInputChange}
                       className={`pl-10 h-11 transition-all duration-200 ${
-                        errors.phone
+                        errors.telephone
                           ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
-                          : isFieldValid("phone")
+                          : isFieldValid("telephone")
                             ? "border-green-500 focus-visible:ring-green-500 bg-green-50"
                             : "border-slate-300 focus-visible:ring-blue-500 hover:border-blue-400"
                       }`}
                     />
                   </div>
-                  {errors.phone && <p className="text-sm text-red-600 animate-pulse">{errors.phone}</p>}
+                  {errors.telephone && <p className="text-sm text-red-600 animate-pulse">{errors.telephone}</p>}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="age" className="text-slate-700 font-medium flex items-center gap-1">
-                    Âge *{isFieldValid("age") && <CheckCircle className="h-3 w-3 text-green-500" />}
-                  </Label>
-                  <div className="relative group">
-                    <Calendar className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-                    <Input
-                      id="age"
-                      name="age"
-                      type="number"
-                      placeholder="Votre âge"
-                      min="16"
-                      max="120"
-                      value={formData.age}
-                      onChange={handleInputChange}
-                      className={`pl-10 h-11 transition-all duration-200 ${
-                        errors.age
-                          ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
-                          : isFieldValid("age")
-                            ? "border-green-500 focus-visible:ring-green-500 bg-green-50"
-                            : "border-slate-300 focus-visible:ring-blue-500 hover:border-blue-400"
-                      }`}
-                    />
+                {/* Âge (pour patients) ou Spécialité (pour personnel médical) */}
+                {!isPersonnelMedical ? (
+                  <div className="space-y-2">
+                    <Label htmlFor="age" className="text-slate-700 font-medium flex items-center gap-1">
+                      Âge *{isFieldValid("age") && <CheckCircle className="h-3 w-3 text-green-500" />}
+                    </Label>
+                    <div className="relative group">
+                      <Calendar className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                      <Input
+                        id="age"
+                        name="age"
+                        type="number"
+                        placeholder="Votre âge"
+                        min="16"
+                        max="120"
+                        value={formData.age}
+                        onChange={handleInputChange}
+                        className={`pl-10 h-11 transition-all duration-200 ${
+                          errors.age
+                            ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
+                            : isFieldValid("age")
+                              ? "border-green-500 focus-visible:ring-green-500 bg-green-50"
+                              : "border-slate-300 focus-visible:ring-blue-500 hover:border-blue-400"
+                        }`}
+                      />
+                    </div>
+                    {errors.age && <p className="text-sm text-red-600 animate-pulse">{errors.age}</p>}
                   </div>
-                  {errors.age && <p className="text-sm text-red-600 animate-pulse">{errors.age}</p>}
-                </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Label htmlFor="specialite" className="text-slate-700 font-medium flex items-center gap-1">
+                      Spécialité *{isFieldValid("specialite") && <CheckCircle className="h-3 w-3 text-green-500" />}
+                    </Label>
+                    <div className="relative">
+                      <Stethoscope className="absolute left-3 top-3 h-4 w-4 text-slate-400 z-10" />
+                      <select
+                        id="specialite"
+                        name="specialite"
+                        value={formData.specialite}
+                        onChange={handleInputChange}
+                        className={`w-full h-11 pl-10 pr-10 rounded-md border-2 transition-all duration-200 appearance-none cursor-pointer ${
+                          errors.specialite
+                            ? "border-red-500 focus:ring-red-500 bg-red-50"
+                            : isFieldValid("specialite")
+                              ? "border-green-500 focus:ring-green-500 bg-green-50"
+                              : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20"
+                        }`}
+                      >
+                        {specialites.map((spec) => (
+                          <option key={spec.value} value={spec.value}>
+                            {spec.label}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3 top-3 h-4 w-4 text-slate-400 pointer-events-none" />
+                    </div>
+                    {errors.specialite && <p className="text-sm text-red-600 animate-pulse">{errors.specialite}</p>}
+                  </div>
+                )}
               </div>
+
+              {/* Case Admin (seulement pour personnel médical) */}
+              {isPersonnelMedical && (
+                <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <input
+                    id="isAdmin"
+                    name="isAdmin"
+                    type="checkbox"
+                    checked={formData.isAdmin}
+                    onChange={handleInputChange}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
+                  />
+                  <Label
+                    htmlFor="isAdmin"
+                    className="text-slate-700 font-medium cursor-pointer flex items-center gap-2"
+                  >
+                    <Crown className="h-4 w-4 text-blue-600" />
+                    Je suis administrateur de ce cabinet
+                  </Label>
+                </div>
+              )}
 
               {/* Mot de passe */}
               <div className="space-y-2">
@@ -1144,7 +1744,11 @@ export default function Register() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl"
+                className={`w-full h-12 text-white font-medium shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl ${
+                  isPersonnelMedical
+                    ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+                    : "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
+                }`}
               >
                 {isLoading ? (
                   <div className="flex items-center gap-2">
@@ -1153,8 +1757,8 @@ export default function Register() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <UserPlus className="h-4 w-4" />
-                    Créer mon compte
+                    {isPersonnelMedical ? <Stethoscope className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
+                    {isPersonnelMedical ? "Rejoindre l'équipe médicale" : "Créer mon compte"}
                   </div>
                 )}
               </Button>

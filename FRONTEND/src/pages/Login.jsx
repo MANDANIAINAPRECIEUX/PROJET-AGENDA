@@ -3,6 +3,8 @@
 "use client";
 
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   Eye,
   EyeOff,
@@ -33,6 +35,7 @@ export default function Login() {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -77,15 +80,34 @@ export default function Login() {
     }
 
     setIsLoading(true);
+    setErrors({}); // Réinitialiser les erreurs générales avant la nouvelle tentative
+
 
     // Simulation d'une requête API
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Données de connexion:", formData);
+      // await new Promise((resolve) => setTimeout(resolve, 1500));
+      // console.log("Données de connexion:", formData);
+
+      const response = await axios.post('http://localhost:5000/api/auth/login', { // L'URL de votre API de connexion
+        email: formData.email,
+        password: formData.password,
+      });
+
+      console.log("Connexion réussie:", response.data);
+
+      // Stocker le token et les informations utilisateur (par exemple, dans le localStorage)
+      localStorage.setItem('userToken', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data)); // Stockez les infos utilisateur
+
+      // Rediriger l'utilisateur vers la page de prise de rendez-vous ou le tableau de bord
+      // Remplacez '/appointments' par le chemin de votre page de rendez-vous
+      navigate('/appointments'); // <-- Utilisez navigate('/votre-chemin') pour la navigation React Router
+
+
       // Ici vous ajouteriez votre logique de connexion
     } catch (error) {
-      console.error("Erreur lors de la connexion:", error);
-      setErrors({ general: "Erreur de connexion. Veuillez réessayer." });
+      console.error("Erreur lors de la connexion:", error.response?.data?.message || error.message);
+      setErrors({ general: error.response?.data?.message || "Erreur de connexion. Veuillez réessayer." });
     } finally {
       setIsLoading(false);
     }
