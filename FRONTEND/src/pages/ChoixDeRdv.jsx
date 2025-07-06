@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, Clock, User } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,48 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { useNavigate } from "react-router-dom";
 
-// Types
-// interface TimeSlot {
-//   hour: number
-//   minute: number
-//   available: boolean
-// }
-
-// interface Appointment {
-//   date: string
-//   time: string
-//   patientName: string
-//   patientEmail: string
-//   patientPhone: string
-//   patientAge: string
-//   notes: string
-// }
-
-export default function DentalAppointmentPage() {
+export default function ChoixDeRdv() {
+  const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
-  const [showBookingForm, setShowBookingForm] = useState(false);
   const [appointments, setAppointments] = useState([]);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    age: "",
-    notes: "",
-  });
 
   // Heures de travail du cabinet (créneaux d'1 heure)
   const workingHours = [
@@ -149,30 +115,15 @@ export default function DentalAppointmentPage() {
         .toString()
         .padStart(2, "0")}`;
       setSelectedTime(timeString);
-      setShowBookingForm(true);
-    }
-  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (selectedDate && selectedTime) {
-      const newAppointment = {
+      // Navigation automatique vers le formulaire
+      const appointmentData = {
         date: selectedDate.toISOString().split("T")[0],
-        time: selectedTime,
-        patientName: formData.name,
-        patientEmail: formData.email,
-        patientPhone: formData.phone,
-        patientAge: formData.age,
-        notes: formData.notes,
+        time: timeString,
+        dateFormatted: selectedDate.toLocaleDateString("fr-FR"),
       };
-
-      setAppointments([...appointments, newAppointment]);
-      setShowBookingForm(false);
-      setSelectedDate(null);
-      setSelectedTime(null);
-      setFormData({ name: "", email: "", phone: "", age: "", notes: "" });
-
-      alert("Votre rendez-vous a été confirmé !");
+      localStorage.setItem("appointmentData", JSON.stringify(appointmentData));
+      navigate("/FormulaireDeReservation");
     }
   };
 
@@ -345,13 +296,22 @@ export default function DentalAppointmentPage() {
                             .padStart(2, "0")}:${slot.minute
                             .toString()
                             .padStart(2, "0")}`;
+                          const isSelected = selectedTime === timeString;
 
                           return (
                             <Button
                               key={index}
-                              variant={isAvailable ? "outline" : "secondary"}
+                              variant={
+                                isSelected
+                                  ? "default"
+                                  : isAvailable
+                                  ? "outline"
+                                  : "secondary"
+                              }
                               className={`${
-                                isAvailable
+                                isSelected
+                                  ? "bg-blue-600 text-white"
+                                  : isAvailable
                                   ? "hover:bg-blue-50 border-blue-200"
                                   : "bg-red-100 text-red-600 cursor-not-allowed"
                               }`}
@@ -386,13 +346,22 @@ export default function DentalAppointmentPage() {
                             .padStart(2, "0")}:${slot.minute
                             .toString()
                             .padStart(2, "0")}`;
+                          const isSelected = selectedTime === timeString;
 
                           return (
                             <Button
                               key={index}
-                              variant={isAvailable ? "outline" : "secondary"}
+                              variant={
+                                isSelected
+                                  ? "default"
+                                  : isAvailable
+                                  ? "outline"
+                                  : "secondary"
+                              }
                               className={`${
-                                isAvailable
+                                isSelected
+                                  ? "bg-blue-600 text-white"
+                                  : isAvailable
                                   ? "hover:bg-blue-50 border-blue-200"
                                   : "bg-red-100 text-red-600 cursor-not-allowed"
                               }`}
@@ -419,105 +388,6 @@ export default function DentalAppointmentPage() {
             </CardContent>
           </Card>
         </div>
-
-        {/* Formulaire de réservation */}
-        <Dialog open={showBookingForm} onOpenChange={setShowBookingForm}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                Confirmer votre rendez-vous
-              </DialogTitle>
-              <DialogDescription>
-                {selectedDate && selectedTime && (
-                  <Badge variant="secondary" className="mt-2">
-                    {selectedDate.toLocaleDateString("fr-FR")} à {selectedTime}
-                  </Badge>
-                )}
-              </DialogDescription>
-            </DialogHeader>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="name">Nom complet *</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="age">Âge *</Label>
-                  <Input
-                    id="age"
-                    type="number"
-                    value={formData.age}
-                    onChange={(e) =>
-                      setFormData({ ...formData, age: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="phone">Téléphone *</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="notes">Notes (optionnel)</Label>
-                <Textarea
-                  id="notes"
-                  placeholder="Motif de consultation, allergies, etc."
-                  value={formData.notes}
-                  onChange={(e) =>
-                    setFormData({ ...formData, notes: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="flex gap-2 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowBookingForm(false)}
-                  className="flex-1"
-                >
-                  Annuler
-                </Button>
-                <Button type="submit" className="flex-1">
-                  Confirmer le rendez-vous!!!
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );
