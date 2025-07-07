@@ -19,6 +19,13 @@ import { FaSmile } from "react-icons/fa";
 import { FaFaceSadCry, FaFaceMeh } from "react-icons/fa6";
 import { ImSad2 } from "react-icons/im";
 import { GiMineExplosion } from "react-icons/gi";
+import douleurdentaire from "../assets/images/douleurdentaire.JPG";
+import sensibilité from "../assets/images/sensibilité.JPG";
+import mobilité from "../assets/images/mobilité.JPG";
+import gonflement from "../assets/images/gonflement.png";
+import a from "../assets/images/a.jpg";
+import carie from "../assets/images/carie.JPG";
+import fracture from "../assets/images/fracture.JPG";
 
 const modernStyles = `
   .ultra-modern-bg {
@@ -905,13 +912,34 @@ export default function FormulaireDeReservation() {
   ];
 
   const typesSymptomes = [
-    { name: "Douleur", icon: "🔵" },
-    { name: "Sensibilité", icon: "🟦" },
-    { name: "Gonflement", icon: "🫧" },
-    { name: "Saignement", icon: "🩸" },
-    { name: "Carie", icon: "🕳️" },
-    { name: "Fracture", icon: "💎" },
-    { name: "Mobilité", icon: "🌀" },
+    {
+      name: "Douleur",
+      icon: <img src={douleurdentaire} alt="Douleur" className="w-8 h-8" />,
+    },
+    {
+      name: "Sensibilité",
+      icon: <img src={sensibilité} alt="Sensibilité" className="w-8 h-8" />,
+    },
+    {
+      name: "Mobilité",
+      icon: <img src={mobilité} alt="Mobilité" className="w-8 h-8" />,
+    },
+    {
+      name: "Gonflement",
+      icon: <img src={gonflement} alt="Mobilité" className="w-8 h-8" />,
+    },
+    {
+      name: "Saignement",
+      icon: <img src={a} alt="Mobilité" className="w-8 h-8" />,
+    },
+    {
+      name: "Carie",
+      icon: <img src={carie} alt="Mobilité" className="w-8 h-8" />,
+    },
+    {
+      name: "Fracture",
+      icon: <img src={fracture} alt="fracture" className="w-8 h-8" />,
+    },
     { name: "Autre", icon: "💙" },
   ];
 
