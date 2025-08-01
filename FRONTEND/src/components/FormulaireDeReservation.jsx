@@ -27,6 +27,37 @@ import a from "../assets/images/a.jpg";
 import carie from "../assets/images/carie.JPG";
 import fracture from "../assets/images/fracture.JPG";
 
+// Fonction utilitaire pour récupérer les données patient
+const getPatientData = () => {
+  try {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      return JSON.parse(userData);
+    }
+    return null;
+  } catch (error) {
+    console.error("Erreur lors de la récupération des données patient:", error);
+    return null;
+  }
+};
+
+// Fonction utilitaire pour générer un ID patient
+const generatePatientId = (patientData) => {
+  if (!patientData) return "";
+  
+  // Essayer d'utiliser l'ID existant
+  if (patientData.id) return patientData.id;
+  if (patientData._id) return patientData._id;
+  
+  // Générer un ID basé sur le nom et prénom
+  if (patientData.nom && patientData.prenom) {
+    return `ID-${patientData.nom.toUpperCase()}-${patientData.prenom.toUpperCase()}`;
+  }
+  
+  // ID par défaut
+  return `ID-PATIENT-${Date.now()}`;
+};
+
 const modernStyles = `
   .ultra-modern-bg {
     background: linear-gradient(135deg, #ffffff 0%, #f8fafc 25%, #f1f5f9 50%, #e2e8f0 75%, #cbd5e1 100%);
@@ -695,9 +726,24 @@ const emojiOptions = [
 ];
 
 export default function FormulaireDeReservation() {
+  /**
+   * Composant de formulaire de réservation dentaire
+   * 
+   * Récupération automatique des données patient :
+   * - ID Patient : patientData?.id || patientData?._id ou généré automatiquement
+   * - Nom Patient : patientData?.prenom + " " + patientData?.nom
+   * - Email : patientData?.email
+   * - Téléphone : patientData?.telephone
+   * - Âge : patientData?.age
+   * 
+   * Les données sont récupérées depuis localStorage après la connexion
+   */
+  
   const navigate = useNavigate();
   const [appointmentData, setAppointmentData] = useState(null);
   const [selectedTeeth, setSelectedTeeth] = useState([]);
+  // Ajout des états pour les données patient
+  const [patientData, setPatientData] = useState(null);
   const [formData, setFormData] = useState({
     // Champs pour la dent
     patient: "",
@@ -951,6 +997,20 @@ export default function FormulaireDeReservation() {
     } else {
       navigate("/ChoixDeRdv");
     }
+
+    // Récupération des données patient avec les fonctions utilitaires
+    const userData = getPatientData();
+    if (userData) {
+      setPatientData(userData);
+      
+      // Pré-remplir le champ patient avec l'ID généré
+      setFormData(prev => ({
+        ...prev,
+        patient: generatePatientId(userData),
+      }));
+    } else {
+      console.warn("Aucune donnée utilisateur trouvée dans localStorage");
+    }
   }, [navigate]);
 
   const handleInputChange = (e) => {
@@ -1069,7 +1129,13 @@ export default function FormulaireDeReservation() {
     if (appointmentData) {
       const finalAppointment = {
         ...appointmentData,
-        patient: formData.patient,
+        // Informations patient complètes
+        patientId: patientData?.id || patientData?._id || formData.patient,
+        patientNom: patientData ? `${patientData.prenom} ${patientData.nom}` : "Non renseigné",
+        patientEmail: patientData?.email || "Non renseigné",
+        patientTelephone: patientData?.telephone || "Non renseigné",
+        patientAge: patientData?.age || "Non renseigné",
+        patient: formData.patient, // Gardé pour compatibilité
         dentsSelectionnees: selectedTeeth.map((tooth) => ({
           numero: tooth.number,
           nom: tooth.name,
@@ -1159,21 +1225,71 @@ export default function FormulaireDeReservation() {
                 <h2 className="subsection-title">Identification Patient</h2>
               </div>
 
-              <div className="max-w-md">
-                <Label
-                  htmlFor="patient"
-                  className="text-slate-700 font-semibold text-lg mb-3 block"
-                >
-                  Identifiant Patient *
-                </Label>
-                <Input
-                  id="patient"
-                  placeholder="ID-XXXX-XXXX"
-                  value={formData.patient}
-                  onChange={handleInputChange}
-                  className="modern-input"
-                  required
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label
+                    htmlFor="patient"
+                    className="text-slate-700 font-semibold text-lg mb-3 block"
+                  >
+                    Identifiant Patient *
+                  </Label>
+                  <Input
+                    id="patient"
+                    placeholder="ID-XXXX-XXXX"
+                    value={formData.patient}
+                    onChange={handleInputChange}
+                    className="modern-input"
+                    readOnly={!!patientData} // Lecture seule si les données patient sont disponibles
+                    required
+                  />
+                </div>
+                
+                {/* Affichage du nom complet du patient */}
+                {patientData && (
+                  <div>
+                    <Label className="text-slate-700 font-semibold text-lg mb-3 block">
+                      Nom du Patient
+                    </Label>
+                    <div className="modern-input bg-gray-50 flex items-center">
+                      <User className="h-5 w-5 text-blue-600 mr-3" />
+                      <span className="text-slate-800 font-medium">
+                        {patientData.prenom} {patientData.nom}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Informations supplémentaires du patient */}
+                {patientData && (
+                  <div className="md:col-span-2">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h4 className="text-blue-800 font-semibold mb-2">Informations Patient</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        {patientData.email && (
+                          <div>
+                            <span className="text-blue-600 font-medium">Email:</span>
+                            <br />
+                            <span className="text-slate-700">{patientData.email}</span>
+                          </div>
+                        )}
+                        {patientData.telephone && (
+                          <div>
+                            <span className="text-blue-600 font-medium">Téléphone:</span>
+                            <br />
+                            <span className="text-slate-700">{patientData.telephone}</span>
+                          </div>
+                        )}
+                        {patientData.age && (
+                          <div>
+                            <span className="text-blue-600 font-medium">Âge:</span>
+                            <br />
+                            <span className="text-slate-700">{patientData.age} ans</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
