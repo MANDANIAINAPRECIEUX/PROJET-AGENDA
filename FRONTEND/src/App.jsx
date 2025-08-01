@@ -90,11 +90,13 @@ import Essai from "./components/Essai";
 
 function App() {
   const location = useLocation();
+  const NoNavbarPaths = ["/FormulaireDeReservation"];
+  const showNavbar = !NoNavbarPaths.includes(location.pathname);
 
   return (
     <>
       {/* C'est ici que l'information est passée */}
-      <Navbar currentPage={location.pathname} />
+      {showNavbar && <Navbar currentPage={location.pathname} />}
 
       <Routes>
         <Route path="/" element={<Essai />} />
