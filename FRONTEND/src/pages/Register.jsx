@@ -202,407 +202,394 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-white flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Éléments décoratifs flottants */}
+    <div className="min-h-screen bg-gradient-to-br from-pink-500 via-purple-500 to-blue-600 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Overlay effects matching the colorful gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-pink-400/20 via-purple-400/20 to-blue-500/20"></div>
+      
+      {/* Floating elements matching the colorful scheme */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-green-200/10 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-emerald-200/10 rounded-full blur-3xl animate-float-delayed"></div>
-        <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-teal-200/10 rounded-full blur-2xl animate-float-slow"></div>
-        <div className="absolute top-1/2 right-1/3 w-32 h-32 bg-green-300/10 rounded-full blur-xl animate-float"></div>
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-pink-300/10 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-purple-300/10 rounded-full blur-3xl animate-float-delayed"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-blue-300/10 rounded-full blur-2xl animate-float-slow"></div>
+        <div className="absolute top-1/2 right-1/3 w-32 h-32 bg-indigo-300/10 rounded-full blur-xl animate-float"></div>
       </div>
 
       <div className="w-full max-w-md relative z-10">
-        {/* Header avec logo amélioré */}
+        {/* Enhanced Header with logo matching the gradient */}
         <div className="text-center mb-8 animate-fade-in-up">
           <div className="flex justify-center mb-6">
             <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full blur opacity-20 group-hover:opacity-30 transition duration-300"></div>
-              <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-600 to-green-700 shadow-2xl transform transition-all duration-300 hover:scale-110 hover:shadow-3xl">
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-600 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+              <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-600 shadow-2xl transform group-hover:scale-105 transition-all duration-300">
+                <Stethoscope className="h-10 w-10 text-white" />
                 <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/20"></div>
-                <Stethoscope className="h-10 w-10 text-white relative z-10" />
-                <div className="absolute inset-2 rounded-full border border-white/30"></div>
               </div>
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-3 bg-gradient-to-r from-green-600 to-green-800 bg-clip-text text-transparent drop-shadow-sm">
+          <h1 className="text-3xl font-bold text-white mb-3 drop-shadow-lg">
             Agenda Dentaire
           </h1>
-          <p className="text-slate-600 font-medium text-lg">Créez votre compte patient</p>
-          <div className="flex items-center justify-center gap-2 mt-3 text-slate-500">
-            <Shield className="h-4 w-4 text-green-600" />
+          <p className="text-white/90 text-lg font-medium drop-shadow">
+            Créez votre compte patient
+          </p>
+          <div className="flex items-center justify-center gap-2 mt-2 text-white/80">
+            <Shield className="h-4 w-4" />
             <span className="text-sm">Plateforme sécurisée</span>
-            <Heart className="h-4 w-4 text-green-500" />
+            <Heart className="h-4 w-4 text-pink-300" />
           </div>
         </div>
 
-        <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-xl transform transition-all duration-300 hover:shadow-3xl border border-white/20 overflow-hidden animate-fade-in-up animation-delay-200">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-white/20 to-transparent pointer-events-none"></div>
+        {/* Enhanced Card with glass morphism matching the gradient */}
+        <Card className="shadow-2xl border-0 bg-white/10 backdrop-blur-xl border border-white/20 overflow-hidden animate-fade-in-up animation-delay-200">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/10 to-transparent"></div>
           
-          <CardHeader className="space-y-1 pb-4 bg-gradient-to-r from-green-50/80 to-emerald-50/80 rounded-t-lg relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-green-100/50 to-transparent"></div>
-            <CardTitle className="text-2xl font-bold text-center text-slate-900 flex items-center justify-center gap-3 relative z-10">
-              <div className="p-2 bg-gradient-to-r from-green-600 to-green-700 rounded-xl shadow-lg">
+          <CardHeader className="space-y-1 pb-6 pt-8 relative">
+            <CardTitle className="text-2xl font-bold text-center text-white flex items-center justify-center gap-3">
+              <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
                 <UserPlus className="h-6 w-6 text-white" />
               </div>
               Inscription Patient
-              <Sparkles className="h-5 w-5 text-green-500 opacity-70" />
+              <Sparkles className="h-5 w-5 text-pink-300 opacity-70" />
             </CardTitle>
-            <CardDescription className="text-center text-slate-600 relative z-10 text-base">
+            <CardDescription className="text-center text-white/80 text-base">
               Rejoignez notre plateforme de soins dentaires
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="p-6 relative">
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Message de succès ou d'erreur global amélioré */}
+          <CardContent className="space-y-6 pb-8 relative">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Enhanced error message */}
               {registrationMessage && (
-                <div
-                  className={`p-4 rounded-xl text-center text-sm font-medium transition-all duration-300 animate-fade-in ${
-                    isSuccess
-                      ? "bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200 shadow-sm"
-                      : "bg-gradient-to-r from-red-50 to-pink-50 text-red-700 border border-red-200 shadow-sm"
-                  }`}
-                >
-                  <div className="flex items-center justify-center gap-2">
+                <div className={`p-4 text-sm ${isSuccess ? 'text-green-100 bg-green-500/20 border border-green-400/30' : 'text-red-100 bg-red-500/20 border border-red-400/30'} rounded-xl backdrop-blur-sm animate-shake`}>
+                  <div className="flex items-center gap-2">
                     {isSuccess ? (
-                      <CheckCircle className="h-5 w-5" />
+                      <CheckCircle className="h-4 w-4" />
                     ) : (
-                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-red-400 rounded-full"></div>
                     )}
                     {registrationMessage}
                   </div>
                 </div>
               )}
 
-              {/* Nom et Prénom améliorés */}
+              {/* Enhanced Name Fields */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="prenom"
-                    className="text-slate-700 font-medium flex items-center gap-1"
-                  >
+                <div className="space-y-3">
+                  <Label htmlFor="prenom" className="text-white font-medium text-sm flex items-center gap-2">
+                    <User className="h-4 w-4" />
                     Prénom *
                     {isFieldValid("prenom") && (
-                      <CheckCircle className="h-3 w-3 text-green-500 animate-pulse" />
+                      <CheckCircle className="h-3 w-3 text-green-400" />
                     )}
                   </Label>
                   <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
-                    <User className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-green-500 transition-colors z-10" />
-                    <Input
-                      id="prenom"
-                      name="prenom"
-                      type="text"
-                      placeholder="Votre prénom"
-                      value={formData.prenom}
-                      onChange={handleInputChange}
-                      className={`pl-10 h-11 transition-all duration-200 relative ${
-                        errors.prenom
-                          ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
-                          : isFieldValid("prenom")
-                          ? "border-green-500 focus-visible:ring-green-500 bg-green-50 shadow-sm"
-                          : "border-slate-300 focus-visible:ring-green-500 hover:border-green-400 hover:shadow-sm"
-                      }`}
-                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-600/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60 transition-colors group-focus-within:text-white" />
+                      <Input
+                        id="prenom"
+                        name="prenom"
+                        type="text"
+                        placeholder="Votre prénom"
+                        value={formData.prenom}
+                        onChange={handleInputChange}
+                        className={`pl-12 pr-4 py-3 h-12 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-white/50 backdrop-blur-sm transition-all duration-300 focus:bg-white/15 focus:border-white/40 focus:ring-0 focus:ring-offset-0 hover:bg-white/15 ${
+                          errors.prenom
+                            ? "border-red-400/50 bg-red-500/10"
+                            : ""
+                        }`}
+                      />
+                    </div>
                   </div>
                   {errors.prenom && (
-                    <p className="text-sm text-red-600 animate-pulse flex items-center gap-1">
-                      <div className="w-1 h-1 bg-red-500 rounded-full"></div>
+                    <p className="text-sm text-red-300 flex items-center gap-2 animate-fade-in">
+                      <div className="w-1 h-1 bg-red-400 rounded-full"></div>
                       {errors.prenom}
                     </p>
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="nom"
-                    className="text-slate-700 font-medium flex items-center gap-1"
-                  >
+                <div className="space-y-3">
+                  <Label htmlFor="nom" className="text-white font-medium text-sm flex items-center gap-2">
+                    <User className="h-4 w-4" />
                     Nom *
                     {isFieldValid("nom") && (
-                      <CheckCircle className="h-3 w-3 text-green-500 animate-pulse" />
+                      <CheckCircle className="h-3 w-3 text-green-400" />
                     )}
                   </Label>
                   <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
-                    <User className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-green-500 transition-colors z-10" />
-                    <Input
-                      id="nom"
-                      name="nom"
-                      type="text"
-                      placeholder="Votre nom"
-                      value={formData.nom}
-                      onChange={handleInputChange}
-                      className={`pl-10 h-11 transition-all duration-200 relative ${
-                        errors.nom
-                          ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
-                          : isFieldValid("nom")
-                          ? "border-green-500 focus-visible:ring-green-500 bg-green-50 shadow-sm"
-                          : "border-slate-300 focus-visible:ring-green-500 hover:border-green-400 hover:shadow-sm"
-                      }`}
-                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-600/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60 transition-colors group-focus-within:text-white" />
+                      <Input
+                        id="nom"
+                        name="nom"
+                        type="text"
+                        placeholder="Votre nom"
+                        value={formData.nom}
+                        onChange={handleInputChange}
+                        className={`pl-12 pr-4 py-3 h-12 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-white/50 backdrop-blur-sm transition-all duration-300 focus:bg-white/15 focus:border-white/40 focus:ring-0 focus:ring-offset-0 hover:bg-white/15 ${
+                          errors.nom
+                            ? "border-red-400/50 bg-red-500/10"
+                            : ""
+                        }`}
+                      />
+                    </div>
                   </div>
                   {errors.nom && (
-                    <p className="text-sm text-red-600 animate-pulse flex items-center gap-1">
-                      <div className="w-1 h-1 bg-red-500 rounded-full"></div>
+                    <p className="text-sm text-red-300 flex items-center gap-2 animate-fade-in">
+                      <div className="w-1 h-1 bg-red-400 rounded-full"></div>
                       {errors.nom}
                     </p>
                   )}
                 </div>
               </div>
 
-              {/* Email amélioré */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="email"
-                  className="text-slate-700 font-medium flex items-center gap-1"
-                >
+              {/* Enhanced Email Input */}
+              <div className="space-y-3">
+                <Label htmlFor="email" className="text-white font-medium text-sm flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
                   Adresse email *
                   {isFieldValid("email") && (
-                    <CheckCircle className="h-3 w-3 text-green-500 animate-pulse" />
+                    <CheckCircle className="h-3 w-3 text-green-400" />
                   )}
                 </Label>
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-green-500 transition-colors z-10" />
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="votre.email@exemple.com"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className={`pl-10 h-11 transition-all duration-200 relative ${
-                      errors.email
-                        ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
-                        : isFieldValid("email")
-                        ? "border-green-500 focus-visible:ring-green-500 bg-green-50 shadow-sm"
-                        : "border-slate-300 focus-visible:ring-green-500 hover:border-green-400 hover:shadow-sm"
-                    }`}
-                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-600/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60 transition-colors group-focus-within:text-white" />
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="votre.email@exemple.com"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className={`pl-12 pr-4 py-3 h-12 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-white/50 backdrop-blur-sm transition-all duration-300 focus:bg-white/15 focus:border-white/40 focus:ring-0 focus:ring-offset-0 hover:bg-white/15 ${
+                        errors.email
+                          ? "border-red-400/50 bg-red-500/10"
+                          : ""
+                      }`}
+                      autoComplete="email"
+                    />
+                  </div>
                 </div>
                 {errors.email && (
-                  <p className="text-sm text-red-600 animate-pulse flex items-center gap-1">
-                    <div className="w-1 h-1 bg-red-500 rounded-full"></div>
+                  <p className="text-sm text-red-300 flex items-center gap-2 animate-fade-in">
+                    <div className="w-1 h-1 bg-red-400 rounded-full"></div>
                     {errors.email}
                   </p>
                 )}
               </div>
 
-              {/* Téléphone et Âge améliorés */}
+              {/* Enhanced Phone and Age Fields */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="telephone"
-                    className="text-slate-700 font-medium flex items-center gap-1"
-                  >
+                <div className="space-y-3">
+                  <Label htmlFor="telephone" className="text-white font-medium text-sm flex items-center gap-2">
+                    <Phone className="h-4 w-4" />
                     Téléphone *
                     {isFieldValid("telephone") && (
-                      <CheckCircle className="h-3 w-3 text-green-500 animate-pulse" />
+                      <CheckCircle className="h-3 w-3 text-green-400" />
                     )}
                   </Label>
                   <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
-                    <Phone className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-green-500 transition-colors z-10" />
-                    <Input
-                      id="telephone"
-                      name="telephone"
-                      type="tel"
-                      placeholder="01 23 45 67 89"
-                      value={formData.telephone}
-                      onChange={handleInputChange}
-                      className={`pl-10 h-11 transition-all duration-200 relative ${
-                        errors.telephone
-                          ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
-                          : isFieldValid("telephone")
-                          ? "border-green-500 focus-visible:ring-green-500 bg-green-50 shadow-sm"
-                          : "border-slate-300 focus-visible:ring-green-500 hover:border-green-400 hover:shadow-sm"
-                      }`}
-                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-600/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                    <div className="relative">
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60 transition-colors group-focus-within:text-white" />
+                      <Input
+                        id="telephone"
+                        name="telephone"
+                        type="tel"
+                        placeholder="01 23 45 67 89"
+                        value={formData.telephone}
+                        onChange={handleInputChange}
+                        className={`pl-12 pr-4 py-3 h-12 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-white/50 backdrop-blur-sm transition-all duration-300 focus:bg-white/15 focus:border-white/40 focus:ring-0 focus:ring-offset-0 hover:bg-white/15 ${
+                          errors.telephone
+                            ? "border-red-400/50 bg-red-500/10"
+                            : ""
+                        }`}
+                      />
+                    </div>
                   </div>
                   {errors.telephone && (
-                    <p className="text-sm text-red-600 animate-pulse flex items-center gap-1">
-                      <div className="w-1 h-1 bg-red-500 rounded-full"></div>
+                    <p className="text-sm text-red-300 flex items-center gap-2 animate-fade-in">
+                      <div className="w-1 h-1 bg-red-400 rounded-full"></div>
                       {errors.telephone}
                     </p>
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="age"
-                    className="text-slate-700 font-medium flex items-center gap-1"
-                  >
+                <div className="space-y-3">
+                  <Label htmlFor="age" className="text-white font-medium text-sm flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
                     Âge *
                     {isFieldValid("age") && (
-                      <CheckCircle className="h-3 w-3 text-green-500 animate-pulse" />
+                      <CheckCircle className="h-3 w-3 text-green-400" />
                     )}
                   </Label>
                   <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
-                    <Calendar className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-green-500 transition-colors z-10" />
-                    <Input
-                      id="age"
-                      name="age"
-                      type="number"
-                      placeholder="Votre âge"
-                      min="16"
-                      max="120"
-                      value={formData.age}
-                      onChange={handleInputChange}
-                      className={`pl-10 h-11 transition-all duration-200 relative ${
-                        errors.age
-                          ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
-                          : isFieldValid("age")
-                          ? "border-green-500 focus-visible:ring-green-500 bg-green-50 shadow-sm"
-                          : "border-slate-300 focus-visible:ring-green-500 hover:border-green-400 hover:shadow-sm"
-                      }`}
-                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-600/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                    <div className="relative">
+                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60 transition-colors group-focus-within:text-white" />
+                      <Input
+                        id="age"
+                        name="age"
+                        type="number"
+                        placeholder="Votre âge"
+                        min="16"
+                        max="120"
+                        value={formData.age}
+                        onChange={handleInputChange}
+                        className={`pl-12 pr-4 py-3 h-12 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-white/50 backdrop-blur-sm transition-all duration-300 focus:bg-white/15 focus:border-white/40 focus:ring-0 focus:ring-offset-0 hover:bg-white/15 ${
+                          errors.age
+                            ? "border-red-400/50 bg-red-500/10"
+                            : ""
+                        }`}
+                      />
+                    </div>
                   </div>
                   {errors.age && (
-                    <p className="text-sm text-red-600 animate-pulse flex items-center gap-1">
-                      <div className="w-1 h-1 bg-red-500 rounded-full"></div>
+                    <p className="text-sm text-red-300 flex items-center gap-2 animate-fade-in">
+                      <div className="w-1 h-1 bg-red-400 rounded-full"></div>
                       {errors.age}
                     </p>
                   )}
                 </div>
               </div>
 
-              {/* Mot de passe amélioré */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="password"
-                  className="text-slate-700 font-medium flex items-center gap-1"
-                >
+              {/* Enhanced Password Input */}
+              <div className="space-y-3">
+                <Label htmlFor="password" className="text-white font-medium text-sm flex items-center gap-2">
+                  <Lock className="h-4 w-4" />
                   Mot de passe *
                   {isFieldValid("password") && (
-                    <CheckCircle className="h-3 w-3 text-green-500 animate-pulse" />
+                    <CheckCircle className="h-3 w-3 text-green-400" />
                   )}
                 </Label>
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-green-500 transition-colors z-10" />
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Minimum 6 caractères"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className={`pl-10 pr-10 h-11 transition-all duration-200 relative ${
-                      errors.password
-                        ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
-                        : isFieldValid("password")
-                        ? "border-green-500 focus-visible:ring-green-500 bg-green-50 shadow-sm"
-                        : "border-slate-300 focus-visible:ring-green-500 hover:border-green-400 hover:shadow-sm"
-                    }`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 transition-colors z-10 p-1 rounded-lg hover:bg-slate-100"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
+                  <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-600/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60 transition-colors group-focus-within:text-white" />
+                    <Input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Minimum 6 caractères"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      className={`pl-12 pr-12 py-3 h-12 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-white/50 backdrop-blur-sm transition-all duration-300 focus:bg-white/15 focus:border-white/40 focus:ring-0 focus:ring-offset-0 hover:bg-white/15 ${
+                        errors.password
+                          ? "border-red-400/50 bg-red-500/10"
+                          : ""
+                      }`}
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-red-600 animate-pulse flex items-center gap-1">
-                    <div className="w-1 h-1 bg-red-500 rounded-full"></div>
+                  <p className="text-sm text-red-300 flex items-center gap-2 animate-fade-in">
+                    <div className="w-1 h-1 bg-red-400 rounded-full"></div>
                     {errors.password}
                   </p>
                 )}
               </div>
 
-              {/* Confirmation mot de passe améliorée */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="confirmPassword"
-                  className="text-slate-700 font-medium flex items-center gap-1"
-                >
+              {/* Enhanced Confirm Password Input */}
+              <div className="space-y-3">
+                <Label htmlFor="confirmPassword" className="text-white font-medium text-sm flex items-center gap-2">
+                  <Lock className="h-4 w-4" />
                   Confirmer le mot de passe *
                   {isFieldValid("confirmPassword") && (
-                    <CheckCircle className="h-3 w-3 text-green-500 animate-pulse" />
+                    <CheckCircle className="h-3 w-3 text-green-400" />
                   )}
                 </Label>
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400 group-focus-within:text-green-500 transition-colors z-10" />
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirmez votre mot de passe"
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    className={`pl-10 pr-10 h-11 transition-all duration-200 relative ${
-                      errors.confirmPassword
-                        ? "border-red-500 focus-visible:ring-red-500 bg-red-50"
-                        : isFieldValid("confirmPassword")
-                        ? "border-green-500 focus-visible:ring-green-500 bg-green-50 shadow-sm"
-                        : "border-slate-300 focus-visible:ring-green-500 hover:border-green-400 hover:shadow-sm"
-                    }`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 transition-colors z-10 p-1 rounded-lg hover:bg-slate-100"
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
+                  <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-600/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60 transition-colors group-focus-within:text-white" />
+                    <Input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Confirmez votre mot de passe"
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
+                      className={`pl-12 pr-12 py-3 h-12 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-white/50 backdrop-blur-sm transition-all duration-300 focus:bg-white/15 focus:border-white/40 focus:ring-0 focus:ring-offset-0 hover:bg-white/15 ${
+                        errors.confirmPassword
+                          ? "border-red-400/50 bg-red-500/10"
+                          : ""
+                      }`}
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
                 {errors.confirmPassword && (
-                  <p className="text-sm text-red-600 animate-pulse flex items-center gap-1">
-                    <div className="w-1 h-1 bg-red-500 rounded-full"></div>
+                  <p className="text-sm text-red-300 flex items-center gap-2 animate-fade-in">
+                    <div className="w-1 h-1 bg-red-400 rounded-full"></div>
                     {errors.confirmPassword}
                   </p>
                 )}
               </div>
 
-              {/* Bouton amélioré */}
+              {/* Enhanced Submit Button matching the gradient */}
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium shadow-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group"
+                className="w-full h-12 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-600 hover:from-pink-600 hover:via-purple-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none border-0 relative overflow-hidden group"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 {isLoading ? (
-                  <div className="flex items-center gap-2 relative z-10">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  <div className="flex items-center gap-3 relative z-10">
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"></div>
                     Création en cours...
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 relative z-10">
-                    <UserPlus className="h-4 w-4" />
+                  <div className="flex items-center gap-3 relative z-10">
+                    <UserPlus className="h-5 w-5" />
                     Créer mon compte patient
                     <Sparkles className="h-4 w-4 opacity-70" />
                   </div>
                 )}
               </Button>
 
-              {/* Section sécurité améliorée */}
-              <div className="flex items-center justify-center gap-2 text-sm text-slate-500 bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl border border-green-100 shadow-sm">
-                <Shield className="h-4 w-4 text-green-600" />
+              {/* Enhanced Information */}
+              <div className="flex items-center justify-center gap-2 text-sm text-white/70 bg-white/10 p-4 rounded-xl border border-white/20 backdrop-blur-sm">
+                <Shield className="h-4 w-4 text-white" />
                 <span className="font-medium">
                   Vos données médicales sont sécurisées et confidentielles
                 </span>
-                <Heart className="h-4 w-4 text-green-500" />
+                <Heart className="h-4 w-4 text-pink-300" />
               </div>
 
-              {/* Lien connexion amélioré */}
-              <div className="text-center pt-4 border-t border-slate-200">
-                <p className="text-sm text-slate-600">
+              {/* Enhanced Registration Link */}
+              <div className="text-center pt-6 border-t border-white/20">
+                <p className="text-sm text-white/80">
                   Vous avez déjà un compte ?{" "}
                   <Link
                     to="/login"
-                    className="font-medium text-green-600 hover:text-green-700 transition-colors hover:underline"
+                    className="font-semibold text-pink-200 hover:text-white transition-colors hover:underline"
                   >
                     Se connecter
                   </Link>
@@ -612,29 +599,33 @@ export default function Register() {
           </CardContent>
         </Card>
 
-        {/* Footer amélioré */}
-        <div className="text-center mt-8 text-sm text-slate-500 space-y-3 animate-fade-in-up animation-delay-400">
-          <p className="font-medium">En créant un compte, vous acceptez nos conditions d'utilisation</p>
-          <div className="flex justify-center items-center gap-4">
-            <Link
-              to="/terms"
-              className="hover:text-slate-700 transition-colors hover:underline"
-            >
-              Conditions
-            </Link>
-            <span className="w-1 h-1 bg-slate-400 rounded-full"></span>
+        {/* Enhanced Footer */}
+        <div className="text-center mt-8 text-white/80 animate-fade-in-up animation-delay-400">
+          <div className="flex justify-center items-center gap-2 mb-3">
+            <Shield className="h-4 w-4" />
+            <p className="text-sm font-medium">Plateforme sécurisée • Données protégées</p>
+            <Heart className="h-4 w-4 text-pink-300" />
+          </div>
+          <div className="flex justify-center items-center gap-6 mt-3">
             <Link
               to="/privacy"
-              className="hover:text-slate-700 transition-colors hover:underline"
+              className="text-sm hover:text-white transition-colors hover:underline"
             >
               Confidentialité
             </Link>
-            <span className="w-1 h-1 bg-slate-400 rounded-full"></span>
+            <span className="w-1 h-1 bg-white/50 rounded-full"></span>
             <Link
               to="/support"
-              className="hover:text-slate-700 transition-colors hover:underline"
+              className="text-sm hover:text-white transition-colors hover:underline"
             >
               Support
+            </Link>
+            <span className="w-1 h-1 bg-white/50 rounded-full"></span>
+            <Link
+              to="/terms"
+              className="text-sm hover:text-white transition-colors hover:underline"
+            >
+              Conditions
             </Link>
           </div>
         </div>
@@ -672,6 +663,12 @@ export default function Register() {
           to { opacity: 1; }
         }
         
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+        
         .animate-float {
           animation: float 6s ease-in-out infinite;
         }
@@ -690,6 +687,10 @@ export default function Register() {
         
         .animate-fade-in {
           animation: fade-in 0.3s ease-out forwards;
+        }
+        
+        .animate-shake {
+          animation: shake 0.5s ease-in-out;
         }
         
         .animation-delay-200 {
