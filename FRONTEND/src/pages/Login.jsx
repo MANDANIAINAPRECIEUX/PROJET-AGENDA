@@ -1,10 +1,8 @@
-//
-
 "use client";
 
 import { useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   Eye,
   EyeOff,
@@ -13,6 +11,9 @@ import {
   Mail,
   Lock,
   UserCheck,
+  Shield,
+  Heart,
+  Sparkles,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -35,7 +36,7 @@ export default function Login() {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -82,13 +83,10 @@ export default function Login() {
     setIsLoading(true);
     setErrors({}); // Réinitialiser les erreurs générales avant la nouvelle tentative
 
-
     // Simulation d'une requête API
     try {
-      // await new Promise((resolve) => setTimeout(resolve, 1500));
-      // console.log("Données de connexion:", formData);
-
-      const response = await axios.post('http://localhost:5000/api/auth/login', { // L'URL de votre API de connexion
+      const response = await axios.post("/api/auth/login", {
+        // L'URL de votre API de connexion
         email: formData.email,
         password: formData.password,
       });
@@ -96,199 +94,255 @@ export default function Login() {
       console.log("Connexion réussie:", response.data);
 
       // Stocker le token et les informations utilisateur (par exemple, dans le localStorage)
-      localStorage.setItem('userToken', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data)); // Stockez les infos utilisateur
+      localStorage.setItem("userToken", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data)); // Stockez les infos utilisateur
 
       // Rediriger l'utilisateur vers la page de prise de rendez-vous ou le tableau de bord
       // Remplacez '/appointments' par le chemin de votre page de rendez-vous
-      navigate('/appointments'); // <-- Utilisez navigate('/votre-chemin') pour la navigation React Router
-
+      navigate("/ChoixDeRdv"); // <-- Utilisez navigate('/votre-chemin') pour la navigation React Router
 
       // Ici vous ajouteriez votre logique de connexion
     } catch (error) {
-      console.error("Erreur lors de la connexion:", error.response?.data?.message || error.message);
-      setErrors({ general: error.response?.data?.message || "Erreur de connexion. Veuillez réessayer." });
+      console.error(
+        "Erreur lors de la connexion:",
+        error.response?.data?.message || error.message
+      );
+      setErrors({
+        general:
+          error.response?.data?.message ||
+          "Erreur de connexion. Veuillez réessayer.",
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Header avec logo */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg">
-              <Stethoscope className="h-8 w-8 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-pink-500 via-purple-500 to-blue-600 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Overlay effects that match the original gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-pink-400/20 via-purple-400/20 to-blue-500/20"></div>
+
+      {/* Floating elements matching the original color scheme */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-pink-300/10 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-purple-300/10 rounded-full blur-3xl animate-float-delayed"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-blue-300/10 rounded-full blur-2xl animate-float-slow"></div>
+      </div>
+
+      <div className="w-full pt-20 max-w-md relative z-10">
+        {/* Enhanced Header with logo matching the gradient */}
+        <div className="text-center mb-8 animate-fade-in-up">
+          <div className="flex justify-center mb-6">
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-600 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+              <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-600 shadow-2xl transform group-hover:scale-105 transition-all duration-300">
+                <Stethoscope className="h-10 w-10 text-white" />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/20"></div>
+              </div>
             </div>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">
+          <h1 className="text-3xl font-bold text-white mb-3 drop-shadow-lg">
             Agenda Dentaire
           </h1>
-          <p className="text-slate-600">Accédez à votre espace professionnel</p>
+          <p className="text-white/90 text-lg font-medium drop-shadow">
+            Accédez à notre page
+          </p>
+          <div className="flex items-center justify-center gap-2 mt-2 text-white/80">
+            <Shield className="h-4 w-4" />
+            <span className="text-sm">Connexion sécurisée</span>
+          </div>
         </div>
-        {/* soratra connection */}
-        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur">
-          <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-2xl font-bold text-center text-slate-900 flex items-center justify-center gap-2">
-              <LogIn className="h-6 w-6 text-blue-600" />
+
+        {/* Enhanced Card with glass morphism matching the gradient */}
+        <Card className="shadow-2xl border-0 bg-white/10 backdrop-blur-xl border border-white/20 overflow-hidden animate-fade-in-up animation-delay-200">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/10 to-transparent"></div>
+
+          <CardHeader className="relative space-y-1 pb-6 pt-8">
+            <CardTitle className="text-2xl font-bold text-center text-white flex items-center justify-center gap-3">
+              <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                <LogIn className="h-6 w-6 text-white" />
+              </div>
               Connexion
             </CardTitle>
-            <CardDescription className="text-center text-slate-600">
-              Connectez-vous à votre compte professionnel
+            <CardDescription className="text-center text-white/80 text-base">
+              Connectez-vous à votre compte
             </CardDescription>
           </CardHeader>
 
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Message d'erreur général */}
+          <CardContent className="relative space-y-6 pb-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Enhanced error message */}
               {errors.general && (
-                <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
-                  {errors.general}
+                <div className="p-4 text-sm text-red-100 bg-red-500/20 border border-red-400/30 rounded-xl backdrop-blur-sm animate-shake">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                    {errors.general}
+                  </div>
                 </div>
               )}
 
-              {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-700 font-medium">
+              {/* Enhanced Email Input */}
+              <div className="space-y-3">
+                <Label
+                  htmlFor="email"
+                  className="text-white font-medium text-sm flex items-center gap-2"
+                >
+                  <Mail className="h-4 w-4" />
                   Email professionnel
                 </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="votre.email@exemple.com"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className={`pl-10 ${
-                      errors.email
-                        ? "border-red-500 focus-visible:ring-red-500"
-                        : "border-slate-300 focus-visible:ring-blue-500"
-                    }`}
-                    autoComplete="email"
-                  />
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-600/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60 transition-colors group-focus-within:text-white" />
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="votre.email@exemple.com"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className={`pl-12 pr-4 py-3 h-12 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-white/50 backdrop-blur-sm transition-all duration-300 focus:bg-white/15 focus:border-white/40 focus:ring-0 focus:ring-offset-0 hover:bg-white/15 ${
+                        errors.email ? "border-red-400/50 bg-red-500/10" : ""
+                      }`}
+                      autoComplete="email"
+                    />
+                  </div>
                 </div>
                 {errors.email && (
-                  <p className="text-sm text-red-600">{errors.email}</p>
+                  <p className="text-sm text-red-300 flex items-center gap-2 animate-fade-in">
+                    <div className="w-1 h-1 bg-red-400 rounded-full"></div>
+                    {errors.email}
+                  </p>
                 )}
               </div>
 
-              {/* Mot de passe */}
-              <div className="space-y-2">
+              {/* Enhanced Password Input */}
+              <div className="space-y-3">
                 <Label
                   htmlFor="password"
-                  className="text-slate-700 font-medium"
+                  className="text-white font-medium text-sm flex items-center gap-2"
                 >
+                  <Lock className="h-4 w-4" />
                   Mot de passe
                 </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Votre mot de passe"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className={`pl-10 pr-10 ${
-                      errors.password
-                        ? "border-red-500 focus-visible:ring-red-500"
-                        : "border-slate-300 focus-visible:ring-blue-500"
-                    }`}
-                    autoComplete="current-password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 transition-colors"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-600/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60 transition-colors group-focus-within:text-white" />
+                    <Input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Votre mot de passe"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      className={`pl-12 pr-12 py-3 h-12 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-white/50 backdrop-blur-sm transition-all duration-300 focus:bg-white/15 focus:border-white/40 focus:ring-0 focus:ring-offset-0 hover:bg-white/15 ${
+                        errors.password ? "border-red-400/50 bg-red-500/10" : ""
+                      }`}
+                      autoComplete="current-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-red-600">{errors.password}</p>
+                  <p className="text-sm text-red-300 flex items-center gap-2 animate-fade-in">
+                    <div className="w-1 h-1 bg-red-400 rounded-full"></div>
+                    {errors.password}
+                  </p>
                 )}
               </div>
 
-              {/* Options */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <input
-                    id="rememberMe"
-                    name="rememberMe"
-                    type="checkbox"
-                    checked={formData.rememberMe}
-                    onChange={handleInputChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
-                  />
+              {/* Enhanced Options */}
+              <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center space-x-3">
+                  <div className="relative">
+                    <input
+                      id="rememberMe"
+                      name="rememberMe"
+                      type="checkbox"
+                      checked={formData.rememberMe}
+                      onChange={handleInputChange}
+                      className="w-4 h-4 text-purple-500 bg-white/20 border-white/30 rounded focus:ring-purple-500 focus:ring-2 backdrop-blur-sm"
+                    />
+                  </div>
                   <Label
                     htmlFor="rememberMe"
-                    className="text-sm text-slate-600 cursor-pointer"
+                    className="text-sm text-white/90 cursor-pointer hover:text-white transition-colors"
                   >
                     Se souvenir de moi
                   </Label>
                 </div>
                 <a
                   href="/forgot-password"
-                  className="text-sm text-blue-600 hover:text-blue-700 transition-colors font-medium"
+                  className="text-sm text-pink-200 hover:text-white transition-colors font-medium hover:underline"
                 >
                   Mot de passe oublié ?
                 </a>
               </div>
 
-              {/* Bouton de connexion */}
+              {/* Enhanced Submit Button matching the gradient */}
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-2.5 shadow-lg transition-all duration-200"
+                className="w-full h-12 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-600 hover:from-pink-600 hover:via-purple-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none border-0 relative overflow-hidden group"
               >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  <div className="flex items-center gap-3 relative z-10">
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"></div>
                     Connexion en cours...
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <LogIn className="h-4 w-4" />
+                  <div className="flex items-center gap-3 relative z-10">
+                    <LogIn className="h-5 w-5" />
                     Se connecter
+                    <Sparkles className="h-4 w-4 opacity-70" />
                   </div>
                 )}
               </Button>
 
-              {/* Séparateur */}
-              <div className="relative">
+              {/* Enhanced Separator */}
+              <div className="relative py-4">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-slate-200" />
+                  <span className="w-full border-t border-white/20" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-slate-500">Ou</span>
+                  <span className="bg-white/10 backdrop-blur-sm px-4 py-1 text-white/70 rounded-full border border-white/20">
+                    Ou
+                  </span>
                 </div>
               </div>
 
-              {/* Connexion rapide (optionnel) */}
+              {/* Enhanced Alternative Login */}
               <Button
                 type="button"
                 variant="outline"
-                className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors bg-transparent"
+                className="w-full h-12 border-white/30 text-white hover:bg-white/10 transition-all duration-300 bg-white/5 backdrop-blur-sm rounded-xl hover:border-white/50 group relative overflow-hidden"
               >
-                <UserCheck className="h-4 w-4 mr-2" />
-                Connexion avec badge professionnel
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                <UserCheck className="h-5 w-5 mr-3 relative z-10" />
+                <span className="relative z-10">
+                  Connexion avec badge professionnel
+                </span>
               </Button>
 
-              {/* Lien vers inscription */}
-              <div className="text-center pt-4 border-t border-slate-200">
-                <p className="text-sm text-slate-600">
+              {/* Enhanced Registration Link */}
+              <div className="text-center pt-6 border-t border-white/20">
+                <p className="text-sm text-white/80">
                   Vous n'avez pas encore de compte ?{" "}
                   <a
                     href="/register"
-                    className="font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                    className="font-semibold text-pink-200 hover:text-white transition-colors hover:underline"
                   >
                     Créer un compte
                   </a>
@@ -298,26 +352,136 @@ export default function Login() {
           </CardContent>
         </Card>
 
-        {/* Footer */}
-        <div className="text-center mt-8 text-sm text-slate-500">
-          <p>Connexion sécurisée • Données protégées</p>
-          <div className="flex justify-center items-center gap-4 mt-2">
+        {/* Enhanced Footer */}
+        <div className="text-center mt-8 text-white/80 animate-fade-in-up animation-delay-400">
+          <div className="flex justify-center items-center gap-2 mb-3">
+            <Shield className="h-4 w-4" />
+            <p className="text-sm font-medium">
+              Connexion sécurisée • Données protégées
+            </p>
+            <Heart className="h-4 w-4 text-pink-300" />
+          </div>
+          <div className="flex justify-center items-center gap-6 mt-3">
             <a
               href="/privacy"
-              className="hover:text-slate-700 transition-colors"
+              className="text-sm hover:text-white transition-colors hover:underline"
             >
               Confidentialité
             </a>
-            <span>•</span>
+            <span className="w-1 h-1 bg-white/50 rounded-full"></span>
             <a
               href="/support"
-              className="hover:text-slate-700 transition-colors"
+              className="text-sm hover:text-white transition-colors hover:underline"
             >
               Support
+            </a>
+            <span className="w-1 h-1 bg-white/50 rounded-full"></span>
+            <a
+              href="/terms"
+              className="text-sm hover:text-white transition-colors hover:underline"
+            >
+              Conditions
             </a>
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes float {
+          0%,
+          100% {
+            transform: translateY(0px) rotate(0deg);
+          }
+          50% {
+            transform: translateY(-20px) rotate(3deg);
+          }
+        }
+
+        @keyframes float-delayed {
+          0%,
+          100% {
+            transform: translateY(0px) rotate(0deg);
+          }
+          50% {
+            transform: translateY(-15px) rotate(-2deg);
+          }
+        }
+
+        @keyframes float-slow {
+          0%,
+          100% {
+            transform: translateY(0px) rotate(0deg);
+          }
+          50% {
+            transform: translateY(-10px) rotate(1deg);
+          }
+        }
+
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes shake {
+          0%,
+          100% {
+            transform: translateX(0);
+          }
+          25% {
+            transform: translateX(-5px);
+          }
+          75% {
+            transform: translateX(5px);
+          }
+        }
+
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-float-delayed {
+          animation: float-delayed 8s ease-in-out infinite;
+        }
+
+        .animate-float-slow {
+          animation: float-slow 10s ease-in-out infinite;
+        }
+
+        .animate-fade-in-up {
+          animation: fade-in-up 0.6s ease-out forwards;
+        }
+
+        .animate-fade-in {
+          animation: fade-in 0.3s ease-out forwards;
+        }
+
+        .animate-shake {
+          animation: shake 0.5s ease-in-out;
+        }
+
+        .animation-delay-200 {
+          animation-delay: 0.2s;
+        }
+
+        .animation-delay-400 {
+          animation-delay: 0.4s;
+        }
+      `}</style>
     </div>
   );
 }
