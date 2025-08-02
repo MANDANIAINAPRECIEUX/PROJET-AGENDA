@@ -27,36 +27,7 @@ import a from "../assets/images/a.jpg";
 import carie from "../assets/images/carie.JPG";
 import fracture from "../assets/images/fracture.JPG";
 
-// Fonction utilitaire pour récupérer les données patient
-const getPatientData = () => {
-  try {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      return JSON.parse(userData);
-    }
-    return null;
-  } catch (error) {
-    console.error("Erreur lors de la récupération des données patient:", error);
-    return null;
-  }
-};
 
-// Fonction utilitaire pour générer un ID patient
-const generatePatientId = (patientData) => {
-  if (!patientData) return "";
-  
-  // Essayer d'utiliser l'ID existant
-  if (patientData.id) return patientData.id;
-  if (patientData._id) return patientData._id;
-  
-  // Générer un ID basé sur le nom et prénom
-  if (patientData.nom && patientData.prenom) {
-    return `ID-${patientData.nom.toUpperCase()}-${patientData.prenom.toUpperCase()}`;
-  }
-  
-  // ID par défaut
-  return `ID-PATIENT-${Date.now()}`;
-};
 
 const modernStyles = `
   .ultra-modern-bg {
@@ -742,7 +713,6 @@ export default function FormulaireDeReservation() {
   const navigate = useNavigate();
   const [appointmentData, setAppointmentData] = useState(null);
   const [selectedTeeth, setSelectedTeeth] = useState([]);
-  // Ajout des états pour les données patient
   const [patientData, setPatientData] = useState(null);
   const [formData, setFormData] = useState({
     // Champs pour la dent
@@ -756,6 +726,36 @@ export default function FormulaireDeReservation() {
     niveauSymptome: 0, // Mis à 0 par défaut pour correspondre à "AUCUNE"
     description: "",
   });
+
+  // Fonctions utilitaires pour les données patient
+  const getPatientDataFromStorage = () => {
+    try {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        return JSON.parse(userData);
+      }
+      return null;
+    } catch (error) {
+      console.error("Erreur lors de la récupération des données patient:", error);
+      return null;
+    }
+  };
+
+  const generatePatientIdFromData = (userData) => {
+    if (!userData) return "";
+    
+    // Essayer d'utiliser l'ID existant
+    if (userData.id) return userData.id;
+    if (userData._id) return userData._id;
+    
+    // Générer un ID basé sur le nom et prénom
+    if (userData.nom && userData.prenom) {
+      return `ID-${userData.nom.toUpperCase()}-${userData.prenom.toUpperCase()}`;
+    }
+    
+    // ID par défaut
+    return `ID-PATIENT-${Date.now()}`;
+  };
 
   // Données des dents pour la sélection
   const allTeethData = [
@@ -999,14 +999,14 @@ export default function FormulaireDeReservation() {
     }
 
     // Récupération des données patient avec les fonctions utilitaires
-    const userData = getPatientData();
+    const userData = getPatientDataFromStorage();
     if (userData) {
       setPatientData(userData);
       
       // Pré-remplir le champ patient avec l'ID généré
       setFormData(prev => ({
         ...prev,
-        patient: generatePatientId(userData),
+        patient: generatePatientIdFromData(userData),
       }));
     } else {
       console.warn("Aucune donnée utilisateur trouvée dans localStorage");
