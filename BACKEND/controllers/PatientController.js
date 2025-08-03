@@ -34,6 +34,29 @@ const getPatientById = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Obtenir un patient par email
+// @route   GET /api/patients/by-email/:email
+// @access  Private
+const getPatientByEmail = asyncHandler(async (req, res) => {
+  const { email } = req.params;
+  const patient = await Patient.findOne({ email: email.toLowerCase() });
+
+  // Vérifier que l'utilisateur connecté peut accéder à ces données
+  if (req.user.role === "patient" && req.user.email !== email.toLowerCase()) {
+    res.status(403);
+    throw new Error(
+      "Accès refusé : vous ne pouvez accéder qu'à vos propres informations de patient."
+    );
+  }
+
+  if (patient) {
+    res.status(200).json(patient);
+  } else {
+    res.status(404);
+    throw new Error("Patient non trouvé pour cet email");
+  }
+});
+
 //     Créer un nouveau patient
 // route   POST /api/patients
 // @access  Public
@@ -156,6 +179,7 @@ const deletePatient = asyncHandler(async (req, res) => {
 module.exports = {
   getPatients,
   getPatientById,
+  getPatientByEmail,
   createPatient,
   updatePatient,
   deletePatient,

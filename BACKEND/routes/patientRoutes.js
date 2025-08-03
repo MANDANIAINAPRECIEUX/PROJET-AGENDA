@@ -6,6 +6,7 @@ const router = express.Router(); // Créer un routeur Express
 const {
   getPatients,
   getPatientById,
+  getPatientByEmail,
   createPatient,
   updatePatient,
   deletePatient,
@@ -21,6 +22,11 @@ router
   .route("/")
   .get(protect, authorize("admin", "dentiste"), getPatients)
   .post(protect, authorize("admin", "dentiste", "patient"), createPatient);
+
+// Route GET pour obtenir un patient par email
+router
+  .route("/by-email/:email")
+  .get(protect, authorize("admin", "dentiste", "patient"), getPatientByEmail);
 
 // Route GET pour obtenir un patient par ID, PUT pour le mettre à jour, DELETE pour le supprimer
 router

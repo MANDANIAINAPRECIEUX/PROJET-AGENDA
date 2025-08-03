@@ -26,6 +26,7 @@ import gonflement from "../assets/images/gonflement.png";
 import a from "../assets/images/a.jpg";
 import carie from "../assets/images/carie.JPG";
 import fracture from "../assets/images/fracture.JPG";
+import { usePatientData } from "@/lib/hooks/usePatientData";
 
 const modernStyles = `
   .ultra-modern-bg {
@@ -711,7 +712,6 @@ export default function FormulaireDeReservation() {
   const navigate = useNavigate();
   const [appointmentData, setAppointmentData] = useState(null);
   const [selectedTeeth, setSelectedTeeth] = useState([]);
-  const [patientData, setPatientData] = useState(null);
   const [formData, setFormData] = useState({
     // Champs pour la dent
     patient: "",
@@ -725,38 +725,17 @@ export default function FormulaireDeReservation() {
     description: "",
   });
 
-  // Fonctions utilitaires pour les données patient
-  const getPatientDataFromStorage = () => {
-    try {
-      const userData = localStorage.getItem("user");
-      if (userData) {
-        return JSON.parse(userData);
-      }
-      return null;
-    } catch (error) {
-      console.error(
-        "Erreur lors de la récupération des données patient:",
-        error
-      );
-      return null;
-    }
-  };
+  // Utiliser le hook personnalisé pour récupérer les données patient
+  const { 
+    patientData, 
+    loading: patientLoading, 
+    error: patientError, 
+    patientId, 
+    fullName, 
+    hasCompleteData 
+  } = usePatientData();
 
-  const generatePatientIdFromData = (userData) => {
-    if (!userData) return "";
 
-    // Essayer d'utiliser l'ID existant
-    if (userData.id) return userData.id;
-    if (userData._id) return userData._id;
-
-    // Générer un ID basé sur le nom et prénom
-    if (userData.nom && userData.prenom) {
-      return `ID-${userData.nom.toUpperCase()}-${userData.prenom.toUpperCase()}`;
-    }
-
-    // ID par défaut
-    return `ID-PATIENT-${Date.now()}`;
-  };
 
   // [Données des dents complètes - non répétées ici]
   const allTeethData = [
@@ -998,21 +977,17 @@ export default function FormulaireDeReservation() {
     } else {
       navigate("/ChoixDeRdv");
     }
+  }, [navigate]);
 
-    // Récupération des données patient avec les fonctions utilitaires
-    const userData = getPatientDataFromStorage();
-    if (userData) {
-      setPatientData(userData);
-
-      // Pré-remplir le champ patient avec l'ID généré
+  // Pré-remplir le champ patient quand les données patient sont disponibles
+  useEffect(() => {
+    if (patientData && patientId) {
       setFormData((prev) => ({
         ...prev,
-        patient: generatePatientIdFromData(userData),
+        patient: patientId,
       }));
-    } else {
-      console.warn("Aucune donnée utilisateur trouvée dans localStorage");
     }
-  }, [navigate]);
+  }, [patientData, patientId]);
 
   // [Toutes les autres fonctions restent identiques]
   const handleInputChange = (e) => {
@@ -1129,10 +1104,8 @@ export default function FormulaireDeReservation() {
       const finalAppointment = {
         ...appointmentData,
         // Informations patient complètes
-        patientId: patientData?.id || patientData?._id || formData.patient,
-        patientNom: patientData
-          ? `${patientData.prenom} ${patientData.nom}`
-          : "Non renseigné",
+        patientId: patientId || formData.patient,
+        patientNom: fullName,
         patientEmail: patientData?.email || "Non renseigné",
         patientTelephone: patientData?.telephone || "Non renseigné",
         patientAge: patientData?.age || "Non renseigné",
@@ -1198,19 +1171,27 @@ export default function FormulaireDeReservation() {
                 </div>
 
                 {/* Affichage du nom complet du patient */}
-                {patientData && (
-                  <div>
-                    <Label className="text-slate-700 font-semibold text-lg mb-3 block">
-                      Nom du Patient
-                    </Label>
-                    <div className="modern-input bg-gray-50 flex items-center">
-                      <User className="h-5 w-5 text-blue-600 mr-3" />
-                      <span className="text-slate-800 font-medium">
-                        {patientData.prenom} {patientData.nom}
-                      </span>
-                    </div>
+                <div>
+                  <Label className="text-slate-700 font-semibold text-lg mb-3 block">
+                    Nom du Patient
+                  </Label>
+                  <div className="modern-input bg-gray-50 flex items-center">
+                    <User className="h-5 w-5 text-blue-600 mr-3" />
+                    <span className="text-slate-800 font-medium">
+                      {patientLoading ? "Chargement..." : fullName}
+                    </span>
                   </div>
-                )}
+                  {patientError && (
+                    <p className="text-red-600 text-sm mt-1">
+                      Erreur: {patientError}
+                    </p>
+                  )}
+                  {!hasCompleteData && !patientLoading && (
+                    <p className="text-orange-600 text-sm mt-1">
+                      ⚠️ Données incomplètes - Nom et prénom manquants dans le profil patient
+                    </p>
+                  )}
+                </div>
 
                 {/* Informations supplémentaires du patient */}
                 {patientData && (
