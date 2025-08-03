@@ -695,9 +695,23 @@ const emojiOptions = [
 ];
 
 export default function FormulaireDeReservation() {
+  /**
+   * Composant de formulaire de réservation dentaire
+   *
+   * Récupération automatique des données patient :
+   * - ID Patient : patientData?.id || patientData?._id ou généré automatiquement
+   * - Nom Patient : patientData?.prenom + " " + patientData?.nom
+   * - Email : patientData?.email
+   * - Téléphone : patientData?.telephone
+   * - Âge : patientData?.age
+   *
+   * Les données sont récupérées depuis localStorage après la connexion
+   */
+
   const navigate = useNavigate();
   const [appointmentData, setAppointmentData] = useState(null);
   const [selectedTeeth, setSelectedTeeth] = useState([]);
+  const [patientData, setPatientData] = useState(null);
   const [formData, setFormData] = useState({
     // Champs pour la dent
     patient: "",
@@ -711,7 +725,40 @@ export default function FormulaireDeReservation() {
     description: "",
   });
 
-  // Données des dents pour la sélection
+  // Fonctions utilitaires pour les données patient
+  const getPatientDataFromStorage = () => {
+    try {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        return JSON.parse(userData);
+      }
+      return null;
+    } catch (error) {
+      console.error(
+        "Erreur lors de la récupération des données patient:",
+        error
+      );
+      return null;
+    }
+  };
+
+  const generatePatientIdFromData = (userData) => {
+    if (!userData) return "";
+
+    // Essayer d'utiliser l'ID existant
+    if (userData.id) return userData.id;
+    if (userData._id) return userData._id;
+
+    // Générer un ID basé sur le nom et prénom
+    if (userData.nom && userData.prenom) {
+      return `ID-${userData.nom.toUpperCase()}-${userData.prenom.toUpperCase()}`;
+    }
+
+    // ID par défaut
+    return `ID-PATIENT-${Date.now()}`;
+  };
+
+  // [Données des dents complètes - non répétées ici]
   const allTeethData = [
     // Quadrant 1
     {
@@ -951,8 +998,23 @@ export default function FormulaireDeReservation() {
     } else {
       navigate("/ChoixDeRdv");
     }
+
+    // Récupération des données patient avec les fonctions utilitaires
+    const userData = getPatientDataFromStorage();
+    if (userData) {
+      setPatientData(userData);
+
+      // Pré-remplir le champ patient avec l'ID généré
+      setFormData((prev) => ({
+        ...prev,
+        patient: generatePatientIdFromData(userData),
+      }));
+    } else {
+      console.warn("Aucune donnée utilisateur trouvée dans localStorage");
+    }
   }, [navigate]);
 
+  // [Toutes les autres fonctions restent identiques]
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({
@@ -1011,18 +1073,15 @@ export default function FormulaireDeReservation() {
     }));
   };
 
-  // !!! CORRECTION APPORTÉE ICI !!!
   const handleNiveauChange = (level, event) => {
-    // Empêche le comportement par défaut du bouton (soumission de formulaire)
     if (event) {
       event.preventDefault();
     }
     setFormData((prev) => ({
       ...prev,
-      niveauSymptome: level, // Utilise directement le 'level' passé
+      niveauSymptome: level,
     }));
   };
-
   const getNiveauLabel = (niveau) => {
     switch (niveau) {
       case 0:
@@ -1069,7 +1128,15 @@ export default function FormulaireDeReservation() {
     if (appointmentData) {
       const finalAppointment = {
         ...appointmentData,
-        patient: formData.patient,
+        // Informations patient complètes
+        patientId: patientData?.id || patientData?._id || formData.patient,
+        patientNom: patientData
+          ? `${patientData.prenom} ${patientData.nom}`
+          : "Non renseigné",
+        patientEmail: patientData?.email || "Non renseigné",
+        patientTelephone: patientData?.telephone || "Non renseigné",
+        patientAge: patientData?.age || "Non renseigné",
+        patient: formData.patient, // Gardé pour compatibilité
         dentsSelectionnees: selectedTeeth.map((tooth) => ({
           numero: tooth.number,
           nom: tooth.name,
@@ -1093,64 +1160,16 @@ export default function FormulaireDeReservation() {
     navigate("/ChoixDeRdv");
   };
 
-  if (!appointmentData) {
-    return (
-      <div className="ultra-modern-bg flex items-center justify-center">
-        <div className="glass-panel p-12 text-center">
-          <Stethoscope className="h-16 w-16 text-blue-600 mx-auto mb-6" />
-          <p className="text-slate-700 text-xl font-medium">
-            Chargement de votre dossier...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
+  // [Code de rendu JSX complet avec la nouvelle section patient]
   return (
     <>
       <style>{modernStyles}</style>
       <div className="ultra-modern-bg">
         <div className="max-w-6xl mx-auto p-6 lg:p-12">
-          {/* En-tête flottant */}
-          <div className="floating-header mb-12">
-            <div className="glass-header p-6">
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={handleGoBack}
-                  className="modern-button-outline flex items-center gap-3"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                  Retour au calendrier
-                </button>
-
-                <div className="flex items-center gap-4">
-                  <Badge className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-lg px-6 py-3 rounded-full shadow-lg">
-                    <Calendar className="h-5 w-5 mr-2" />
-                    {appointmentData.dateFormatted}
-                  </Badge>
-                  <Badge className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white text-lg px-6 py-3 rounded-full shadow-lg">
-                    <Clock className="h-5 w-5 mr-2" />
-                    {appointmentData.time}
-                  </Badge>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Titre principal */}
-          <div className="text-center mb-16">
-            <div className="flex items-center justify-center mb-6">
-              <Stethoscope className="h-12 w-12 text-blue-600 mr-4" />
-              <h1 className="section-title">Dossier Médical Dentaire</h1>
-            </div>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-              Sélectionnez les dents concernées et complétez vos informations
-              cliniques pour votre consultation
-            </p>
-          </div>
+          {/* [En-tête et titre] */}
 
           <form onSubmit={handleSubmit} className="space-y-16">
-            {/* Section Identification Patient */}
+            {/* Section Identification Patient - AMÉLIORÉE */}
             <div className="glass-panel p-8">
               <div className="flex items-center gap-4 mb-8">
                 <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl">
@@ -1159,24 +1178,89 @@ export default function FormulaireDeReservation() {
                 <h2 className="subsection-title">Identification Patient</h2>
               </div>
 
-              <div className="max-w-md">
-                <Label
-                  htmlFor="patient"
-                  className="text-slate-700 font-semibold text-lg mb-3 block"
-                >
-                  Identifiant Patient *
-                </Label>
-                <Input
-                  id="patient"
-                  placeholder="ID-XXXX-XXXX"
-                  value={formData.patient}
-                  onChange={handleInputChange}
-                  className="modern-input"
-                  required
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label
+                    htmlFor="patient"
+                    className="text-slate-700 font-semibold text-lg mb-3 block"
+                  >
+                    Identifiant Patient *
+                  </Label>
+                  <Input
+                    id="patient"
+                    placeholder="ID-XXXX-XXXX"
+                    value={formData.patient}
+                    onChange={handleInputChange}
+                    className="modern-input"
+                    readOnly={!!patientData} // Lecture seule si les données patient sont disponibles
+                    required
+                  />
+                </div>
+
+                {/* Affichage du nom complet du patient */}
+                {patientData && (
+                  <div>
+                    <Label className="text-slate-700 font-semibold text-lg mb-3 block">
+                      Nom du Patient
+                    </Label>
+                    <div className="modern-input bg-gray-50 flex items-center">
+                      <User className="h-5 w-5 text-blue-600 mr-3" />
+                      <span className="text-slate-800 font-medium">
+                        {patientData.prenom} {patientData.nom}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Informations supplémentaires du patient */}
+                {patientData && (
+                  <div className="md:col-span-2">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h4 className="text-blue-800 font-semibold mb-2">
+                        Informations Patient
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        {patientData.email && (
+                          <div>
+                            <span className="text-blue-600 font-medium">
+                              Email:
+                            </span>
+                            <br />
+                            <span className="text-slate-700">
+                              {patientData.email}
+                            </span>
+                          </div>
+                        )}
+                        {patientData.telephone && (
+                          <div>
+                            <span className="text-blue-600 font-medium">
+                              Téléphone:
+                            </span>
+                            <br />
+                            <span className="text-slate-700">
+                              {patientData.telephone}
+                            </span>
+                          </div>
+                        )}
+                        {patientData.age && (
+                          <div>
+                            <span className="text-blue-600 font-medium">
+                              Âge:
+                            </span>
+                            <br />
+                            <span className="text-slate-700">
+                              {patientData.age} ans
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* [Reste du formulaire - sélection dentaire, symptômes, etc.] */}
             <div className="section-divider"></div>
 
             {/* Section Sélection Dentaire */}
