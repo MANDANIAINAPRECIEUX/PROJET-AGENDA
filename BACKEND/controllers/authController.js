@@ -12,7 +12,7 @@ const registerUser = asyncHandler(async (req, res) => {
   if (!email || !password) {
     res.status(400);
     throw new Error(
-      "Veuillez entrer tous les champs obligatoires : email et mot de passe."
+      "Veuillez entrer tous les champs obligatoires : email et mot de passe.",
     );
   }
 
@@ -104,6 +104,26 @@ const getMe = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Obtenir un utilisateur par email
+// @route   GET /api/users/email/:email
+// @access  Private (nécessite un token JWT valide)
+const getUserByEmail = asyncHandler(async (req, res) => {
+  const email = req.params.email;
+  if (!email) {
+    res.status(400);
+    throw new Error("Email requis");
+  }
+  // On ne renvoie pas le mot de passe
+  const user = await User.findOne({ email: email.toLowerCase() }).select(
+    "-password",
+  );
+  if (!user) {
+    res.status(404);
+    throw new Error("Utilisateur non trouvé");
+  }
+  res.status(200).json(user);
+});
+
 // @desc    Obtenir tous les utilisateurs
 // @route   GET /api/users (ou /api/auth/users)
 // @access  Privé (Admin seulement)
@@ -116,5 +136,6 @@ module.exports = {
   registerUser,
   loginUser,
   getMe,
+  getUserByEmail,
   getUsers,
 };

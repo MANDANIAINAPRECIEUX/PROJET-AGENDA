@@ -6,6 +6,7 @@ const {
   loginUser,
   getMe,
   getUsers,
+  getUserByEmail,
 } = require("../controllers/authController");
 
 // Nous ajouterons le middleware 'protect' ici plus tard pour la route '/me'
@@ -19,7 +20,10 @@ router.get(
   "/users",
   protect,
   authorize("admin", "patient", "dentiste"),
-  getUsers
+  getUsers,
 );
+
+// Ajouter la route pour récupérer un utilisateur par email
+router.get("/users/email/:email", protect, getUserByEmail);
 
 module.exports = router;
