@@ -733,14 +733,6 @@ export default function FormulaireDeReservation() {
       if (userData) {
         const parsedData = JSON.parse(userData);
         console.log("Données patient récupérées:", parsedData);
-        
-        // Si les données contiennent déjà nom et prénom, les utiliser
-        if (parsedData.nom && parsedData.prenom) {
-          return parsedData;
-        }
-        
-        // Sinon, essayer de récupérer les données complètes depuis l'API
-        // Cette logique sera implémentée plus tard si nécessaire
         return parsedData;
       }
       return null;
@@ -770,7 +762,7 @@ export default function FormulaireDeReservation() {
   };
 
   // Fonction pour récupérer les données complètes du patient depuis l'API
-  const fetchPatientData = async (userId) => {
+  const fetchPatientData = async (email) => {
     try {
       const token = localStorage.getItem("userToken");
       if (!token) {
@@ -778,7 +770,10 @@ export default function FormulaireDeReservation() {
         return null;
       }
 
-      const response = await fetch(`/api/users/${userId}`, {
+      console.log("Recherche du patient avec l'email:", email);
+      
+      // Utiliser l'endpoint pour récupérer les données par email
+      const response = await fetch(`/api/users/email/${email}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -1047,47 +1042,39 @@ export default function FormulaireDeReservation() {
       console.log("Nom:", userData.nom);
       console.log("Prénom:", userData.prenom);
       
-      // Si les données contiennent nom et prénom, les utiliser directement
-      if (userData.nom && userData.prenom) {
-        setPatientData(userData);
-        setFormData((prev) => ({
-          ...prev,
-          patient: generatePatientIdFromData(userData),
-        }));
-      } else {
-        // Sinon, essayer de récupérer les données complètes depuis l'API
-        const fetchCompleteData = async () => {
-          setIsLoadingPatientData(true);
-          try {
-            const completeData = await fetchPatientData(userData._id || userData.id);
-            if (completeData) {
-              setPatientData(completeData);
-              setFormData((prev) => ({
-                ...prev,
-                patient: generatePatientIdFromData(completeData),
-              }));
-            } else {
-              // Utiliser les données de base si l'API ne fonctionne pas
-              setPatientData(userData);
-              setFormData((prev) => ({
-                ...prev,
-                patient: generatePatientIdFromData(userData),
-              }));
-            }
-          } catch (error) {
-            console.error("Erreur lors de la récupération des données patient:", error);
-            // Utiliser les données de base en cas d'erreur
+      // Toujours essayer de récupérer les données complètes depuis l'API
+      const fetchCompleteData = async () => {
+        setIsLoadingPatientData(true);
+        try {
+          // Utiliser l'email pour récupérer les données complètes
+          const completeData = await fetchPatientData(userData.email);
+          if (completeData) {
+            setPatientData(completeData);
+            setFormData((prev) => ({
+              ...prev,
+              patient: generatePatientIdFromData(completeData),
+            }));
+          } else {
+            // Utiliser les données de base si l'API ne fonctionne pas
             setPatientData(userData);
             setFormData((prev) => ({
               ...prev,
               patient: generatePatientIdFromData(userData),
             }));
-          } finally {
-            setIsLoadingPatientData(false);
           }
-        };
-        fetchCompleteData();
-      }
+        } catch (error) {
+          console.error("Erreur lors de la récupération des données patient:", error);
+          // Utiliser les données de base en cas d'erreur
+          setPatientData(userData);
+          setFormData((prev) => ({
+            ...prev,
+            patient: generatePatientIdFromData(userData),
+          }));
+        } finally {
+          setIsLoadingPatientData(false);
+        }
+      };
+      fetchCompleteData();
     } else {
       console.warn("Aucune donnée utilisateur trouvée dans localStorage");
     }
