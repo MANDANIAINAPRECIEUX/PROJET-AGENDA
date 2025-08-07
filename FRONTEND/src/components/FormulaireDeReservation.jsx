@@ -730,7 +730,9 @@ export default function FormulaireDeReservation() {
     try {
       const userData = localStorage.getItem("user");
       if (userData) {
-        return JSON.parse(userData);
+        const parsedData = JSON.parse(userData);
+        console.log("Données patient récupérées:", parsedData);
+        return parsedData;
       }
       return null;
     } catch (error) {
@@ -1002,6 +1004,9 @@ export default function FormulaireDeReservation() {
     // Récupération des données patient avec les fonctions utilitaires
     const userData = getPatientDataFromStorage();
     if (userData) {
+      console.log("Données patient trouvées:", userData);
+      console.log("Nom:", userData.nom);
+      console.log("Prénom:", userData.prenom);
       setPatientData(userData);
 
       // Pré-remplir le champ patient avec l'ID généré
@@ -1198,7 +1203,7 @@ export default function FormulaireDeReservation() {
                 </div>
 
                 {/* Affichage du nom complet du patient */}
-                {patientData && (
+                {patientData && patientData.nom && patientData.prenom && (
                   <div>
                     <Label className="text-slate-700 font-semibold text-lg mb-3 block">
                       Nom du Patient
@@ -1213,7 +1218,7 @@ export default function FormulaireDeReservation() {
                 )}
 
                 {/* Informations supplémentaires du patient */}
-                {patientData && (
+                {patientData && (patientData.email || patientData.telephone || patientData.age) && (
                   <div className="md:col-span-2">
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                       <h4 className="text-blue-800 font-semibold mb-2">
