@@ -712,6 +712,7 @@ export default function FormulaireDeReservation() {
   const [appointmentData, setAppointmentData] = useState(null);
   const [selectedTeeth, setSelectedTeeth] = useState([]);
   const [patientData, setPatientData] = useState(null);
+  const [isLoadingPatientData, setIsLoadingPatientData] = useState(false);
   const [formData, setFormData] = useState({
     // Champs pour la dent
     patient: "",
@@ -732,6 +733,14 @@ export default function FormulaireDeReservation() {
       if (userData) {
         const parsedData = JSON.parse(userData);
         console.log("Données patient récupérées:", parsedData);
+        
+        // Si les données contiennent déjà nom et prénom, les utiliser
+        if (parsedData.nom && parsedData.prenom) {
+          return parsedData;
+        }
+        
+        // Sinon, essayer de récupérer les données complètes depuis l'API
+        // Cette logique sera implémentée plus tard si nécessaire
         return parsedData;
       }
       return null;
@@ -758,6 +767,36 @@ export default function FormulaireDeReservation() {
 
     // ID par défaut
     return `ID-PATIENT-${Date.now()}`;
+  };
+
+  // Fonction pour récupérer les données complètes du patient depuis l'API
+  const fetchPatientData = async (userId) => {
+    try {
+      const token = localStorage.getItem("userToken");
+      if (!token) {
+        console.warn("Aucun token trouvé");
+        return null;
+      }
+
+      const response = await fetch(`/api/users/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const patientData = await response.json();
+        console.log("Données patient récupérées depuis l'API:", patientData);
+        return patientData;
+      } else {
+        console.warn("Impossible de récupérer les données patient depuis l'API");
+        return null;
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des données patient:", error);
+      return null;
+    }
   };
 
   // [Données des dents complètes - non répétées ici]
@@ -1007,13 +1046,48 @@ export default function FormulaireDeReservation() {
       console.log("Données patient trouvées:", userData);
       console.log("Nom:", userData.nom);
       console.log("Prénom:", userData.prenom);
-      setPatientData(userData);
-
-      // Pré-remplir le champ patient avec l'ID généré
-      setFormData((prev) => ({
-        ...prev,
-        patient: generatePatientIdFromData(userData),
-      }));
+      
+      // Si les données contiennent nom et prénom, les utiliser directement
+      if (userData.nom && userData.prenom) {
+        setPatientData(userData);
+        setFormData((prev) => ({
+          ...prev,
+          patient: generatePatientIdFromData(userData),
+        }));
+      } else {
+        // Sinon, essayer de récupérer les données complètes depuis l'API
+        const fetchCompleteData = async () => {
+          setIsLoadingPatientData(true);
+          try {
+            const completeData = await fetchPatientData(userData._id || userData.id);
+            if (completeData) {
+              setPatientData(completeData);
+              setFormData((prev) => ({
+                ...prev,
+                patient: generatePatientIdFromData(completeData),
+              }));
+            } else {
+              // Utiliser les données de base si l'API ne fonctionne pas
+              setPatientData(userData);
+              setFormData((prev) => ({
+                ...prev,
+                patient: generatePatientIdFromData(userData),
+              }));
+            }
+          } catch (error) {
+            console.error("Erreur lors de la récupération des données patient:", error);
+            // Utiliser les données de base en cas d'erreur
+            setPatientData(userData);
+            setFormData((prev) => ({
+              ...prev,
+              patient: generatePatientIdFromData(userData),
+            }));
+          } finally {
+            setIsLoadingPatientData(false);
+          }
+        };
+        fetchCompleteData();
+      }
     } else {
       console.warn("Aucune donnée utilisateur trouvée dans localStorage");
     }
@@ -1203,7 +1277,7 @@ export default function FormulaireDeReservation() {
                 </div>
 
                 {/* Affichage du nom complet du patient */}
-                {patientData && patientData.nom && patientData.prenom && (
+                {patientData && (patientData.nom || patientData.prenom) && (
                   <div>
                     <Label className="text-slate-700 font-semibold text-lg mb-3 block">
                       Nom du Patient
@@ -1211,8 +1285,21 @@ export default function FormulaireDeReservation() {
                     <div className="modern-input bg-gray-50 flex items-center">
                       <User className="h-5 w-5 text-blue-600 mr-3" />
                       <span className="text-slate-800 font-medium">
-                        {patientData.prenom} {patientData.nom}
+                        {patientData.prenom || ""} {patientData.nom || ""}
                       </span>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Indicateur de chargement */}
+                {isLoadingPatientData && (
+                  <div>
+                    <Label className="text-slate-700 font-semibold text-lg mb-3 block">
+                      Nom du Patient
+                    </Label>
+                    <div className="modern-input bg-gray-50 flex items-center">
+                      <User className="h-5 w-5 text-blue-600 mr-3" />
+                      <span className="text-slate-600">Chargement des données...</span>
                     </div>
                   </div>
                 )}
