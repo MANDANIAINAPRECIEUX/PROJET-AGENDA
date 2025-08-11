@@ -726,6 +726,42 @@ export default function FormulaireDeReservation() {
     description: "",
   });
 
+  useEffect(() => {
+    const localPatient = getPatientDataFromStorage();
+    if (!localPatient?.email) return;
+
+    const token = localStorage.getItem("userToken");
+    if (!token) return;
+
+    const fetchPatientByEmail = async () => {
+      setIsLoadingPatientData(true);
+      try {
+        const response = await fetch(
+          `/api/users/email/${encodeURIComponent(localPatient.email)}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setPatientData(data);
+        } else {
+          console.warn("Impossible de récupérer le patient depuis l'API");
+        }
+      } catch (error) {
+        console.error("Erreur récupération patient:", error);
+      } finally {
+        setIsLoadingPatientData(false);
+      }
+    };
+
+    fetchPatientByEmail();
+  }, []);
+
   // Fonctions utilitaires pour les données patient depuis localstorage
   const getPatientDataFromStorage = () => {
     try {
@@ -774,82 +810,6 @@ export default function FormulaireDeReservation() {
   };
 
   // Fonction pour récupérer les données complètes du patient depuis l'API
-  // const fetchPatientData = async (userId) => {
-  //   try {
-  //     const token = localStorage.getItem("userToken");
-  //     if (!token) {
-  //       console.warn("Aucun token trouvé");
-  //       return null;
-  //     }
-
-  //     const response = await fetch(`/api/users/${userId}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-
-  //     if (response.ok) {
-  //       const patientData = await response.json();
-  //       console.log("Données patient récupérées depuis l'API:", patientData);
-  //       return patientData;
-  //     } else {
-  //       console.warn(
-  //         "Impossible de récupérer les données patient depuis l'API"
-  //       );
-  //       return null;
-  //     }
-  //   } catch (error) {
-  //     console.error(
-  //       "Erreur lors de la récupération des données patient:",
-  //       error
-  //     );
-  //     return null;
-  //   }
-  // };
-
-  // [Données des dents complètes - non répétées ici]
-
-  // const getPatientByEmail = async () => {
-  //   // 1. Récupération depuis le localStorage
-  //   const localData = getPatientDataFromStorage();
-
-  //   if (!localData || !localData.email) {
-  //     console.warn("Aucun email trouvé dans le localStorage");
-  //     return null;
-  //   }
-
-  //   const email = localData.email;
-
-  //   // 2. Récupération du token
-  //   const token = localStorage.getItem("userToken");
-  //   if (!token) {
-  //     console.warn("Aucun token trouvé");
-  //     return null;
-  //   }
-
-  //   try {
-  //     // 3. Appel API pour récupérer les infos complètes via l'email
-  //     const response = await fetch(`/api/users/email/${encodeURIComponent(email)}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-
-  //     if (response.ok) {
-  //       const userData = await response.json();
-  //       console.log("Données complètes de l'utilisateur:", userData);
-  //       return userData;
-  //     } else {
-  //       console.warn("Impossible de récupérer l'utilisateur depuis l'API");
-  //       return null;
-  //     }
-  //   } catch (error) {
-  //     console.error("Erreur lors de la récupération de l'utilisateur:", error);
-  //     return null;
-  //   }
-  // };
 
   const getPatientByEmail = async () => {
     const localData = getPatientDataFromStorage();
@@ -1448,6 +1408,62 @@ export default function FormulaireDeReservation() {
                       </div>
                     </div>
                   )}
+              </div>
+            </div>
+
+            <div className="glass-panel p-8">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl">
+                  <User className="h-6 w-6 text-white" />
+                </div>
+                <h2 className="subsection-title">Identification Patient</h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label
+                    htmlFor="patient"
+                    className="text-slate-700 font-semibold text-lg mb-3 block"
+                  >
+                    Identifiant Patient *
+                  </Label>
+                  <Input
+                    id="patient"
+                    placeholder="ID-XXXX-XXXX"
+                    value={formData.patient}
+                    onChange={handleInputChange}
+                    className="modern-input"
+                    readOnly={!!patientData}
+                    required
+                  />
+                </div>
+
+                {/* Affichage nom + prénom */}
+                {isLoadingPatientData ? (
+                  <div>
+                    <Label className="text-slate-700 font-semibold text-lg mb-3 block">
+                      Nom du Patient
+                    </Label>
+                    <div className="modern-input bg-gray-50 flex items-center">
+                      <User className="h-5 w-5 text-blue-600 mr-3" />
+                      <span className="text-slate-600">
+                        Chargement des données...
+                      </span>
+                    </div>
+                  </div>
+                ) : patientData && (patientData.nom || patientData.prenom) ? (
+                  <div>
+                    <Label className="text-slate-700 font-semibold text-lg mb-3 block">
+                      Nom du Patient
+                    </Label>
+                    <div className="modern-input bg-gray-50 flex items-center">
+                      <User className="h-5 w-5 text-blue-600 mr-3" />
+                      <span className="text-slate-800 font-medium">
+                        {patientData.prenom} {patientData.nom}
+                      </span>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </div>
 
