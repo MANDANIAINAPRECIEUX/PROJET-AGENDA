@@ -725,131 +725,6 @@ export default function FormulaireDeReservation() {
     niveauSymptome: 0, // Mis à 0 par défaut pour correspondre à "AUCUNE"
     description: "",
   });
-
-  useEffect(() => {
-    const localPatient = getPatientDataFromStorage();
-    if (!localPatient?.email) return;
-
-    const token = localStorage.getItem("userToken");
-    if (!token) return;
-
-    const fetchPatientByEmail = async () => {
-      setIsLoadingPatientData(true);
-      try {
-        const response = await fetch(
-          `/api/auth/users/email/${encodeURIComponent(email)}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setPatientData(data);
-        } else {
-          console.warn("Impossible de récupérer le patient depuis l'API");
-        }
-      } catch (error) {
-        console.error("Erreur récupération patient:", error);
-      } finally {
-        setIsLoadingPatientData(false);
-      }
-    };
-
-    fetchPatientByEmail();
-  }, []);
-
-  // Fonctions utilitaires pour les données patient depuis localstorage
-  const getPatientDataFromStorage = () => {
-    try {
-      const userData = localStorage.getItem("user");
-      if (userData) {
-        const parsedData = JSON.parse(userData);
-        console.log("Données patient récupérées:", parsedData);
-
-        // Si les données contiennent déjà nom et prénom, les utiliser
-        if (parsedData.nom && parsedData.prenom) {
-          return parsedData;
-        } else {
-          if (parsedData.email) {
-            return parsedData;
-          }
-        }
-
-        // Sinon, essayer de récupérer les données complètes depuis l'API
-        // Cette logique sera implémentée plus tard si nécessaire
-        return parsedData;
-      }
-      return null;
-    } catch (error) {
-      console.error(
-        "Erreur lors de la récupération des données patient:",
-        error
-      );
-      return null;
-    }
-  };
-
-  const generatePatientIdFromData = (userData) => {
-    if (!userData) return "";
-
-    // Essayer d'utiliser l'ID existant
-    if (userData.id) return userData.id;
-    if (userData._id) return userData._id;
-
-    // Générer un ID basé sur le nom et prénom
-    if (userData.nom && userData.prenom) {
-      return `ID-${userData.nom.toUpperCase()}-${userData.prenom.toUpperCase()}`;
-    }
-
-    // ID par défaut
-    return `ID-PATIENT-${Date.now()}`;
-  };
-
-  // Fonction pour récupérer les données complètes du patient depuis l'API
-
-  const getPatientByEmail = async () => {
-    const localData = getPatientDataFromStorage();
-
-    if (!localData || !localData.email) {
-      console.warn("Aucun email trouvé dans le localStorage");
-      return null;
-    }
-
-    const token = localStorage.getItem("userToken");
-    if (!token) {
-      console.warn("Aucun token trouvé");
-      return null;
-    }
-
-    try {
-      const response = await fetch(
-        `/api/users/email/${encodeURIComponent(localData.email)}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.ok) {
-        const userData = await response.json();
-        console.log("Données complètes depuis MongoDB:", userData);
-        return userData;
-      } else {
-        console.warn("Impossible de récupérer l'utilisateur");
-        return null;
-      }
-    } catch (error) {
-      console.error("Erreur frontend:", error);
-      return null;
-    }
-  };
-
   const allTeethData = [
     // Quadrant 1
     {
@@ -1081,6 +956,228 @@ export default function FormulaireDeReservation() {
     { name: "Autre", icon: "💙" },
   ];
 
+  //alaina le ao am localstorage
+  const getPatientDataFromStorage = () => {
+    try {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        const parsedData = JSON.parse(userData);
+        console.log("Données patient récupérées:", parsedData);
+
+        // Si les données contiennent déjà nom et prénom, les utiliser
+        if (parsedData.nom && parsedData.prenom) {
+          return parsedData;
+        } else {
+          if (parsedData.email) {
+            return parsedData;
+          }
+        }
+
+        // Sinon, essayer de récupérer les données complètes depuis l'API
+        // Cette logique sera implémentée plus tard si nécessaire
+        return parsedData;
+      }
+      return null;
+    } catch (error) {
+      console.error(
+        "Erreur lors de la récupération des données patient:",
+        error
+      );
+      return null;
+    }
+  };
+
+  // pour les patients alaina retra avy ao de alaina le email
+  // ato no angalana anle nom sy prenom am alalan fetch
+
+  useEffect(() => {
+    const localPatient = getPatientDataFromStorage();
+    if (!localPatient?.email) return;
+
+    const email = localPatient.email;
+    const token = localStorage.getItem("userToken");
+    if (!token) return;
+
+    // recuperation anl nom s prenom
+    const fetchPatientByEmail = async () => {
+      setIsLoadingPatientData(true);
+      try {
+        const response = await fetch(
+          `/api/auth/users/email/${encodeURIComponent(email)}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log("situation anle valin fetch: ", response);
+        if (response.ok) {
+          const data = await response.json();
+          console.log("contenu anle data :", data);
+          setPatientData(data);
+        } else {
+          console.warn("Impossible de récupérer le patient depuis l'API");
+        }
+      } catch (error) {
+        console.error("Erreur récupération patient:", error);
+      } finally {
+        setIsLoadingPatientData(false);
+      }
+    };
+
+    fetchPatientByEmail();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const idPatientRecuperer = patientData?._id || patientData?.id;
+
+    if (!idPatientRecuperer) {
+      // Si patientData est null, nous utilisons l'ID du user du token
+      const idFromToken = user?._id || user?.id;
+      if (!idFromToken) {
+        setMessage({
+          type: "error",
+          text: "Impossible de récupérer l'ID patient. Veuillez vous reconnecter.",
+        });
+        return;
+      }
+      idPatientRecuperer = idFromToken;
+    }
+    console.log("ID patient :", idPatientRecuperer);
+
+    // On construit finalAppointment avec les données détaillées du patient
+    const finalAppointment = {
+      patientId: idPatientRecuperer,
+      patientNom:
+        `${patientData?.prenom || ""} ${patientData?.nom || ""}`.trim() ||
+        "Non renseigné",
+      patientEmail: patientData?.email || "Non renseigné",
+      patientTelephone: patientData?.telephone || "Non renseigné",
+      patientAge: patientData?.age || "Non renseigné",
+      dentsSelectionnees: selectedTeeth.map((tooth) => ({
+        numero: tooth.number,
+        nom: tooth.name,
+        type: tooth.type,
+        secteur: tooth.secteur,
+      })),
+      nombreDents: selectedTeeth.length,
+      typesSymptomes: formData.typesSymptomes,
+      niveauSymptome: formData.niveauSymptome,
+      description: formData.description,
+    };
+
+    try {
+      for (let dent of finalAppointment.dentsSelectionnees) {
+        let dentId = null;
+
+        // Requête pour vérifier si la dent existe
+        const checkRes = await fetch(
+          `/api/dents/patient/${idPatientRecuperer}/numero/${dent.numero}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (checkRes.ok) {
+          const existingDent = await checkRes.json();
+          dentId = existingDent.data._id;
+          console.log(`Dent ${dent.numero} déjà existante, id: ${dentId}`);
+        } else if (checkRes.status === 404) {
+          // La dent n'existe pas, on passe à la création
+          console.log(`Dent ${dent.numero} non trouvée, on la crée.`);
+        } else {
+          // Gérer les autres erreurs (ex: 401 Unauthorized, 500 Internal Server Error)
+          throw new Error(
+            `Erreur lors de la vérification de la dent : ${checkRes.statusText}`
+          );
+        }
+
+        // Si la dent n'existe pas, on la crée
+        if (!dentId) {
+          const createRes = await fetch(`/api/dents`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              patient: finalAppointment.patientId,
+              typeDent: dent.type,
+              secteurDentaire: dent.secteur,
+              numero: dent.numero,
+            }),
+          });
+
+          if (!createRes.ok)
+            throw new Error(`Erreur création dent numéro ${dent.numero}`);
+          const newDent = await createRes.json();
+          dentId = newDent.data._id;
+          console.log(`Dent ${dent.numero} créée avec succès`);
+        }
+
+        // Enregistrement du symptôme
+        const symptomeRes = await fetch("/api/symptomes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            dent: dentId,
+            typeSymptome: finalAppointment.typesSymptomes.join(", "),
+            niveauSymptome: finalAppointment.niveauSymptome,
+            description: finalAppointment.description,
+          }),
+        });
+
+        if (!symptomeRes.ok)
+          throw new Error(
+            `Erreur enregistrement symptôme pour dent ${dent.numero}`
+          );
+        console.log(`Symptôme enregistré pour dent ${dent.numero}`);
+      }
+
+      setMessage({
+        type: "success",
+        text: "Toutes les dents et symptômes ont été enregistrés !",
+      });
+      navigate("/ChoixDeRdv");
+    } catch (error) {
+      console.error("Erreur envoi dents/symptômes :", error);
+      setMessage({
+        type: "error",
+        text: `Erreur : ${error.message || "Une erreur inconnue est survenue"}`,
+      });
+    }
+  };
+
+  // Fonctions utilitaires pour les données patient depuis localstorage
+
+  const generatePatientIdFromData = (userData) => {
+    if (!userData) return "";
+
+    // Essayer d'utiliser l'ID existant
+    if (userData.id) return userData.id;
+    if (userData._id) return userData._id;
+
+    // Générer un ID basé sur le nom et prénom
+    if (userData.nom && userData.prenom) {
+      return `ID-${userData.nom.toUpperCase()}-${userData.prenom.toUpperCase()}`;
+    }
+
+    // ID par défaut
+    return `ID-PATIENT-${Date.now()}`;
+  };
+
+  // Fonction pour récupérer les données complètes du patient depuis l'API
+
   // Charger les données du rendez-vous depuis localStorage
   useEffect(() => {
     const savedData = localStorage.getItem("appointmentData");
@@ -1104,44 +1201,6 @@ export default function FormulaireDeReservation() {
           ...prev,
           patient: generatePatientIdFromData(userData),
         }));
-      } else {
-        // Sinon, essayer de récupérer les données complètes depuis l'API
-        const fetchCompleteData = async () => {
-          setIsLoadingPatientData(true);
-          try {
-            const completeData = await fetchPatientData(
-              userData._id || userData.id
-            );
-            if (completeData) {
-              setPatientData(completeData);
-              setFormData((prev) => ({
-                ...prev,
-                patient: generatePatientIdFromData(completeData),
-              }));
-            } else {
-              // Utiliser les données de base si l'API ne fonctionne pas
-              setPatientData(userData);
-              setFormData((prev) => ({
-                ...prev,
-                patient: generatePatientIdFromData(userData),
-              }));
-            }
-          } catch (error) {
-            console.error(
-              "Erreur lors de la récupération des données patient:",
-              error
-            );
-            // Utiliser les données de base en cas d'erreur
-            setPatientData(userData);
-            setFormData((prev) => ({
-              ...prev,
-              patient: generatePatientIdFromData(userData),
-            }));
-          } finally {
-            setIsLoadingPatientData(false);
-          }
-        };
-        fetchCompleteData();
       }
     } else {
       console.warn("Aucune donnée utilisateur trouvée dans localStorage");
@@ -1216,84 +1275,13 @@ export default function FormulaireDeReservation() {
       niveauSymptome: level,
     }));
   };
-  const getNiveauLabel = (niveau) => {
-    switch (niveau) {
-      case 0:
-        return "Aucune";
-      case 1:
-        return "Légère";
-      case 2:
-        return "Modérée";
-      case 3:
-        return "Forte";
-      case 4:
-        return "Insupportable";
-      default:
-        return "Aucune"; // Valeur par défaut si non trouvé
-    }
-  };
-
-  const getNiveauColor = (niveau) => {
-    switch (niveau) {
-      case 1:
-        return "from-emerald-400 to-teal-500";
-      case 2:
-        return "from-amber-400 to-orange-500";
-      case 3:
-        return "from-red-400 to-rose-500";
-      default:
-        return "from-emerald-400 to-teal-500";
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!selectedTeeth || selectedTeeth.length === 0) {
-      alert("Veuillez sélectionner au moins une dent sur le diagramme");
-      return;
-    }
-
-    if (formData.typesSymptomes.length === 0) {
-      alert("Veuillez sélectionner au moins un type de symptôme");
-      return;
-    }
-
-    if (appointmentData) {
-      const finalAppointment = {
-        ...appointmentData,
-        // Informations patient complètes
-        patientId: patientData?.id || patientData?._id || formData.patient,
-        patientNom: patientData
-          ? `${patientData.prenom} ${patientData.nom}`
-          : "Non renseigné",
-        patientEmail: patientData?.email || "Non renseigné",
-        patientTelephone: patientData?.telephone || "Non renseigné",
-        patientAge: patientData?.age || "Non renseigné",
-        patient: formData.patient, // Gardé pour compatibilité
-        dentsSelectionnees: selectedTeeth.map((tooth) => ({
-          numero: tooth.number,
-          nom: tooth.name,
-          type: tooth.type,
-          secteur: tooth.secteur,
-        })),
-        nombreDents: selectedTeeth.length,
-        typesSymptomes: formData.typesSymptomes,
-        niveauSymptome: getNiveauLabel(formData.niveauSymptome),
-        description: formData.description,
-      };
-
-      console.log("Rendez-vous confirmé :", finalAppointment);
-      localStorage.removeItem("appointmentData");
-      alert("Votre rendez-vous a été confirmé avec succès !");
-      navigate("/ChoixDeRdv");
-    }
-  };
 
   const handleGoBack = () => {
     navigate("/ChoixDeRdv");
   };
 
+  const localPatient = JSON.parse(localStorage.getItem("user"));
+  const idPatient = localPatient?._id || localPatient?.id || "";
   // [Code de rendu JSX complet avec la nouvelle section patient]
   return (
     <>
@@ -1323,7 +1311,7 @@ export default function FormulaireDeReservation() {
                   <Input
                     id="patient"
                     placeholder="ID-XXXX-XXXX"
-                    value={formData.patient}
+                    value={idPatient}
                     onChange={handleInputChange}
                     className="modern-input"
                     readOnly={!!patientData} // Lecture seule si les données patient sont disponibles
@@ -1430,7 +1418,7 @@ export default function FormulaireDeReservation() {
                   <Input
                     id="patient"
                     placeholder="ID-XXXX-XXXX"
-                    value={formData.patient}
+                    value={idPatient}
                     onChange={handleInputChange}
                     className="modern-input"
                     readOnly={!!patientData}
