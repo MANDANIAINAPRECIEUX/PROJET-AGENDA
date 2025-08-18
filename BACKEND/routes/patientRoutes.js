@@ -9,6 +9,7 @@ const {
   createPatient,
   updatePatient,
   deletePatient,
+  getPatientByEmail,
 } = require("../controllers/PatientController");
 
 const { protect } = require("../middlewares/authMiddleware"); // Importe le middleware d'authentification
@@ -22,6 +23,10 @@ router
   .get(protect, authorize("admin", "dentiste"), getPatients)
   .post(protect, authorize("admin", "dentiste", "patient"), createPatient);
 
+router
+  .route("/by-email/:email")
+  .get(protect, authorize("admin", "dentiste", "patient"), getPatientByEmail);
+
 // Route GET pour obtenir un patient par ID, PUT pour le mettre à jour, DELETE pour le supprimer
 router
   .route("/:id")
@@ -30,3 +35,4 @@ router
   .delete(protect, authorize("admin"), deletePatient);
 
 module.exports = router;
+1;

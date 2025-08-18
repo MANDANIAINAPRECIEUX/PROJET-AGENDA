@@ -9,6 +9,7 @@ const {
   createDent,
   updateDent,
   deleteDent,
+  getDentByPatientAndNumber,
 } = require("../controllers/DentController"); // Notez 'DentController'
 const { protect } = require("../middlewares/authMiddleware");
 const authorize = require("../middlewares/authorize");
@@ -26,5 +27,13 @@ router
   .get(protect, authorize("admin", "dentiste", "patient"), getDentById)
   .put(protect, authorize("patient"), updateDent)
   .delete(protect, authorize("patient"), deleteDent);
+
+router
+  .route("/patient/:patientId/numero/:numeroDent")
+  .get(
+    protect,
+    authorize("admin", "dentiste", "patient"),
+    getDentByPatientAndNumber
+  );
 
 module.exports = router;

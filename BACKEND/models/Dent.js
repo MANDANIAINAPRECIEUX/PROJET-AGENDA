@@ -9,12 +9,12 @@ const dentSchema = mongoose.Schema(
       required: [true, "Une dent doit être associée à un patient"],
       ref: "Patient", // Fait référence au modèle 'Patient'
     },
-    nomDent: {
-      // Mappe à nomDent
-      type: String,
-      required: [true, "Veuillez spécifier le nom de la dent"],
-      trim: true,
-    },
+    // nomDent: {
+    //   // Mappe à nomDent
+    //   type: String,
+    //   required: [true, "Veuillez spécifier le nom de la dent"],
+    //   trim: true,
+    // },
     typeDent: {
       // Mappe à typeDent
       type: String,

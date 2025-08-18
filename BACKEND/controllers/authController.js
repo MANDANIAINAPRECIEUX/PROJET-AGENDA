@@ -6,7 +6,7 @@ const User = require("../models/User"); // Importer le modèle User
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { email, password, role } = req.body;
+  const { email, password, role, nom, prenom, age, telephone } = req.body;
 
   // 1. Validation des champs d'entrée
   if (!email || !password) {
@@ -28,7 +28,12 @@ const registerUser = asyncHandler(async (req, res) => {
   const user = await User.create({
     email,
     password,
-    role: role || "patient", // Utilise le rôle fourni ou 'patient' par défaut
+    role: role || "patient",
+    nom,
+    prenom,
+    age,
+    telephone,
+    // Utilise le rôle fourni ou 'patient' par défaut
   });
 
   // 4. Répondre avec les informations de l'utilisateur et un JWT
@@ -37,6 +42,11 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: user._id,
       email: user.email,
       role: user.role,
+      nom: user.nom,
+      prenom: user.prenom,
+      age: user.age,
+      telephone: user.telephone,
+      password: user.password,
       token: user.getSignedJwtToken(), // Génère et envoie le JWT
     });
   } else {
@@ -112,9 +122,28 @@ const getUsers = asyncHandler(async (req, res) => {
   res.status(200).json(users);
 });
 
+//mitady user am email
+const getUserByEmail = async (req, res) => {
+  try {
+    const email = req.params.email.toLowerCase();
+
+    const user = await User.findOne({ email }).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error("Erreur lors de la récupération de l'utilisateur:", error);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getMe,
   getUsers,
+  getUserByEmail,
 };

@@ -1,5 +1,6 @@
 // backend/controllers/DentController.js
-const Dent = require("../models/Dent"); // Importer le modèle Dent
+const Dent = require("../models/Dent");
+
 const asyncHandler = require("express-async-handler"); // Pour gérer les erreurs asynchrones
 
 // @desc    Obtenir toutes les dents
@@ -28,10 +29,10 @@ const getDentById = asyncHandler(async (req, res) => {
 // @route   POST /api/dents
 // @access  Public
 const createDent = asyncHandler(async (req, res) => {
-  const { patient, nomDent, typeDent, secteurDentaire, numero } = req.body;
+  const { patient, typeDent, secteurDentaire, numero } = req.body;
 
   // Validation des champs obligatoires
-  if (!patient || !nomDent || !typeDent || !numero || !secteurDentaire) {
+  if (!patient || !typeDent || !numero || !secteurDentaire) {
     res.status(400);
     throw new Error(
       "Veuillez ajouter tous les champs obligatoires : nomDent, typeDent, numero"
@@ -46,7 +47,6 @@ const createDent = asyncHandler(async (req, res) => {
   }
 
   const dent = await Dent.create({
-    nomDent,
     typeDent,
     numero,
     patient,
@@ -65,13 +65,13 @@ const createDent = asyncHandler(async (req, res) => {
 // @route   PUT /api/dents/:id
 // @access  Public
 const updateDent = asyncHandler(async (req, res) => {
-  const { nomDent, typeDent, numero } = req.body;
+  const { typeDent, numero } = req.body;
 
   const dent = await Dent.findById(req.params.id);
 
   if (dent) {
     // Mettre à jour les champs si fournis
-    dent.nomDent = nomDent !== undefined ? nomDent : dent.nomDent;
+
     dent.typeDent = typeDent !== undefined ? typeDent : dent.typeDent;
     dent.numero = numero !== undefined ? numero : dent.numero;
 
@@ -98,10 +98,32 @@ const deleteDent = asyncHandler(async (req, res) => {
   }
 });
 
+const getDentByPatientAndNumber = asyncHandler(async (req, res, next) => {
+  const { patientId, numeroDent } = req.params;
+
+  // Recherche dans la base de données
+  const dent = await Dent.findOne({
+    patient: patientId, // Correspondance de l'ID patient
+    numero: numeroDent, // Correspondance du numéro de dent
+  });
+
+  if (!dent) {
+    // Si aucune dent n'est trouvée, renvoyer une erreur 404
+    return res.status(404).json({
+      success: false,
+      message: "Cette dent n'existe pas pour ce patient.",
+    });
+  }
+
+  // Si la dent est trouvée, renvoyer une réponse 200 avec l'objet dent
+  res.status(200).json({ success: true, data: dent });
+});
+
 module.exports = {
   getDents,
   getDentById,
   createDent,
   updateDent,
   deleteDent,
+  getDentByPatientAndNumber,
 };

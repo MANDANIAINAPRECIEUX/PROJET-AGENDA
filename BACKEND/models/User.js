@@ -27,6 +27,32 @@ const userSchema = mongoose.Schema(
       enum: ["admin", "dentiste", "patient"], // Les rôles possibles
       default: "patient", // Rôle par défaut si non spécifié
     },
+    prenom: {
+      // Correspond à `prenom` dans votre formData du frontend
+      type: String,
+      required: [true, "Veuillez ajouter un prénom"],
+      trim: true,
+    },
+    nom: {
+      // Correspond à `nom` dans votre formData du frontend
+      type: String,
+      required: [true, "Veuillez ajouter un nom"],
+      trim: true,
+    },
+    telephone: {
+      // Correspond à `telephone` dans votre formData du frontend
+      type: String,
+      required: [true, "Veuillez ajouter un numéro de téléphone"],
+      trim: true,
+    },
+    age: {
+      // Correspond à `age` dans votre formData du frontend
+      type: Number,
+      required: [true, "Veuillez ajouter l'âge"],
+      min: [0, "L'âge ne peut pas être négatif"],
+      max: [120, "L'âge maximum est de 120 ans"],
+    },
+    // Vous pouvez aussi ajouter une adresse si nécessaire
   },
   {
     timestamps: true, // Ajoute createdAt et updatedAt

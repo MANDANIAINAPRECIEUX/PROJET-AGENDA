@@ -19,7 +19,7 @@ const rendezVousSchema = mongoose.Schema(
     },
     dureeMinutes: {
       type: Number,
-      required: [true, "Veuillez spécifier la durée du rendez-vous en minutes"],
+      required: [false, "Veuillez spécifier la durée du rendez-vous en minutes"],
       min: 1, // Un rendez-vous doit durer au moins 1 minute
     },
     motif: {

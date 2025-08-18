@@ -153,10 +153,29 @@ const deletePatient = asyncHandler(async (req, res) => {
   }
 });
 
+const getPatientByEmail = asyncHandler(async (req, res) => {
+  const { email } = req.params;
+  const patient = await Patient.findOne({ email: email.toLowerCase() });
+  if (req.user.role === "patient" && req.user.email !== email.toLowerCase()) {
+    res.status(403);
+    throw new Error(
+      "Accès refusé : vous ne pouvez accéder qu'à vos propres informations de patient."
+    );
+  }
+
+  if (patient) {
+    res.status(200).json(patient);
+  } else {
+    res.status(404);
+    throw new Error("Patient non trouvé pour cet email");
+  }
+});
+
 module.exports = {
   getPatients,
   getPatientById,
   createPatient,
   updatePatient,
   deletePatient,
+  getPatientByEmail,
 };

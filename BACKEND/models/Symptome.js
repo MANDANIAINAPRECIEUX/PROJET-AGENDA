@@ -27,7 +27,7 @@ const symptomeSchema = mongoose.Schema(
       // Mappe à description
       type: String,
       trim: true,
-      // required: false // La description est optionnelle
+      required: false, // La description est optionnelle
     },
     // idSymptome sera géré par Mongoose via le champ _id par défaut
   },

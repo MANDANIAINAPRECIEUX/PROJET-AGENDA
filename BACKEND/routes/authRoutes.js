@@ -6,6 +6,7 @@ const {
   loginUser,
   getMe,
   getUsers,
+  getUserByEmail,
 } = require("../controllers/authController");
 
 // Nous ajouterons le middleware 'protect' ici plus tard pour la route '/me'
@@ -21,5 +22,7 @@ router.get(
   authorize("admin", "patient", "dentiste"),
   getUsers
 );
+// router.get("/email/:email", getUserByEmail);
+router.get("/users/email/:email", protect, getUserByEmail);
 
 module.exports = router;
