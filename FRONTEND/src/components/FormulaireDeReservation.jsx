@@ -9,9 +9,6 @@ import {
   Stethoscope,
   Activity,
   AlertCircle,
-  Mail,
-  Phone,
-  Search,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -698,6 +695,19 @@ const emojiOptions = [
 ];
 
 export default function FormulaireDeReservation() {
+  /**
+   * Composant de formulaire de réservation dentaire
+   *
+   * Récupération automatique des données patient :
+   * - ID Patient : patientData?.id || patientData?._id ou généré automatiquement
+   * - Nom Patient : patientData?.prenom + " " + patientData?.nom
+   * - Email : patientData?.email
+   * - Téléphone : patientData?.telephone
+   * - Âge : patientData?.age
+   *
+   * Les données sont récupérées depuis localStorage après la connexion
+   */
+
   const navigate = useNavigate();
   const [appointmentData, setAppointmentData] = useState(null);
   const [selectedTeeth, setSelectedTeeth] = useState([]);
@@ -716,6 +726,42 @@ export default function FormulaireDeReservation() {
     description: "",
   });
 
+  useEffect(() => {
+    const localPatient = getPatientDataFromStorage();
+    if (!localPatient?.email) return;
+
+    const token = localStorage.getItem("userToken");
+    if (!token) return;
+
+    const fetchPatientByEmail = async () => {
+      setIsLoadingPatientData(true);
+      try {
+        const response = await fetch(
+          `/api/auth/users/email/${encodeURIComponent(email)}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setPatientData(data);
+        } else {
+          console.warn("Impossible de récupérer le patient depuis l'API");
+        }
+      } catch (error) {
+        console.error("Erreur récupération patient:", error);
+      } finally {
+        setIsLoadingPatientData(false);
+      }
+    };
+
+    fetchPatientByEmail();
+  }, []);
+
   // Fonctions utilitaires pour les données patient depuis localstorage
   const getPatientDataFromStorage = () => {
     try {
@@ -733,6 +779,8 @@ export default function FormulaireDeReservation() {
           }
         }
 
+        // Sinon, essayer de récupérer les données complètes depuis l'API
+        // Cette logique sera implémentée plus tard si nécessaire
         return parsedData;
       }
       return null;
@@ -745,58 +793,62 @@ export default function FormulaireDeReservation() {
     }
   };
 
-  useEffect(() => {
-    const localPatient = getPatientDataFromStorage();
-    const email = localPatient.email;
-    const idPatientRecuperer = localPatient.id;
-    const idPatient = localPatient?._id || localPatient?.id;
-    if (!localPatient?.email) return;
+  const generatePatientIdFromData = (userData) => {
+    if (!userData) return "";
 
-    const token = localStorage.getItem("userToken");
-    if (!email) return;
+    // Essayer d'utiliser l'ID existant
+    if (userData.id) return userData.id;
+    if (userData._id) return userData._id;
 
-    if (idPatient) {
-      setFormData((prev) => ({
-        ...prev,
-        patient: idPatient,
-      }));
+    // Générer un ID basé sur le nom et prénom
+    if (userData.nom && userData.prenom) {
+      return `ID-${userData.nom.toUpperCase()}-${userData.prenom.toUpperCase()}`;
     }
 
-    const fetchPatientByEmail = async () => {
-      setIsLoadingPatientData(true);
-      try {
-        const response = await fetch(
-          `/api/auth/users/email/${encodeURIComponent(email)}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+    // ID par défaut
+    return `ID-PATIENT-${Date.now()}`;
+  };
 
-        console.log("Réponse brute fetch:", response); // Voir statut, headers, etc.
+  // Fonction pour récupérer les données complètes du patient depuis l'API
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Données patient reçues:", data); // Voir le JSON renvoyé
-          setPatientData(data);
-          setFormData((prev) => ({
-            ...prev,
-            patient: data._id || data.id,
-          }));
-        } else {
-          console.warn("Impossible de récupérer le patient depuis l'API");
+  const getPatientByEmail = async () => {
+    const localData = getPatientDataFromStorage();
+
+    if (!localData || !localData.email) {
+      console.warn("Aucun email trouvé dans le localStorage");
+      return null;
+    }
+
+    const token = localStorage.getItem("userToken");
+    if (!token) {
+      console.warn("Aucun token trouvé");
+      return null;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/users/email/${encodeURIComponent(localData.email)}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      } catch (error) {
-        console.error("Erreur récupération patient:", error);
-      } finally {
-        setIsLoadingPatientData(false);
-      }
-    };
+      );
 
-    fetchPatientByEmail();
-  }, []);
+      if (response.ok) {
+        const userData = await response.json();
+        console.log("Données complètes depuis MongoDB:", userData);
+        return userData;
+      } else {
+        console.warn("Impossible de récupérer l'utilisateur");
+        return null;
+      }
+    } catch (error) {
+      console.error("Erreur frontend:", error);
+      return null;
+    }
+  };
 
   const allTeethData = [
     // Quadrant 1
@@ -1026,8 +1078,75 @@ export default function FormulaireDeReservation() {
       name: "Fracture",
       icon: <img src={fracture} alt="fracture" className="w-8 h-8" />,
     },
-    { name: "Autre", icon: "?" },
+    { name: "Autre", icon: "💙" },
   ];
+
+  // Charger les données du rendez-vous depuis localStorage
+  useEffect(() => {
+    const savedData = localStorage.getItem("appointmentData");
+    if (savedData) {
+      setAppointmentData(JSON.parse(savedData));
+    } else {
+      navigate("/ChoixDeRdv");
+    }
+
+    // Récupération des données patient avec les fonctions utilitaires
+    const userData = getPatientDataFromStorage();
+    if (userData) {
+      console.log("Données patient trouvées:", userData);
+      console.log("Nom:", userData.nom);
+      console.log("Prénom:", userData.prenom);
+
+      // Si les données contiennent nom et prénom, les utiliser directement
+      if (userData.nom && userData.prenom) {
+        setPatientData(userData);
+        setFormData((prev) => ({
+          ...prev,
+          patient: generatePatientIdFromData(userData),
+        }));
+      } else {
+        // Sinon, essayer de récupérer les données complètes depuis l'API
+        const fetchCompleteData = async () => {
+          setIsLoadingPatientData(true);
+          try {
+            const completeData = await fetchPatientData(
+              userData._id || userData.id
+            );
+            if (completeData) {
+              setPatientData(completeData);
+              setFormData((prev) => ({
+                ...prev,
+                patient: generatePatientIdFromData(completeData),
+              }));
+            } else {
+              // Utiliser les données de base si l'API ne fonctionne pas
+              setPatientData(userData);
+              setFormData((prev) => ({
+                ...prev,
+                patient: generatePatientIdFromData(userData),
+              }));
+            }
+          } catch (error) {
+            console.error(
+              "Erreur lors de la récupération des données patient:",
+              error
+            );
+            // Utiliser les données de base en cas d'erreur
+            setPatientData(userData);
+            setFormData((prev) => ({
+              ...prev,
+              patient: generatePatientIdFromData(userData),
+            }));
+          } finally {
+            setIsLoadingPatientData(false);
+          }
+        };
+        fetchCompleteData();
+      }
+    } else {
+      console.warn("Aucune donnée utilisateur trouvée dans localStorage");
+    }
+  }, [navigate]);
 
   // [Toutes les autres fonctions restent identiques]
   const handleInputChange = (e) => {
@@ -1114,6 +1233,19 @@ export default function FormulaireDeReservation() {
     }
   };
 
+  const getNiveauColor = (niveau) => {
+    switch (niveau) {
+      case 1:
+        return "from-emerald-400 to-teal-500";
+      case 2:
+        return "from-amber-400 to-orange-500";
+      case 3:
+        return "from-red-400 to-rose-500";
+      default:
+        return "from-emerald-400 to-teal-500";
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -1127,33 +1259,35 @@ export default function FormulaireDeReservation() {
       return;
     }
 
-    const finalAppointment = {
-      patientId: patientData?._id || patientData?.id || formData.patient,
-      patientNom: patientData
-        ? `${patientData.prenom} ${patientData.nom}`
-        : "Non renseigné",
-      patientEmail: patientData?.email || "Non renseigné",
-      patientTelephone: patientData?.telephone || "Non renseigné",
-      patientAge: patientData?.age || "Non renseigné",
-      patient: formData.patient,
-      dentsSelectionnees: selectedTeeth.map((tooth) => ({
-        numero: tooth.number,
-        nom: tooth.name,
-        type: tooth.type,
-        secteur: tooth.secteur,
-      })),
-      nombreDents: selectedTeeth.length,
-      typesSymptomes: formData.typesSymptomes,
-      niveauSymptome: getNiveauLabel(formData.niveauSymptome),
-      description: formData.description,
-    };
+    if (appointmentData) {
+      const finalAppointment = {
+        ...appointmentData,
+        // Informations patient complètes
+        patientId: patientData?.id || patientData?._id || formData.patient,
+        patientNom: patientData
+          ? `${patientData.prenom} ${patientData.nom}`
+          : "Non renseigné",
+        patientEmail: patientData?.email || "Non renseigné",
+        patientTelephone: patientData?.telephone || "Non renseigné",
+        patientAge: patientData?.age || "Non renseigné",
+        patient: formData.patient, // Gardé pour compatibilité
+        dentsSelectionnees: selectedTeeth.map((tooth) => ({
+          numero: tooth.number,
+          nom: tooth.name,
+          type: tooth.type,
+          secteur: tooth.secteur,
+        })),
+        nombreDents: selectedTeeth.length,
+        typesSymptomes: formData.typesSymptomes,
+        niveauSymptome: getNiveauLabel(formData.niveauSymptome),
+        description: formData.description,
+      };
 
-    console.log("Rendez-vous confirmé :", finalAppointment);
-
-    // TODO: Envoyer au backend ici avant suppression
-    localStorage.removeItem("appointmentData");
-    alert("Votre rendez-vous a été confirmé avec succès !");
-    navigate("/ChoixDeRdv");
+      console.log("Rendez-vous confirmé :", finalAppointment);
+      localStorage.removeItem("appointmentData");
+      alert("Votre rendez-vous a été confirmé avec succès !");
+      navigate("/ChoixDeRdv");
+    }
   };
 
   const handleGoBack = () => {
@@ -1164,7 +1298,7 @@ export default function FormulaireDeReservation() {
   return (
     <>
       <style>{modernStyles}</style>
-      <div className="min-h-screen bg-gradient-to-br from-pink-500 via-purple-500 to-blue-600 flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="ultra-modern-bg">
         <div className="max-w-6xl mx-auto p-6 lg:p-12">
           {/* [En-tête et titre] */}
 
@@ -1175,7 +1309,7 @@ export default function FormulaireDeReservation() {
                 <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl">
                   <User className="h-6 w-6 text-white" />
                 </div>
-                <h2 className="subsection-title">Mon Profil</h2>
+                <h2 className="subsection-title">Identification Patient</h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1184,7 +1318,7 @@ export default function FormulaireDeReservation() {
                     htmlFor="patient"
                     className="text-slate-700 font-semibold text-lg mb-3 block"
                   >
-                    Identifiant
+                    Identifiant Patient *
                   </Label>
                   <Input
                     id="patient"
@@ -1201,7 +1335,7 @@ export default function FormulaireDeReservation() {
                 {patientData && (patientData.nom || patientData.prenom) && (
                   <div>
                     <Label className="text-slate-700 font-semibold text-lg mb-3 block">
-                      Nom et prenom
+                      Nom du Patient
                     </Label>
                     <div className="modern-input bg-gray-50 flex items-center">
                       <User className="h-5 w-5 text-blue-600 mr-3" />
@@ -1233,6 +1367,9 @@ export default function FormulaireDeReservation() {
                     patientData.age) && (
                     <div className="md:col-span-2">
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h4 className="text-blue-800 font-semibold mb-2">
+                          Informations Patient
+                        </h4>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                           {patientData.email && (
                             <div>
@@ -1271,6 +1408,62 @@ export default function FormulaireDeReservation() {
                       </div>
                     </div>
                   )}
+              </div>
+            </div>
+
+            <div className="glass-panel p-8">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl">
+                  <User className="h-6 w-6 text-white" />
+                </div>
+                <h2 className="subsection-title">Identification Patient</h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label
+                    htmlFor="patient"
+                    className="text-slate-700 font-semibold text-lg mb-3 block"
+                  >
+                    Identifiant Patient *
+                  </Label>
+                  <Input
+                    id="patient"
+                    placeholder="ID-XXXX-XXXX"
+                    value={formData.patient}
+                    onChange={handleInputChange}
+                    className="modern-input"
+                    readOnly={!!patientData}
+                    required
+                  />
+                </div>
+
+                {/* Affichage nom + prénom */}
+                {isLoadingPatientData ? (
+                  <div>
+                    <Label className="text-slate-700 font-semibold text-lg mb-3 block">
+                      Nom du Patient
+                    </Label>
+                    <div className="modern-input bg-gray-50 flex items-center">
+                      <User className="h-5 w-5 text-blue-600 mr-3" />
+                      <span className="text-slate-600">
+                        Chargement des données...
+                      </span>
+                    </div>
+                  </div>
+                ) : patientData && (patientData.nom || patientData.prenom) ? (
+                  <div>
+                    <Label className="text-slate-700 font-semibold text-lg mb-3 block">
+                      Nom du Patient
+                    </Label>
+                    <div className="modern-input bg-gray-50 flex items-center">
+                      <User className="h-5 w-5 text-blue-600 mr-3" />
+                      <span className="text-slate-800 font-medium">
+                        {patientData.prenom} {patientData.nom}
+                      </span>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </div>
 
