@@ -123,7 +123,7 @@ const getUsers = asyncHandler(async (req, res) => {
 });
 
 //mitady user am email
-const getUserByEmail = async (req, res) => {
+const getUserByEmail = asyncHandler(async (req, res) => {
   try {
     const email = req.params.email.toLowerCase();
 
@@ -138,7 +138,7 @@ const getUserByEmail = async (req, res) => {
     console.error("Erreur lors de la récupération de l'utilisateur:", error);
     res.status(500).json({ message: "Erreur serveur" });
   }
-};
+});
 
 module.exports = {
   registerUser,
