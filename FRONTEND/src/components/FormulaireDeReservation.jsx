@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+
 import {
   User,
   ArrowLeft,
@@ -15,10 +16,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { FaSmile } from "react-icons/fa";
-import { FaFaceSadCry, FaFaceMeh } from "react-icons/fa6";
-import { ImSad2 } from "react-icons/im";
-import { GiMineExplosion } from "react-icons/gi";
 import douleurdentaire from "../assets/images/douleurdentaire.JPG";
 import sensibilité from "../assets/images/sensibilité.JPG";
 import mobilité from "../assets/images/mobilité.JPG";
@@ -26,6 +23,15 @@ import gonflement from "../assets/images/gonflement.png";
 import a from "../assets/images/a.jpg";
 import carie from "../assets/images/carie.JPG";
 import fracture from "../assets/images/fracture.JPG";
+import { DiagrammeDentaire } from "../components/DiagrammeDentaire";
+import { emojiOptions } from "./EmojiOption";
+import { allTeethData } from "./AllTeethData";
+import axios from "axios";
+
+import { useContext } from "react";
+import { ColorContext } from "../context/color-context";
+import { useReservation } from "../hooks/useReservation";
+import { getPatientDataFromStorage } from "../hooks/useReservation";
 
 const modernStyles = `
   .ultra-modern-bg {
@@ -246,685 +252,7 @@ const modernStyles = `
     margin-bottom: 1.5rem;
   }
 `;
-
-// Composant du diagramme dentaire
-const DiagrammeDentaire = ({ selectedTeeth, onToothSelect }) => {
-  // Données des dents avec positions et types
-  const teethData = {
-    // Quadrant 1 (Supérieur droit)
-    1: [
-      { number: 18, name: "3ème molaire", type: "Molaire", x: 50, y: 80 },
-      { number: 17, name: "2ème molaire", type: "Molaire", x: 80, y: 75 },
-      { number: 16, name: "1ère molaire", type: "Molaire", x: 110, y: 70 },
-      {
-        number: 15,
-        name: "2ème prémolaire",
-        type: "Prémolaire",
-        x: 140,
-        y: 65,
-      },
-      {
-        number: 14,
-        name: "1ère prémolaire",
-        type: "Prémolaire",
-        x: 170,
-        y: 60,
-      },
-      { number: 13, name: "Canine", type: "Canine", x: 200, y: 55 },
-      {
-        number: 12,
-        name: "Incisive latérale",
-        type: "Incisive",
-        x: 230,
-        y: 50,
-      },
-      {
-        number: 11,
-        name: "Incisive centrale",
-        type: "Incisive",
-        x: 260,
-        y: 45,
-      },
-    ],
-    // Quadrant 2 (Supérieur gauche)
-    2: [
-      {
-        number: 21,
-        name: "Incisive centrale",
-        type: "Incisive",
-        x: 290,
-        y: 45,
-      },
-      {
-        number: 22,
-        name: "Incisive latérale",
-        type: "Incisive",
-        x: 320,
-        y: 50,
-      },
-      { number: 23, name: "Canine", type: "Canine", x: 350, y: 55 },
-      {
-        number: 24,
-        name: "1ère prémolaire",
-        type: "Prémolaire",
-        x: 380,
-        y: 60,
-      },
-      {
-        number: 25,
-        name: "2ème prémolaire",
-        type: "Prémolaire",
-        x: 410,
-        y: 65,
-      },
-      { number: 26, name: "1ère molaire", type: "Molaire", x: 440, y: 70 },
-      { number: 27, name: "2ème molaire", type: "Molaire", x: 470, y: 75 },
-      { number: 28, name: "3ème molaire", type: "Molaire", x: 500, y: 80 },
-    ],
-    // Quadrant 3 (Inférieur gauche)
-    3: [
-      {
-        number: 31,
-        name: "Incisive centrale",
-        type: "Incisive",
-        x: 290,
-        y: 255,
-      },
-      {
-        number: 32,
-        name: "Incisive latérale",
-        type: "Incisive",
-        x: 320,
-        y: 250,
-      },
-      { number: 33, name: "Canine", type: "Canine", x: 350, y: 245 },
-      {
-        number: 34,
-        name: "1ère prémolaire",
-        type: "Prémolaire",
-        x: 380,
-        y: 240,
-      },
-      {
-        number: 35,
-        name: "2ème prémolaire",
-        type: "Prémolaire",
-        x: 410,
-        y: 235,
-      },
-      { number: 36, name: "1ère molaire", type: "Molaire", x: 440, y: 230 },
-      { number: 37, name: "2ème molaire", type: "Molaire", x: 470, y: 225 },
-      { number: 38, name: "3ème molaire", type: "Molaire", x: 500, y: 220 },
-    ],
-    // Quadrant 4 (Inférieur droit)
-    4: [
-      { number: 48, name: "3ème molaire", type: "Molaire", x: 50, y: 220 },
-      { number: 47, name: "2ème molaire", type: "Molaire", x: 80, y: 225 },
-      { number: 46, name: "1ère molaire", type: "Molaire", x: 110, y: 230 },
-      {
-        number: 45,
-        name: "2ème prémolaire",
-        type: "Prémolaire",
-        x: 140,
-        y: 235,
-      },
-      {
-        number: 44,
-        name: "1ère prémolaire",
-        type: "Prémolaire",
-        x: 170,
-        y: 240,
-      },
-      { number: 43, name: "Canine", type: "Canine", x: 200, y: 245 },
-      {
-        number: 42,
-        name: "Incisive latérale",
-        type: "Incisive",
-        x: 230,
-        y: 250,
-      },
-      {
-        number: 41,
-        name: "Incisive centrale",
-        type: "Incisive",
-        x: 260,
-        y: 255,
-      },
-    ],
-  };
-
-  const getToothColor = (type, isSelected) => {
-    if (isSelected) return "#3b82f6";
-    switch (type) {
-      case "Incisive":
-        return "#e0e7ff";
-      case "Canine":
-        return "#c7d2fe";
-      case "Prémolaire":
-        return "#a5b4fc";
-      case "Molaire":
-        return "#8b5cf6";
-      default:
-        return "#e0e7ff";
-    }
-  };
-
-  const getToothShape = (type, x, y, isSelected, tooth) => {
-    const baseProps = {
-      className: `tooth ${isSelected ? "selected" : ""}`,
-      onClick: () => onToothSelect(tooth.number),
-    };
-
-    // Si la dent est sélectionnée, afficher un cercle
-    if (isSelected) {
-      return (
-        <circle
-          {...baseProps}
-          cx={x}
-          cy={y}
-          r="14"
-          fill="#3b82f6"
-          stroke="#1d4ed8"
-          strokeWidth="3"
-        />
-      );
-    }
-
-    // Sinon, afficher la forme normale selon le type
-    switch (type) {
-      case "Incisive":
-        return (
-          <rect
-            {...baseProps}
-            x={x - 8}
-            y={y - 12}
-            width="16"
-            height="24"
-            rx="3"
-            fill={getToothColor(type, isSelected)}
-            stroke="#475569"
-            strokeWidth="1"
-          />
-        );
-      case "Canine":
-        return (
-          <polygon
-            {...baseProps}
-            points={`${x - 8},${y + 10} ${x},${y - 12} ${x + 8},${y + 10}`}
-            fill={getToothColor(type, isSelected)}
-            stroke="#475569"
-            strokeWidth="1"
-          />
-        );
-      case "Prémolaire":
-        return (
-          <rect
-            {...baseProps}
-            x={x - 10}
-            y={y - 10}
-            width="20"
-            height="20"
-            rx="4"
-            fill={getToothColor(type, isSelected)}
-            stroke="#475569"
-            strokeWidth="1"
-          />
-        );
-      case "Molaire":
-        return (
-          <rect
-            {...baseProps}
-            x={x - 12}
-            y={y - 12}
-            width="24"
-            height="24"
-            rx="4"
-            fill={getToothColor(type, isSelected)}
-            stroke="#475569"
-            strokeWidth="1"
-          />
-        );
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <div className="diagram-container p-8">
-      <div className="text-center mb-6">
-        <h4 className="subsection-title">Diagramme Dentaire FDI</h4>
-        <p className="text-slate-600 text-lg">
-          Cliquez sur les dents concernées
-        </p>
-      </div>
-
-      <svg viewBox="0 0 550 300" className="w-full h-auto max-w-3xl mx-auto">
-        {/* Lignes de séparation des quadrants */}
-        <line
-          x1="275"
-          y1="30"
-          x2="275"
-          y2="270"
-          stroke="#6366f1"
-          strokeWidth="2"
-          strokeDasharray="8,4"
-          opacity="0.6"
-        />
-        <line
-          x1="30"
-          y1="150"
-          x2="520"
-          y2="150"
-          stroke="#6366f1"
-          strokeWidth="2"
-          strokeDasharray="8,4"
-          opacity="0.6"
-        />
-
-        {/* Labels des quadrants */}
-        <text x="150" y="25" className="quadrant-label">
-          Quadrant 1 (Supérieur Droit)
-        </text>
-        <text x="400" y="25" className="quadrant-label">
-          Quadrant 2 (Supérieur Gauche)
-        </text>
-        <text x="400" y="290" className="quadrant-label">
-          Quadrant 3 (Inférieur Gauche)
-        </text>
-        <text x="150" y="290" className="quadrant-label">
-          Quadrant 4 (Inférieur Droit)
-        </text>
-
-        {/* Rendu des dents */}
-        {Object.entries(teethData).map(([quadrant, teeth]) =>
-          teeth.map((tooth) => {
-            const isSelected = selectedTeeth?.some(
-              (t) => t.number === tooth.number
-            );
-            return (
-              <g key={tooth.number}>
-                {getToothShape(tooth.type, tooth.x, tooth.y, isSelected, tooth)}
-                <text x={tooth.x} y={tooth.y} className="tooth-number">
-                  {tooth.number}
-                </text>
-              </g>
-            );
-          })
-        )}
-
-        {/* Légende des types de dents */}
-        <g transform="translate(30, 320)">
-          <rect
-            x="0"
-            y="0"
-            width="16"
-            height="24"
-            rx="3"
-            fill="#e0e7ff"
-            stroke="#4338ca"
-            strokeWidth="1"
-          />
-          <text
-            x="25"
-            y="15"
-            className="tooth-number"
-            style={{ fontSize: "11px", textAnchor: "start", fill: "#4338ca" }}
-          >
-            Incisive
-          </text>
-
-          <polygon
-            points="60,24 68,0 76,24"
-            fill="#c7d2fe"
-            stroke="#4338ca"
-            strokeWidth="1"
-          />
-          <text
-            x="85"
-            y="15"
-            className="tooth-number"
-            style={{ fontSize: "11px", textAnchor: "start", fill: "#4338ca" }}
-          >
-            Canine
-          </text>
-
-          <rect
-            x="130"
-            y="2"
-            width="20"
-            height="20"
-            rx="4"
-            fill="#a5b4fc"
-            stroke="#4338ca"
-            strokeWidth="1"
-          />
-          <text
-            x="160"
-            y="15"
-            className="tooth-number"
-            style={{ fontSize: "11px", textAnchor: "start", fill: "#4338ca" }}
-          >
-            Prémolaire
-          </text>
-
-          <rect
-            x="220"
-            y="0"
-            width="24"
-            height="24"
-            rx="4"
-            fill="#8b5cf6"
-            stroke="#4338ca"
-            strokeWidth="1"
-          />
-          <text
-            x="255"
-            y="15"
-            className="tooth-number"
-            style={{ fontSize: "11px", textAnchor: "start", fill: "#4338ca" }}
-          >
-            Molaire
-          </text>
-        </g>
-      </svg>
-
-      {selectedTeeth && selectedTeeth.length > 0 && (
-        <div className="mt-8 text-center">
-          <div className="flex flex-wrap justify-center gap-3">
-            {selectedTeeth.map((tooth) => (
-              <Badge
-                key={tooth.number}
-                className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-base px-6 py-3 rounded-full shadow-lg"
-              >
-                🦷 {tooth.number} - {tooth.name}
-              </Badge>
-            ))}
-          </div>
-          <p className="text-slate-600 mt-4 text-lg">
-            {selectedTeeth.length} dent{selectedTeeth.length > 1 ? "s" : ""}{" "}
-            sélectionnée
-            {selectedTeeth.length > 1 ? "s" : ""}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-};
-
-const emojiOptions = [
-  {
-    level: 0,
-    icon: FaSmile,
-    label: "AUCUNE",
-    color: "text-blue-400",
-    bgColor: "bg-blue-100",
-    hoverBg: "hover:bg-blue-200",
-  },
-  {
-    level: 1,
-    icon: FaFaceMeh,
-    label: "LÉGÈRE",
-    color: "text-blue-500",
-    bgColor: "bg-blue-200",
-    hoverBg: "hover:bg-blue-300",
-  },
-  {
-    level: 2,
-    icon: ImSad2,
-    label: "MODÉRÉE",
-    color: "text-blue-600",
-    bgColor: "bg-blue-300",
-    hoverBg: "hover:bg-blue-400",
-  },
-  {
-    level: 3,
-    icon: FaFaceSadCry,
-    label: "FORTE",
-    color: "text-blue-700",
-    bgColor: "bg-blue-400",
-    hoverBg: "hover:bg-blue-500",
-  },
-  {
-    level: 4,
-    icon: GiMineExplosion,
-    label: "INSUPPORTABLE",
-    color: "text-blue-800",
-    bgColor: "bg-blue-500",
-    hoverBg: "hover:bg-blue-600",
-  },
-];
-
-export default function FormulaireDeReservation() {
-  /**
-   * Composant de formulaire de réservation dentaire
-   *
-   * Récupération automatique des données patient :
-   * - ID Patient : patientData?.id || patientData?._id ou généré automatiquement
-   * - Nom Patient : patientData?.prenom + " " + patientData?.nom
-   * - Email : patientData?.email
-   * - Téléphone : patientData?.telephone
-   * - Âge : patientData?.age
-   *
-   * Les données sont récupérées depuis localStorage après la connexion
-   */
-
-  const navigate = useNavigate();
-  const [appointmentData, setAppointmentData] = useState(null);
-  const [selectedTeeth, setSelectedTeeth] = useState([]);
-  const [patientData, setPatientData] = useState(null);
-  const [isLoadingPatientData, setIsLoadingPatientData] = useState(false);
-  const [formData, setFormData] = useState({
-    // Champs pour la dent
-    patient: "",
-    nomDent: "",
-    typeDent: "",
-    secteurDentaire: "",
-    numero: "",
-    // Champs pour les symptômes
-    typesSymptomes: [],
-    niveauSymptome: 0, // Mis à 0 par défaut pour correspondre à "AUCUNE"
-    description: "",
-  });
-  const allTeethData = [
-    // Quadrant 1
-    {
-      number: 18,
-      name: "3ème molaire supérieure droite",
-      type: "Molaire",
-      secteur: "Supérieur droit",
-    },
-    {
-      number: 17,
-      name: "2ème molaire supérieure droite",
-      type: "Molaire",
-      secteur: "Supérieur droit",
-    },
-    {
-      number: 16,
-      name: "1ère molaire supérieure droite",
-      type: "Molaire",
-      secteur: "Supérieur droit",
-    },
-    {
-      number: 15,
-      name: "2ème prémolaire supérieure droite",
-      type: "Prémolaire",
-      secteur: "Supérieur droit",
-    },
-    {
-      number: 14,
-      name: "1ère prémolaire supérieure droite",
-      type: "Prémolaire",
-      secteur: "Supérieur droit",
-    },
-    {
-      number: 13,
-      name: "Canine supérieure droite",
-      type: "Canine",
-      secteur: "Supérieur droit",
-    },
-    {
-      number: 12,
-      name: "Incisive latérale supérieure droite",
-      type: "Incisive",
-      secteur: "Supérieur droit",
-    },
-    {
-      number: 11,
-      name: "Incisive centrale supérieure droite",
-      type: "Incisive",
-      secteur: "Supérieur droit",
-    },
-    // Quadrant 2
-    {
-      number: 21,
-      name: "Incisive centrale supérieure gauche",
-      type: "Incisive",
-      secteur: "Supérieur gauche",
-    },
-    {
-      number: 22,
-      name: "Incisive latérale supérieure gauche",
-      type: "Incisive",
-      secteur: "Supérieur gauche",
-    },
-    {
-      number: 23,
-      name: "Canine supérieure gauche",
-      type: "Canine",
-      secteur: "Supérieur gauche",
-    },
-    {
-      number: 24,
-      name: "1ère prémolaire supérieure gauche",
-      type: "Prémolaire",
-      secteur: "Supérieur gauche",
-    },
-    {
-      number: 25,
-      name: "2ème prémolaire supérieure gauche",
-      type: "Prémolaire",
-      secteur: "Supérieur gauche",
-    },
-    {
-      number: 26,
-      name: "1ère molaire supérieure gauche",
-      type: "Molaire",
-      secteur: "Supérieur gauche",
-    },
-    {
-      number: 27,
-      name: "2ème molaire supérieure gauche",
-      type: "Molaire",
-      secteur: "Supérieur gauche",
-    },
-    {
-      number: 28,
-      name: "3ème molaire supérieure gauche",
-      type: "Molaire",
-      secteur: "Supérieur gauche",
-    },
-    // Quadrant 3
-    {
-      number: 31,
-      name: "Incisive centrale inférieure gauche",
-      type: "Incisive",
-      secteur: "Inférieur gauche",
-    },
-    {
-      number: 32,
-      name: "Incisive latérale inférieure gauche",
-      type: "Incisive",
-      secteur: "Inférieur gauche",
-    },
-    {
-      number: 33,
-      name: "Canine inférieure gauche",
-      type: "Canine",
-      secteur: "Inférieur gauche",
-    },
-    {
-      number: 34,
-      name: "1ère prémolaire inférieure gauche",
-      type: "Prémolaire",
-      secteur: "Inférieur gauche",
-    },
-    {
-      number: 35,
-      name: "2ème prémolaire inférieure gauche",
-      type: "Prémolaire",
-      secteur: "Inférieur gauche",
-    },
-    {
-      number: 36,
-      name: "1ère molaire inférieure gauche",
-      type: "Molaire",
-      secteur: "Inférieur gauche",
-    },
-    {
-      number: 37,
-      name: "2ème molaire inférieure gauche",
-      type: "Molaire",
-      secteur: "Inférieur gauche",
-    },
-    {
-      number: 38,
-      name: "3ème molaire inférieure gauche",
-      type: "Molaire",
-      secteur: "Inférieur gauche",
-    },
-    // Quadrant 4
-    {
-      number: 48,
-      name: "3ème molaire inférieure droite",
-      type: "Molaire",
-      secteur: "Inférieur droit",
-    },
-    {
-      number: 47,
-      name: "2ème molaire inférieure droite",
-      type: "Molaire",
-      secteur: "Inférieur droit",
-    },
-    {
-      number: 46,
-      name: "1ère molaire inférieure droite",
-      type: "Molaire",
-      secteur: "Inférieur droit",
-    },
-    {
-      number: 45,
-      name: "2ème prémolaire inférieure droite",
-      type: "Prémolaire",
-      secteur: "Inférieur droit",
-    },
-    {
-      number: 44,
-      name: "1ère prémolaire inférieure droite",
-      type: "Prémolaire",
-      secteur: "Inférieur droit",
-    },
-    {
-      number: 43,
-      name: "Canine inférieure droite",
-      type: "Canine",
-      secteur: "Inférieur droit",
-    },
-    {
-      number: 42,
-      name: "Incisive latérale inférieure droite",
-      type: "Incisive",
-      secteur: "Inférieur droit",
-    },
-    {
-      number: 41,
-      name: "Incisive centrale inférieure droite",
-      type: "Incisive",
-      secteur: "Inférieur droit",
-    },
-  ];
-
-  const typesSymptomes = [
+ const typesSymptomes = [
     {
       name: "Douleur",
       icon: <img src={douleurdentaire} alt="Douleur" className="w-8 h-8" />,
@@ -955,206 +283,79 @@ export default function FormulaireDeReservation() {
     },
     { name: "Autre", icon: "💙" },
   ];
+// Composant du diagramme dentaire
 
-  //alaina le ao am localstorage
-  const getPatientDataFromStorage = () => {
-    try {
-      const userData = localStorage.getItem("user");
-      if (userData) {
-        const parsedData = JSON.parse(userData);
-        console.log("Données patient récupérées:", parsedData);
+export default function FormulaireDeReservation() {
+  const navigate = useNavigate();
+  const {theme, setTheme} = useContext(ColorContext)
+  const {isLoading: isLoadingPatientData, patientData} = useReservation()
+  
+  const [appointmentData, setAppointmentData] = useState(null);
+  const [selectedTeeth, setSelectedTeeth] = useState([]);
+  const [message, setMessage] = useState(null);
+  const [formData, setFormData] = useState({
+    // Champs pour la dent
+    patient: "",
+    nomDent: "",
+    typeDent: "",
+    secteurDentaire: "",
+    numero: "",
+    // Champs pour les symptômes
+    typesSymptomes: [],
+    niveauSymptome: 0, // Mis à 0 par défaut pour correspondre à "AUCUNE"
+    description: "",
+  });
 
-        // Si les données contiennent déjà nom et prénom, les utiliser
-        if (parsedData.nom && parsedData.prenom) {
-          return parsedData;
-        } else {
-          if (parsedData.email) {
-            return parsedData;
-          }
-        }
-
-        // Sinon, essayer de récupérer les données complètes depuis l'API
-        // Cette logique sera implémentée plus tard si nécessaire
-        return parsedData;
-      }
-      return null;
-    } catch (error) {
-      console.error(
-        "Erreur lors de la récupération des données patient:",
-        error
-      );
-      return null;
-    }
-  };
-
-  // pour les patients alaina retra avy ao de alaina le email
-  // ato no angalana anle nom sy prenom am alalan fetch
-
-  useEffect(() => {
-    const localPatient = getPatientDataFromStorage();
-    if (!localPatient?.email) return;
-
-    const email = localPatient.email;
-    const token = localStorage.getItem("userToken");
-    if (!token) return;
-
-    // recuperation anl nom s prenom
-    const fetchPatientByEmail = async () => {
-      setIsLoadingPatientData(true);
-      try {
-        const response = await fetch(
-          `/api/auth/users/email/${encodeURIComponent(email)}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        console.log("situation anle valin fetch: ", response);
-        if (response.ok) {
-          const data = await response.json();
-          console.log("contenu anle data :", data);
-          setPatientData(data);
-        } else {
-          console.warn("Impossible de récupérer le patient depuis l'API");
-        }
-      } catch (error) {
-        console.error("Erreur récupération patient:", error);
-      } finally {
-        setIsLoadingPatientData(false);
-      }
-    };
-
-    fetchPatientByEmail();
-  }, []);
+ 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("userToken");
+    if (!token) {
+      alert("❌ Veuillez vous reconnecter pour valider votre demande.");
+      return;
+    }
 
-    const idPatientRecuperer = patientData?._id || patientData?.id;
+    let idPatientRecuperer = patientData?._id || patientData?.id;
 
     if (!idPatientRecuperer) {
-      // Si patientData est null, nous utilisons l'ID du user du token
-      const idFromToken = user?._id || user?.id;
+      const localPatient = JSON.parse(localStorage.getItem("patient"));
+      const idFromToken = localPatient?.id || localPatient?._id || null;
       if (!idFromToken) {
-        setMessage({
-          type: "error",
-          text: "Impossible de récupérer l'ID patient. Veuillez vous reconnecter.",
-        });
+        alert(
+          "❌ Impossible de récupérer l'ID patient. Veuillez vous reconnecter."
+        );
         return;
       }
       idPatientRecuperer = idFromToken;
     }
-    console.log("ID patient :", idPatientRecuperer);
 
-    // On construit finalAppointment avec les données détaillées du patient
-    const finalAppointment = {
-      patientId: idPatientRecuperer,
-      patientNom:
-        `${patientData?.prenom || ""} ${patientData?.nom || ""}`.trim() ||
-        "Non renseigné",
-      patientEmail: patientData?.email || "Non renseigné",
-      patientTelephone: patientData?.telephone || "Non renseigné",
-      patientAge: patientData?.age || "Non renseigné",
-      dentsSelectionnees: selectedTeeth.map((tooth) => ({
-        numero: tooth.number,
-        nom: tooth.name,
-        type: tooth.type,
-        secteur: tooth.secteur,
-      })),
-      nombreDents: selectedTeeth.length,
-      typesSymptomes: formData.typesSymptomes,
-      niveauSymptome: formData.niveauSymptome,
-      description: formData.description,
-    };
-
+    console.log("ty le token", token);
     try {
-      for (let dent of finalAppointment.dentsSelectionnees) {
-        let dentId = null;
+      const rendezVousRes = await axios.post(
+        "/api/rendezvous",
+        {
+          patient: idPatientRecuperer || 21, // récupéré du formulaire ou du token
+          dentiste: "6862e8f446136d62ea73498a", // ID fixe du dentiste
+          dateHeure: formData.dateHeure || new Date().toISOString(), // date choisie ou actuelle
+          dureeMinutes: formData.dureeMinutes || 30, // par défaut 30 min
+          motif: formData.motif || "Consultation dentaire",
+          statut: "En attente",
+          notes: formData.description || "Aucune note",
+        },
 
-        // Requête pour vérifier si la dent existe
-        const checkRes = await fetch(
-          `/api/dents/patient/${idPatientRecuperer}/numero/${dent.numero}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (checkRes.ok) {
-          const existingDent = await checkRes.json();
-          dentId = existingDent.data._id;
-          console.log(`Dent ${dent.numero} déjà existante, id: ${dentId}`);
-        } else if (checkRes.status === 404) {
-          // La dent n'existe pas, on passe à la création
-          console.log(`Dent ${dent.numero} non trouvée, on la crée.`);
-        } else {
-          // Gérer les autres erreurs (ex: 401 Unauthorized, 500 Internal Server Error)
-          throw new Error(
-            `Erreur lors de la vérification de la dent : ${checkRes.statusText}`
-          );
-        }
-
-        // Si la dent n'existe pas, on la crée
-        if (!dentId) {
-          const createRes = await fetch(`/api/dents`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              patient: finalAppointment.patientId,
-              typeDent: dent.type,
-              secteurDentaire: dent.secteur,
-              numero: dent.numero,
-            }),
-          });
-
-          if (!createRes.ok)
-            throw new Error(`Erreur création dent numéro ${dent.numero}`);
-          const newDent = await createRes.json();
-          dentId = newDent.data._id;
-          console.log(`Dent ${dent.numero} créée avec succès`);
-        }
-
-        // Enregistrement du symptôme
-        const symptomeRes = await fetch("/api/symptomes", {
-          method: "POST",
+        {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            dent: dentId,
-            typeSymptome: finalAppointment.typesSymptomes.join(", "),
-            niveauSymptome: finalAppointment.niveauSymptome,
-            description: finalAppointment.description,
-          }),
-        });
+        }
+      );
 
-        if (!symptomeRes.ok)
-          throw new Error(
-            `Erreur enregistrement symptôme pour dent ${dent.numero}`
-          );
-        console.log(`Symptôme enregistré pour dent ${dent.numero}`);
-      }
-
-      setMessage({
-        type: "success",
-        text: "Toutes les dents et symptômes ont été enregistrés !",
-      });
-      navigate("/ChoixDeRdv");
+      console.log("Rendez-vous créé :", rendezVousRes.data);
     } catch (error) {
-      console.error("Erreur envoi dents/symptômes :", error);
-      setMessage({
-        type: "error",
-        text: `Erreur : ${error.message || "Une erreur inconnue est survenue"}`,
-      });
+      console.error("❌ Erreur :", error);
+      alert(`Erreur : ${error.message}`);
     }
   };
 
@@ -1399,62 +600,6 @@ export default function FormulaireDeReservation() {
               </div>
             </div>
 
-            <div className="glass-panel p-8">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl">
-                  <User className="h-6 w-6 text-white" />
-                </div>
-                <h2 className="subsection-title">Identification Patient</h2>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label
-                    htmlFor="patient"
-                    className="text-slate-700 font-semibold text-lg mb-3 block"
-                  >
-                    Identifiant Patient *
-                  </Label>
-                  <Input
-                    id="patient"
-                    placeholder="ID-XXXX-XXXX"
-                    value={idPatient}
-                    onChange={handleInputChange}
-                    className="modern-input"
-                    readOnly={!!patientData}
-                    required
-                  />
-                </div>
-
-                {/* Affichage nom + prénom */}
-                {isLoadingPatientData ? (
-                  <div>
-                    <Label className="text-slate-700 font-semibold text-lg mb-3 block">
-                      Nom du Patient
-                    </Label>
-                    <div className="modern-input bg-gray-50 flex items-center">
-                      <User className="h-5 w-5 text-blue-600 mr-3" />
-                      <span className="text-slate-600">
-                        Chargement des données...
-                      </span>
-                    </div>
-                  </div>
-                ) : patientData && (patientData.nom || patientData.prenom) ? (
-                  <div>
-                    <Label className="text-slate-700 font-semibold text-lg mb-3 block">
-                      Nom du Patient
-                    </Label>
-                    <div className="modern-input bg-gray-50 flex items-center">
-                      <User className="h-5 w-5 text-blue-600 mr-3" />
-                      <span className="text-slate-800 font-medium">
-                        {patientData.prenom} {patientData.nom}
-                      </span>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-
             {/* [Reste du formulaire - sélection dentaire, symptômes, etc.] */}
             <div className="section-divider"></div>
 
@@ -1565,99 +710,6 @@ export default function FormulaireDeReservation() {
                       {/* Barre de gradient bleue */}
                       <div className="absolute  bottom-1/2 left-0 w-full h-3 rounded-full bg-gradient-to-r from-blue-200 via-blue-400 to-blue-800 shadow-inner -translate-y-1/2 z-0" />
 
-                      {/* Emojis cliquables */}
-                      {/* <div className="relative z-10 flex justify-between items-center mb-8">
-                        {[
-                          {
-                            level: 0,
-                            emoji: (
-                              <FaSmile size={32} className="text-blue-500" />
-                            ),
-                            label: "AUCUNE",
-                            color: "text-blue-400",
-                            bgColor: "bg-blue-100",
-                            hoverBg: "hover:bg-blue-200 text-white",
-                          },
-                          {
-                            level: 1,
-                            emoji: (
-                              <FaFaceMeh size={32} className="text-blue-500" />
-                            ),
-                            label: "LÉGÈRE",
-                            color: "text-blue-500",
-                            bgColor: "bg-blue-200",
-                            hoverBg: "hover:bg-blue-300",
-                          },
-                          {
-                            level: 2,
-                            emoji: (
-                              <ImSad2 size={32} className="text-blue-500" />
-                            ),
-                            label: "MODÉRÉE",
-                            color: "text-blue-600",
-                            bgColor: "bg-blue-300",
-                            hoverBg: "hover:bg-blue-400",
-                          },
-                          {
-                            level: 3,
-                            emoji: (
-                              <FaFaceSadCry
-                                size={32}
-                                className="text-blue-500"
-                              />
-                            ),
-                            label: "FORTE",
-                            color: "text-blue-700",
-                            bgColor: "bg-blue-400",
-                            hoverBg: "hover:bg-blue-500",
-                          },
-                          {
-                            level: 4,
-                            emoji: (
-                              <GiMineExplosion
-                                size={32}
-                                className="text-blue-500"
-                              />
-                            ),
-                            label: "INSUPPORTABLE",
-                            color: "text-blue-800",
-                            bgColor: "bg-blue-500",
-                            hoverBg: "hover:bg-blue-600",
-                          },
-                        ].map((item) => (
-                          <div
-                            key={item.level}
-                            className="flex flex-col items-center"
-                          >
-                            <button
-                              type="button"
-                              onClick={(e) => handleNiveauChange(item.level, e)}
-                              className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl transition-all duration-300 transform ${
-                                formData.niveauSymptome === item.level
-                                  ? `${item.bgColor} scale-125 shadow-lg ring-4 ring-blue-300`
-                                  : `bg-white ${item.hoverBg} hover:scale-110 shadow-md`
-                              } border-2 ${
-                                formData.niveauSymptome === item.level
-                                  ? "border-blue-400"
-                                  : "border-gray-200"
-                              }`}
-                            >
-                              {item.emoji}
-                            </button>
-                            <div className="mt-3 text-center">
-                              <div
-                                className={`text-xs font-bold uppercase tracking-wide ${
-                                  formData.niveauSymptome === item.level
-                                    ? item.color
-                                    : "text-gray-400"
-                                }`}
-                              >
-                                {item.label}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div> */}
                       <div className="relative z-10 flex justify-between items-center mb-8">
                         {emojiOptions.map((item) => {
                           const Icon = item.icon;

@@ -1,0 +1,198 @@
+export const allTeethData = [
+  // Quadrant 1
+  {
+    number: 18,
+    name: "3ème molaire supérieure droite",
+    type: "Molaire",
+    secteur: "Supérieur droit",
+  },
+  {
+    number: 17,
+    name: "2ème molaire supérieure droite",
+    type: "Molaire",
+    secteur: "Supérieur droit",
+  },
+  {
+    number: 16,
+    name: "1ère molaire supérieure droite",
+    type: "Molaire",
+    secteur: "Supérieur droit",
+  },
+  {
+    number: 15,
+    name: "2ème prémolaire supérieure droite",
+    type: "Prémolaire",
+    secteur: "Supérieur droit",
+  },
+  {
+    number: 14,
+    name: "1ère prémolaire supérieure droite",
+    type: "Prémolaire",
+    secteur: "Supérieur droit",
+  },
+  {
+    number: 13,
+    name: "Canine supérieure droite",
+    type: "Canine",
+    secteur: "Supérieur droit",
+  },
+  {
+    number: 12,
+    name: "Incisive latérale supérieure droite",
+    type: "Incisive",
+    secteur: "Supérieur droit",
+  },
+  {
+    number: 11,
+    name: "Incisive centrale supérieure droite",
+    type: "Incisive",
+    secteur: "Supérieur droit",
+  },
+  // Quadrant 2
+  {
+    number: 21,
+    name: "Incisive centrale supérieure gauche",
+    type: "Incisive",
+    secteur: "Supérieur gauche",
+  },
+  {
+    number: 22,
+    name: "Incisive latérale supérieure gauche",
+    type: "Incisive",
+    secteur: "Supérieur gauche",
+  },
+  {
+    number: 23,
+    name: "Canine supérieure gauche",
+    type: "Canine",
+    secteur: "Supérieur gauche",
+  },
+  {
+    number: 24,
+    name: "1ère prémolaire supérieure gauche",
+    type: "Prémolaire",
+    secteur: "Supérieur gauche",
+  },
+  {
+    number: 25,
+    name: "2ème prémolaire supérieure gauche",
+    type: "Prémolaire",
+    secteur: "Supérieur gauche",
+  },
+  {
+    number: 26,
+    name: "1ère molaire supérieure gauche",
+    type: "Molaire",
+    secteur: "Supérieur gauche",
+  },
+  {
+    number: 27,
+    name: "2ème molaire supérieure gauche",
+    type: "Molaire",
+    secteur: "Supérieur gauche",
+  },
+  {
+    number: 28,
+    name: "3ème molaire supérieure gauche",
+    type: "Molaire",
+    secteur: "Supérieur gauche",
+  },
+  // Quadrant 3
+  {
+    number: 31,
+    name: "Incisive centrale inférieure gauche",
+    type: "Incisive",
+    secteur: "Inférieur gauche",
+  },
+  {
+    number: 32,
+    name: "Incisive latérale inférieure gauche",
+    type: "Incisive",
+    secteur: "Inférieur gauche",
+  },
+  {
+    number: 33,
+    name: "Canine inférieure gauche",
+    type: "Canine",
+    secteur: "Inférieur gauche",
+  },
+  {
+    number: 34,
+    name: "1ère prémolaire inférieure gauche",
+    type: "Prémolaire",
+    secteur: "Inférieur gauche",
+  },
+  {
+    number: 35,
+    name: "2ème prémolaire inférieure gauche",
+    type: "Prémolaire",
+    secteur: "Inférieur gauche",
+  },
+  {
+    number: 36,
+    name: "1ère molaire inférieure gauche",
+    type: "Molaire",
+    secteur: "Inférieur gauche",
+  },
+  {
+    number: 37,
+    name: "2ème molaire inférieure gauche",
+    type: "Molaire",
+    secteur: "Inférieur gauche",
+  },
+  {
+    number: 38,
+    name: "3ème molaire inférieure gauche",
+    type: "Molaire",
+    secteur: "Inférieur gauche",
+  },
+  // Quadrant 4
+  {
+    number: 48,
+    name: "3ème molaire inférieure droite",
+    type: "Molaire",
+    secteur: "Inférieur droit",
+  },
+  {
+    number: 47,
+    name: "2ème molaire inférieure droite",
+    type: "Molaire",
+    secteur: "Inférieur droit",
+  },
+  {
+    number: 46,
+    name: "1ère molaire inférieure droite",
+    type: "Molaire",
+    secteur: "Inférieur droit",
+  },
+  {
+    number: 45,
+    name: "2ème prémolaire inférieure droite",
+    type: "Prémolaire",
+    secteur: "Inférieur droit",
+  },
+  {
+    number: 44,
+    name: "1ère prémolaire inférieure droite",
+    type: "Prémolaire",
+    secteur: "Inférieur droit",
+  },
+  {
+    number: 43,
+    name: "Canine inférieure droite",
+    type: "Canine",
+    secteur: "Inférieur droit",
+  },
+  {
+    number: 42,
+    name: "Incisive latérale inférieure droite",
+    type: "Incisive",
+    secteur: "Inférieur droit",
+  },
+  {
+    number: 41,
+    name: "Incisive centrale inférieure droite",
+    type: "Incisive",
+    secteur: "Inférieur droit",
+  },
+];
