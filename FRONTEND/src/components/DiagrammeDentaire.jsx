@@ -175,8 +175,8 @@ export const DiagrammeDentaire = ({ selectedTeeth, onToothSelect }) => {
           cy={y}
           r="14"
           fill="#3b82f6"
-          stroke="#1d4ed8"
-          strokeWidth="3"
+          stroke="white"
+          strokeWidth="1"
         />
       );
     }
@@ -243,9 +243,9 @@ export const DiagrammeDentaire = ({ selectedTeeth, onToothSelect }) => {
   return (
     <div className="diagram-container p-8">
       <div className="text-center mb-6">
-        <h4 className="subsection-title">Diagramme Dentaire FDI</h4>
+        <h4 className="subsection-title">Diagramme Dentaire </h4>
         <p className="text-slate-600 text-lg">
-          Cliquez sur les dents concernées
+          Cliquez sur les dents qui vous causent des problèmes
         </p>
       </div>
 
@@ -385,7 +385,7 @@ export const DiagrammeDentaire = ({ selectedTeeth, onToothSelect }) => {
             {selectedTeeth.map((tooth) => (
               <Badge
                 key={tooth.number}
-                className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-base px-6 py-3 rounded-full shadow-lg"
+                className=" min-w-100 bg-gradient-to-r from-blue-400 to-purple-400 text-white text-base px-6 py-3 shadow-lg"
               >
                 🦷 {tooth.number} - {tooth.name}
               </Badge>

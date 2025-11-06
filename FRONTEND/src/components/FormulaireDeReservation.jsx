@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRef } from "react";
 
 import {
   User,
@@ -16,13 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import douleurdentaire from "../assets/images/douleurdentaire.JPG";
-import sensibilité from "../assets/images/sensibilité.JPG";
-import mobilité from "../assets/images/mobilité.JPG";
-import gonflement from "../assets/images/gonflement.png";
-import a from "../assets/images/a.jpg";
-import carie from "../assets/images/carie.JPG";
-import fracture from "../assets/images/fracture.JPG";
+
 import { DiagrammeDentaire } from "../components/DiagrammeDentaire";
 import { emojiOptions } from "./EmojiOption";
 import { allTeethData } from "./AllTeethData";
@@ -32,271 +27,21 @@ import { useContext } from "react";
 import { ColorContext } from "../context/color-context";
 import { useReservation } from "../hooks/useReservation";
 import { getPatientDataFromStorage } from "../hooks/useReservation";
-
-const modernStyles = `
-  .ultra-modern-bg {
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 25%, #f1f5f9 50%, #e2e8f0 75%, #cbd5e1 100%);
-    min-height: 100vh;
-  }
-  
-  .glass-panel {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
-    border-radius: 24px;
-  }
-  
-  .glass-header {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(30px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-    border-radius: 20px;
-  }
-  
-  .section-divider {
-    background: linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.2) 50%, transparent 100%);
-    height: 1px;
-    margin: 2rem 0;
-  }
-  
-  .modern-input {
-    background: rgba(255, 255, 255, 0.9);
-    border: 2px solid rgba(59, 130, 246, 0.1);
-    border-radius: 16px;
-    padding: 16px 20px;
-    font-size: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(10px);
-  }
-  
-  .modern-input:focus {
-    border-color: rgba(59, 130, 246, 0.4);
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-    background: rgba(255, 255, 255, 1);
-  }
-  
-  .modern-textarea {
-    background: rgba(255, 255, 255, 0.9);
-    border: 2px solid rgba(59, 130, 246, 0.1);
-    border-radius: 16px;
-    padding: 16px 20px;
-    font-size: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(10px);
-    resize: none;
-  }
-  
-  .modern-textarea:focus {
-    border-color: rgba(59, 130, 246, 0.4);
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-    background: rgba(255, 255, 255, 1);
-  }
-  
-  .modern-slider::-webkit-slider-thumb {
-    appearance: none;
-    height: 28px;
-    width: 28px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    cursor: pointer;
-    border: 4px solid white;
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
-    transition: all 0.3s ease;
-  }
-  
-  .modern-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 24px rgba(59, 130, 246, 0.6);
-  }
-  
-  .modern-slider::-moz-range-thumb {
-    height: 28px;
-    width: 28px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    cursor: pointer;
-    border: 4px solid white;
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
-  }
-  
-  .symptom-card {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(15px);
-    border: 2px solid rgba(59, 130, 246, 0.1);
-    border-radius: 20px;
-    padding: 20px;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
-  }
-  
-  .symptom-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
-    border-color: rgba(59, 130, 246, 0.3);
-  }
-  
-  .symptom-card.selected {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 197, 253, 0.2) 100%);
-    border-color: rgba(59, 130, 246, 0.4);
-    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.25);
-  }
-  
-  .tooth {
-    cursor: pointer;
-    transition: none;
-    filter: drop-shadow(0 2px 8px rgba(30, 64, 175, 0.15));
-    transform-origin: center;
-  }
-  
-  .tooth:hover {
-    filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.3));
-  }
-  
-  .tooth.selected {
-    filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.8)) drop-shadow(0 0 25px rgba(59, 130, 246, 0.6)) drop-shadow(0 0 35px rgba(59, 130, 246, 0.4));
-  }
-  
-  .tooth-number {
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    font-size: 10px;
-    fill: #1e293b;
-    text-anchor: middle;
-    dominant-baseline: central;
-    pointer-events: none;
-    transition: none;
-  }
-  
-  .tooth.selected .tooth-number {
-    fill: white;
-    font-size: 11px;
-    font-weight: 800;
-  }
-  
-  .quadrant-label {
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    font-size: 12px;
-    fill: #4338ca;
-    text-anchor: middle;
-  }
-  
-  .diagram-container {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(20px);
-    border: 2px solid rgba(59, 130, 246, 0.1);
-    border-radius: 24px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
-  }
-  
-  .modern-button {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    border: none;
-    border-radius: 16px;
-    padding: 16px 32px;
-    color: white;
-    font-weight: 600;
-    font-size: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
-  }
-  
-  .modern-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
-  }
-  
-  .modern-button-outline {
-    background: rgba(255, 255, 255, 0.9);
-    border: 2px solid rgba(59, 130, 246, 0.2);
-    border-radius: 16px;
-    padding: 16px 32px;
-    color: #3b82f6;
-    font-weight: 600;
-    font-size: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(10px);
-  }
-  
-  .modern-button-outline:hover {
-    background: rgba(59, 130, 246, 0.05);
-    border-color: rgba(59, 130, 246, 0.4);
-    transform: translateY(-2px);
-  }
-  
-  .floating-header {
-    position: sticky;
-    top: 20px;
-    z-index: 50;
-  }
-  
-  .section-title {
-    background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-size: 2rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-  }
-  
-  .subsection-title {
-    background: linear-gradient(135deg, #475569 0%, #3b82f6 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-  }
-`;
- const typesSymptomes = [
-    {
-      name: "Douleur",
-      icon: <img src={douleurdentaire} alt="Douleur" className="w-8 h-8" />,
-    },
-    {
-      name: "Sensibilité",
-      icon: <img src={sensibilité} alt="Sensibilité" className="w-8 h-8" />,
-    },
-    {
-      name: "Mobilité",
-      icon: <img src={mobilité} alt="Mobilité" className="w-8 h-8" />,
-    },
-    {
-      name: "Gonflement",
-      icon: <img src={gonflement} alt="Mobilité" className="w-8 h-8" />,
-    },
-    {
-      name: "Saignement",
-      icon: <img src={a} alt="Mobilité" className="w-8 h-8" />,
-    },
-    {
-      name: "Carie",
-      icon: <img src={carie} alt="Mobilité" className="w-8 h-8" />,
-    },
-    {
-      name: "Fracture",
-      icon: <img src={fracture} alt="fracture" className="w-8 h-8" />,
-    },
-    { name: "Autre", icon: "💙" },
-  ];
-// Composant du diagramme dentaire
+import { typesSymptomes } from "./types/TypesSymptomes";
+import { modernStyles } from "../styles/Styles";
 
 export default function FormulaireDeReservation() {
   const navigate = useNavigate();
-  const {theme, setTheme} = useContext(ColorContext)
-  const {isLoading: isLoadingPatientData, patientData} = useReservation()
-  
+  const { theme, setTheme } = useContext(ColorContext);
+  const { isLoading: isLoadingPatientData, patientData } = useReservation();
+
   const [appointmentData, setAppointmentData] = useState(null);
   const [selectedTeeth, setSelectedTeeth] = useState([]);
   const [message, setMessage] = useState(null);
   const [formData, setFormData] = useState({
     // Champs pour la dent
     patient: "",
-    nomDent: "",
+
     typeDent: "",
     secteurDentaire: "",
     numero: "",
@@ -305,11 +50,40 @@ export default function FormulaireDeReservation() {
     niveauSymptome: 0, // Mis à 0 par défaut pour correspondre à "AUCUNE"
     description: "",
   });
+  const dentSectionRef = useRef(null);
+  const symptomeSectionRef = useRef(null);
+  const [modalMessage, setModalMessage] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
- 
+  const showAlert = (message) => {
+    setModalMessage(message);
+    setShowModal(true);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (selectedTeeth.length === 0) {
+      showAlert(
+        "⚠️ Veuillez sélectionner au moins une dent avant de continuer."
+      );
+      // Fait défiler vers la section dents
+      document
+        .getElementById("section-dents")
+        ?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
+    if (formData.typesSymptomes.length === 0) {
+      showAlert(
+        "⚠️ Veuillez sélectionner au moins une manifestation clinique avant de continuer."
+      );
+      document
+        .getElementById("section-symptomes")
+        ?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
     const token = localStorage.getItem("userToken");
     if (!token) {
       alert("❌ Veuillez vous reconnecter pour valider votre demande.");
@@ -328,6 +102,14 @@ export default function FormulaireDeReservation() {
         return;
       }
       idPatientRecuperer = idFromToken;
+    }
+    // refa tsisy nify selectionné
+    if (!selectedTeeth || selectedTeeth.length === 0) {
+      setShowModal(true);
+      setModalMessage(
+        "⚠️ Veuillez sélectionner au moins une dent avant de continuer."
+      );
+      return;
     }
 
     console.log("ty le token", token);
@@ -351,12 +133,61 @@ export default function FormulaireDeReservation() {
           },
         }
       );
-
+      alert("✅ Rendez-vous enregistré avec succès !");
       console.log("Rendez-vous créé :", rendezVousRes.data);
     } catch (error) {
       console.error("❌ Erreur :", error);
       alert(`Erreur : ${error.message}`);
     }
+
+    // Pour chaque dent sélectionnée :
+    for (const teeth of selectedTeeth) {
+      try {
+        // 🎉 On utilise les données pré-calculées dans l'objet 'teeth'
+        const secteurDentaire = teeth.secteur;
+        const nomDent = teeth.name;
+
+        // 🔍 Logs utiles
+        console.log("🦷 Envoi de la dent :", teeth);
+        console.log("   Patient ID :", patientData._id);
+        console.log("   Nom de la dent :", nomDent); // Nouveau log
+        console.log("   Type de dent :", teeth.type);
+        console.log("   Secteur dentaire :", secteurDentaire);
+        console.log("   Numéro :", teeth.number);
+
+        // ✅ Requête API
+        const dentRes = await axios.post(
+          "/api/dents",
+          {
+            patient: patientData._id,
+            nomDent, // Optionnel, si votre backend l'accepte
+            typeDent: teeth.type,
+            secteurDentaire, // Maintenant directement tiré de teeth.secteur
+            numero: teeth.number,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log("✅ Dent créée avec succès :", dentRes.data);
+      } catch (error) {
+        // ... (Gestion des erreurs inchangée)
+        console.error("❌ Erreur :", error);
+        alert(
+          `⚠️ Erreur lors de l'envoi : ${
+            error.response?.data?.message || error.message
+          }`
+        );
+      }
+    }
+
+    alert(
+      "🎉 Toutes les dents sélectionnées ont été enregistrées avec succès !"
+    );
   };
 
   // Fonctions utilitaires pour les données patient depuis localstorage
@@ -446,7 +277,7 @@ export default function FormulaireDeReservation() {
         return {
           ...prev,
           numero: updatedSelectedTeeth.map((t) => t.number).join(", "),
-          nomDent: updatedSelectedTeeth.map((t) => t.name).join(", "),
+          // nomDent: updatedSelectedTeeth.map((t) => t.name).join(", "),
           typeDent: [...new Set(updatedSelectedTeeth.map((t) => t.type))].join(
             ", "
           ),
@@ -487,7 +318,23 @@ export default function FormulaireDeReservation() {
   return (
     <>
       <style>{modernStyles}</style>
-      <div className="ultra-modern-bg">
+      <div className=" ultra-modern-bg bg-gradient-to-br from-pink-500 via-purple-500 to-blue-600">
+        {/* titre b voloany */}
+        <div className="relative flex items-center justify-center py-14 px-6 ">
+          <div className="backdrop-blur-lg bg-white/20 border border-white/30 shadow-2xl rounded-2xl p-10 max-w-3xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight drop-shadow-md">
+              Confirmation de{" "}
+              <span className=" drop-shadow-lg">votre Consultation</span>
+            </h1>
+            <p className="text-lg text-white/90 mt-4 max-w-2xl mx-auto">
+              Merci de confirmer votre rendez-vous et de décrire vos symptômes.
+              Ces informations aideront votre dentiste à mieux préparer votre
+              consultation.
+            </p>
+          </div>
+        </div>
+        {/* faranle titre d fanomboanl informatiion */}
+
         <div className="max-w-6xl mx-auto p-6 lg:p-12">
           {/* [En-tête et titre] */}
 
@@ -498,37 +345,40 @@ export default function FormulaireDeReservation() {
                 <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl">
                   <User className="h-6 w-6 text-white" />
                 </div>
-                <h2 className="subsection-title">Identification Patient</h2>
+                <div className="items-center">
+                  <span className="subsection-title">Vos Informations</span>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <Label
                     htmlFor="patient"
-                    className="text-slate-700 font-semibold text-lg mb-3 block"
+                    className="text-blue-600 font-semibold mb-2 text-lg  block"
                   >
-                    Identifiant Patient *
+                    Votre Identifiant
                   </Label>
-                  <Input
-                    id="patient"
-                    placeholder="ID-XXXX-XXXX"
-                    value={idPatient}
-                    onChange={handleInputChange}
-                    className="modern-input"
-                    readOnly={!!patientData} // Lecture seule si les données patient sont disponibles
-                    required
-                  />
+
+                  <div className="modern-input bg-gray-50 flex items-center">
+                    <span
+                      id="patient"
+                      placeholder="ID-XXXX-XXXX"
+                      readOnly={!!patientData} // Lecture seule si les données patient sont disponibles
+                      required
+                    >
+                      {idPatient}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Affichage du nom complet du patient */}
                 {patientData && (patientData.nom || patientData.prenom) && (
                   <div>
-                    <Label className="text-slate-700 font-semibold text-lg mb-3 block">
-                      Nom du Patient
+                    <Label className="text-blue-500 font-semibold mb-2 text-lg block">
+                      Votre Nom
                     </Label>
                     <div className="modern-input bg-gray-50 flex items-center">
-                      <User className="h-5 w-5 text-blue-600 mr-3" />
-                      <span className="text-slate-800 font-medium">
+                      <span>
                         {patientData.prenom || ""} {patientData.nom || ""}
                       </span>
                     </div>
@@ -538,7 +388,7 @@ export default function FormulaireDeReservation() {
                 {isLoadingPatientData && (
                   <div>
                     <Label className="text-slate-700 font-semibold text-lg mb-3 block">
-                      Nom du Patient
+                      Votre Nom
                     </Label>
                     <div className="modern-input bg-gray-50 flex items-center">
                       <User className="h-5 w-5 text-blue-600 mr-3" />
@@ -555,13 +405,10 @@ export default function FormulaireDeReservation() {
                     patientData.telephone ||
                     patientData.age) && (
                     <div className="md:col-span-2">
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h4 className="text-blue-800 font-semibold mb-2">
-                          Informations Patient
-                        </h4>
+                      <div className="bg-blue-50 border bg-gray-50 rounded-lg p-4">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                           {patientData.email && (
-                            <div>
+                            <div className=" flex items-center gap-x-2">
                               <span className="text-blue-600 font-medium">
                                 Email:
                               </span>
@@ -572,7 +419,7 @@ export default function FormulaireDeReservation() {
                             </div>
                           )}
                           {patientData.telephone && (
-                            <div>
+                            <div className=" flex items-center gap-x-2">
                               <span className="text-blue-600 font-medium">
                                 Téléphone:
                               </span>
@@ -583,7 +430,7 @@ export default function FormulaireDeReservation() {
                             </div>
                           )}
                           {patientData.age && (
-                            <div>
+                            <div className=" flex items-center gap-x-2">
                               <span className="text-blue-600 font-medium">
                                 Âge:
                               </span>
@@ -604,12 +451,14 @@ export default function FormulaireDeReservation() {
             <div className="section-divider"></div>
 
             {/* Section Sélection Dentaire */}
-            <div className="glass-panel p-8">
+            <div ref={dentSectionRef} className="glass-panel p-8">
               <div className="flex items-center gap-4 mb-8">
                 <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl">
                   <Activity className="h-6 w-6 text-white" />
                 </div>
-                <h2 className="subsection-title">Sélection Dentaire</h2>
+                <div>
+                  <span className="subsection-title">Sélection Dentaire</span>
+                </div>
               </div>
 
               <DiagrammeDentaire
@@ -621,19 +470,23 @@ export default function FormulaireDeReservation() {
             <div className="section-divider"></div>
 
             {/* Section Symptomatologie */}
-            <div className="glass-panel p-8">
+            <div ref={symptomeSectionRef} className="glass-panel p-8">
               <div className="flex items-center gap-4 mb-8">
                 <div className="p-3 bg-gradient-to-r from-indigo-600 to-purple-700 rounded-2xl">
                   <AlertCircle className="h-6 w-6 text-white" />
                 </div>
-                <h2 className="subsection-title">Symptomatologie Clinique</h2>
+                <div>
+                  <span className="subsection-title">
+                    Symptomatologie Clinique
+                  </span>
+                </div>
               </div>
 
               <div className="space-y-12">
                 {/* Types de symptômes */}
                 <div>
                   <Label className="text-slate-700 font-semibold text-lg mb-6 block">
-                    Manifestations cliniques * (sélection multiple)
+                    Manifestations cliniques
                   </Label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {typesSymptomes.map((symptome) => (
@@ -692,7 +545,7 @@ export default function FormulaireDeReservation() {
                 {/* Intensité des symptômes */}
                 <div>
                   <Label className="text-slate-700 font-semibold text-lg mb-6 block">
-                    Intensité symptomatique *
+                    Intensité symptomatique
                   </Label>
 
                   <div className="glass-panel p-8 rounded-2xl bg-blue-50 shadow-md">
@@ -726,7 +579,7 @@ export default function FormulaireDeReservation() {
                                 onClick={(e) =>
                                   handleNiveauChange(item.level, e)
                                 }
-                                className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 transform ${
+                                className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-300 transform ${
                                   isSelected
                                     ? `${item.bgColor} scale-125 shadow-lg ring-4 ring-blue-300`
                                     : `bg-white ${item.hoverBg} hover:scale-110 shadow-md`
@@ -737,12 +590,13 @@ export default function FormulaireDeReservation() {
                                 }`}
                               >
                                 <Icon
-                                  size={32}
-                                  className={
+                                  size={24} // taille de l’icône pour petits écrans
+                                  className={`${
                                     isSelected ? "text-white" : item.color
-                                  }
+                                  } sm:size-28 md:size-32`}
                                 />
                               </button>
+
                               <div className="mt-3 text-center">
                                 <div
                                   className={`text-xs font-bold uppercase tracking-wide ${
@@ -761,19 +615,19 @@ export default function FormulaireDeReservation() {
                     {/* Badge de niveau sélectionné */}
                     <div className="text-center mt-6">
                       <Badge
-                        className={`text-xl px-8 py-4 ${
+                        className={`text-xl min-w-100 px-8 py-4 ${
                           formData.niveauSymptome === 0
-                            ? "bg-gradient-to-r from-blue-100 to-blue-300"
+                            ? "bg-gradient-to-r from-blue-400 to-purple-300"
                             : formData.niveauSymptome === 1
-                            ? "bg-gradient-to-r from-blue-200 to-blue-400"
+                            ? "bg-gradient-to-r from-blue-400 to-purple-400"
                             : formData.niveauSymptome === 2
-                            ? "bg-gradient-to-r from-blue-300 to-blue-500"
+                            ? "bg-gradient-to-r from-blue-400 to-purple-500"
                             : formData.niveauSymptome === 3
-                            ? "bg-gradient-to-r from-blue-400 to-blue-600"
-                            : "bg-gradient-to-r from-blue-500 to-blue-700"
-                        } text-white shadow-xl rounded-full`}
+                            ? "bg-gradient-to-r from-blue-400 to-purple-700"
+                            : "bg-gradient-to-r from-blue-400 to-purple-800"
+                        } text-white shadow-xl `}
                       >
-                        Intensité:&nbsp;
+                        Intensité :&nbsp;
                         {formData.niveauSymptome === 0
                           ? "Aucune"
                           : formData.niveauSymptome === 1
@@ -829,6 +683,22 @@ export default function FormulaireDeReservation() {
           </form>
         </div>
       </div>
+      {showModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-[8px] flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-11/12 text-center transform transition-all scale-105">
+            <h2 className="text-blue-600 font-bold text-xl mb-3">
+              ⚠️ Attention
+            </h2>
+            <p className="text-gray-700 text-lg mb-6">{modalMessage}</p>
+            <button
+              onClick={() => setShowModal(false)}
+              className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
