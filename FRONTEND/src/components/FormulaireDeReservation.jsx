@@ -34,7 +34,7 @@ export default function FormulaireDeReservation() {
   const navigate = useNavigate();
   const { theme, setTheme } = useContext(ColorContext);
   const { isLoading: isLoadingPatientData, patientData } = useReservation();
-
+  const [rendezVousCree, setRendezVousCree] = useState(null);
   const [appointmentData, setAppointmentData] = useState(null);
   const [selectedTeeth, setSelectedTeeth] = useState([]);
   const [message, setMessage] = useState(null);
@@ -60,9 +60,11 @@ export default function FormulaireDeReservation() {
     setShowModal(true);
   };
 
+  //enregistrement des donnes amzay
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log("ito lo zany an, ny contenu anl form complet", formData);
+    console.log("ito ndray n typesymptome", formData.typesSymptomes);
     if (selectedTeeth.length === 0) {
       showAlert(
         "⚠️ Veuillez sélectionner au moins une dent avant de continuer."
@@ -113,6 +115,8 @@ export default function FormulaireDeReservation() {
     }
 
     console.log("ty le token", token);
+
+    //insertion an rdv vao2
     try {
       const rendezVousRes = await axios.post(
         "/api/rendezvous",
@@ -135,11 +139,13 @@ export default function FormulaireDeReservation() {
       );
       alert("✅ Rendez-vous enregistré avec succès !");
       console.log("Rendez-vous créé :", rendezVousRes.data);
+      setRendezVousCree(rendezVousRes.data);
     } catch (error) {
       console.error("❌ Erreur :", error);
       alert(`Erreur : ${error.message}`);
     }
 
+    // eti ndray mapiditra anl dents
     // Pour chaque dent sélectionnée :
     for (const teeth of selectedTeeth) {
       try {
@@ -188,7 +194,88 @@ export default function FormulaireDeReservation() {
     alert(
       "🎉 Toutes les dents sélectionnées ont été enregistrées avec succès !"
     );
+
+    // eto aon symptome makany am
+    // insertion du nouveau symptome
+    // try {
+    //   const symptomesRes = await axios.post(
+    //     "/api/symptomes",
+    //     {
+    //       rendezVous: rendezVousRes.data._id, // l'ID du rendez-vous créé
+    //       typesSymptomes: formData.typesSymptomes, // tableau des symptômes sélectionnés
+    //       niveauSymptome: formData.niveauSymptome, // intensité
+    //       description: formData.description, // texte libre
+    //     },
+    //     {
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     }
+    //   );
+
+    //   return { symptomesRes };
+
+    //   console.log("✅ Symptômes enregistrés :", symptomesRes.data);
+    // } catch (error) {
+    //   console.error(
+    //     "❌ Erreur lors de l'enregistrement des symptômes :",
+    //     error
+    //   );
+    //   alert(
+    //     `⚠️ Erreur lors de l'enregistrement des symptômes : ${
+    //       error.response?.data?.message || error.message
+    //     }`
+    //   );
+    // }
   };
+
+  useEffect(() => {
+    const enregistrerSymptomes = async () => {
+      if (!rendezVousCree) return;
+
+      // sécurité : on attend que le rendez-vous existe
+      const token = localStorage.getItem("userToken");
+      const typeSymptomeString = formData.typesSymptomes.join(", ");
+
+      console.log("rendezVousCree", rendezVousCree);
+      console.log("rendezVousCree._id", rendezVousCree._id);
+      console.log("typesSymptomes", typeSymptomeString);
+      console.log("niveauSymptome", formData.niveauSymptome);
+      console.log("description", formData.description);
+
+      // rendezVous,    typeSymptome,    niveauSymptome,    description
+      try {
+        const symptomesRes = await axios.post(
+          "/api/symptomes",
+          {
+            rendezVous: rendezVousCree._id, // on récupère l’ID du rendez-vous créé
+            typeSymptome: typeSymptomeString,
+            niveauSymptome: formData.niveauSymptome,
+            description: formData.description,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log("le valeur an rendezvouscree dia :", rendezVousCree);
+        console.log("✅ Symptômes enregistrés :", symptomesRes.data);
+        alert("🎉 Symptômes enregistrés avec succès !");
+      } catch (error) {
+        console.error("❌ Erreur enregistrement symptômes :", error);
+        alert(
+          `⚠️ Erreur lors de l'enregistrement des symptômes : ${
+            error.response?.data?.message || error.message
+          }`
+        );
+      }
+    };
+
+    enregistrerSymptomes();
+  }, [rendezVousCree]); // ✅ Se déclenche uniquement quand un nouveau rendez-vous est créé
 
   // Fonctions utilitaires pour les données patient depuis localstorage
 
