@@ -29,6 +29,7 @@ import { useReservation } from "../hooks/useReservation";
 import { getPatientDataFromStorage } from "../hooks/useReservation";
 import { typesSymptomes } from "./types/TypesSymptomes";
 import { modernStyles } from "../styles/Styles";
+import Modal from "./Modal";
 
 export default function FormulaireDeReservation() {
   const navigate = useNavigate();
@@ -41,7 +42,6 @@ export default function FormulaireDeReservation() {
   const [formData, setFormData] = useState({
     // Champs pour la dent
     patient: "",
-
     typeDent: "",
     secteurDentaire: "",
     numero: "",
@@ -54,10 +54,12 @@ export default function FormulaireDeReservation() {
   const symptomeSectionRef = useRef(null);
   const [modalMessage, setModalMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
 
-  const showAlert = (message) => {
+  const showAlert = (message, modalTitle) => {
     setModalMessage(message);
     setShowModal(true);
+    setModalTitle(modalTitle);
   };
 
   //enregistrement des donnes amzay
@@ -67,7 +69,8 @@ export default function FormulaireDeReservation() {
     console.log("ito ndray n typesymptome", formData.typesSymptomes);
     if (selectedTeeth.length === 0) {
       showAlert(
-        "⚠️ Veuillez sélectionner au moins une dent avant de continuer."
+        "⚠️ Veuillez sélectionner au moins une dent avant de continuer.",
+        "DENTS"
       );
       // Fait défiler vers la section dents
       document
@@ -78,7 +81,8 @@ export default function FormulaireDeReservation() {
 
     if (formData.typesSymptomes.length === 0) {
       showAlert(
-        "⚠️ Veuillez sélectionner au moins une manifestation clinique avant de continuer."
+        "⚠️ Veuillez sélectionner au moins une manifestation clinique avant de continuer.",
+        "MANIFESTATIONS CLINIQUES"
       );
       document
         .getElementById("section-symptomes")
@@ -88,7 +92,7 @@ export default function FormulaireDeReservation() {
 
     const token = localStorage.getItem("userToken");
     if (!token) {
-      alert("❌ Veuillez vous reconnecter pour valider votre demande.");
+      showAlert("❌ Veuillez vous reconnecter pour valider votre demande.");
       return;
     }
 
@@ -98,7 +102,7 @@ export default function FormulaireDeReservation() {
       const localPatient = JSON.parse(localStorage.getItem("patient"));
       const idFromToken = localPatient?.id || localPatient?._id || null;
       if (!idFromToken) {
-        alert(
+        showAlert(
           "❌ Impossible de récupérer l'ID patient. Veuillez vous reconnecter."
         );
         return;
@@ -106,15 +110,8 @@ export default function FormulaireDeReservation() {
       idPatientRecuperer = idFromToken;
     }
     // refa tsisy nify selectionné
-    if (!selectedTeeth || selectedTeeth.length === 0) {
-      setShowModal(true);
-      setModalMessage(
-        "⚠️ Veuillez sélectionner au moins une dent avant de continuer."
-      );
-      return;
-    }
 
-    console.log("ty le token", token);
+    console.log("🛑 ty le token", token);
 
     //insertion an rdv vao2
     try {
@@ -137,29 +134,30 @@ export default function FormulaireDeReservation() {
           },
         }
       );
-      alert("✅ Rendez-vous enregistré avec succès !");
-      console.log("Rendez-vous créé :", rendezVousRes.data);
+      showAlert(
+        " ✅ Votre demande de rendez-vous a bien été enregistré ! <br />Nous vous contacterons très prochainement pour la confirmation. "
+      );
+      console.log(" 🛑 Rendez-vous créé :", rendezVousRes.data);
       setRendezVousCree(rendezVousRes.data);
     } catch (error) {
       console.error("❌ Erreur :", error);
-      alert(`Erreur : ${error.message}`);
     }
 
     // eti ndray mapiditra anl dents
     // Pour chaque dent sélectionnée :
     for (const teeth of selectedTeeth) {
       try {
-        // 🎉 On utilise les données pré-calculées dans l'objet 'teeth'
+        //  On utilise les données pré-calculées dans l'objet 'teeth'
         const secteurDentaire = teeth.secteur;
         const nomDent = teeth.name;
 
         // 🔍 Logs utiles
-        console.log("🦷 Envoi de la dent :", teeth);
-        console.log("   Patient ID :", patientData._id);
-        console.log("   Nom de la dent :", nomDent); // Nouveau log
-        console.log("   Type de dent :", teeth.type);
-        console.log("   Secteur dentaire :", secteurDentaire);
-        console.log("   Numéro :", teeth.number);
+        console.log(" 🛑 🦷 Envoi de la dent :", teeth);
+        console.log("   🛑 Patient ID :", patientData._id);
+        console.log("   🛑 Nom de la dent :", nomDent); // Nouveau log
+        console.log("   🛑 Type de dent :", teeth.type);
+        console.log("   🛑 Secteur dentaire :", secteurDentaire);
+        console.log("   🛑 Numéro :", teeth.number);
 
         // ✅ Requête API
         const dentRes = await axios.post(
@@ -179,55 +177,26 @@ export default function FormulaireDeReservation() {
           }
         );
 
-        console.log("✅ Dent créée avec succès :", dentRes.data);
+        console.log(
+          "%c Dent créée avec succès :",
+          "color: red; font-weight: bold;",
+          dentRes.data
+        );
       } catch (error) {
         // ... (Gestion des erreurs inchangée)
         console.error("❌ Erreur :", error);
-        alert(
-          `⚠️ Erreur lors de l'envoi : ${
-            error.response?.data?.message || error.message
-          }`
-        );
+        // alert(
+        //   `⚠️ Erreur lors de l'envoi : ${
+        //     error.response?.data?.message || error.message
+        //   }`
+        // );
       }
     }
 
-    alert(
-      "🎉 Toutes les dents sélectionnées ont été enregistrées avec succès !"
+    console.log(
+      "%c Toutes les dents sélectionnées ont été enregistrées avec succès !",
+      "color: #ff4d4d; background: #ffe6e6; font-weight: bold; padding: 4px 8px; border-radius: 6px;"
     );
-
-    // eto aon symptome makany am
-    // insertion du nouveau symptome
-    // try {
-    //   const symptomesRes = await axios.post(
-    //     "/api/symptomes",
-    //     {
-    //       rendezVous: rendezVousRes.data._id, // l'ID du rendez-vous créé
-    //       typesSymptomes: formData.typesSymptomes, // tableau des symptômes sélectionnés
-    //       niveauSymptome: formData.niveauSymptome, // intensité
-    //       description: formData.description, // texte libre
-    //     },
-    //     {
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         Authorization: `Bearer ${token}`,
-    //       },
-    //     }
-    //   );
-
-    //   return { symptomesRes };
-
-    //   console.log("✅ Symptômes enregistrés :", symptomesRes.data);
-    // } catch (error) {
-    //   console.error(
-    //     "❌ Erreur lors de l'enregistrement des symptômes :",
-    //     error
-    //   );
-    //   alert(
-    //     `⚠️ Erreur lors de l'enregistrement des symptômes : ${
-    //       error.response?.data?.message || error.message
-    //     }`
-    //   );
-    // }
   };
 
   useEffect(() => {
@@ -238,11 +207,11 @@ export default function FormulaireDeReservation() {
       const token = localStorage.getItem("userToken");
       const typeSymptomeString = formData.typesSymptomes.join(", ");
 
-      console.log("rendezVousCree", rendezVousCree);
-      console.log("rendezVousCree._id", rendezVousCree._id);
-      console.log("typesSymptomes", typeSymptomeString);
-      console.log("niveauSymptome", formData.niveauSymptome);
-      console.log("description", formData.description);
+      console.log("❎rendezVousCree", rendezVousCree);
+      console.log("❎rendezVousCree._id", rendezVousCree._id);
+      console.log("❎typesSymptomes", typeSymptomeString);
+      console.log("❎niveauSymptome", formData.niveauSymptome);
+      console.log("❎description", formData.description);
 
       // rendezVous,    typeSymptome,    niveauSymptome,    description
       try {
@@ -261,16 +230,23 @@ export default function FormulaireDeReservation() {
             },
           }
         );
-        console.log("le valeur an rendezvouscree dia :", rendezVousCree);
-        console.log("✅ Symptômes enregistrés :", symptomesRes.data);
-        alert("🎉 Symptômes enregistrés avec succès !");
-      } catch (error) {
-        console.error("❌ Erreur enregistrement symptômes :", error);
-        alert(
-          `⚠️ Erreur lors de l'enregistrement des symptômes : ${
-            error.response?.data?.message || error.message
-          }`
+        console.log("❎le valeur an rendezvouscree dia :", rendezVousCree);
+        console.log("❎ Symptômes enregistrés :", symptomesRes.data);
+        console.log(
+          "%c🩸 Symptômes enregistrés avec succès !",
+          "color: red; background: #ffe6e6; font-weight: bold;"
         );
+      } catch (error) {
+        console.log(
+          "%c❌ Erreur enregistrement symptômes :",
+          "color: green ; font-weight: bold;",
+          error
+        );
+        // showAlert(
+        //   `⚠️ Erreur lors de l'enregistrement des symptômes : ${
+        //     error.response?.data?.message || error.message
+        //   }`
+        // );
       }
     };
 
@@ -294,8 +270,6 @@ export default function FormulaireDeReservation() {
     // ID par défaut
     return `ID-PATIENT-${Date.now()}`;
   };
-
-  // Fonction pour récupérer les données complètes du patient depuis l'API
 
   // Charger les données du rendez-vous depuis localStorage
   useEffect(() => {
@@ -405,7 +379,7 @@ export default function FormulaireDeReservation() {
   return (
     <>
       <style>{modernStyles}</style>
-      <div className=" ultra-modern-bg bg-gradient-to-br from-pink-500 via-purple-500 to-blue-600">
+      <div className=" ultra-modern-bg bg-gradient-to-br from-pink-500 via-purple-500 to-blue-300">
         {/* titre b voloany */}
         <div className="relative flex items-center justify-center py-14 px-6 ">
           <div className="backdrop-blur-lg bg-white/20 border border-white/30 shadow-2xl rounded-2xl p-10 max-w-3xl mx-auto text-center">
@@ -772,14 +746,19 @@ export default function FormulaireDeReservation() {
       </div>
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-[8px] flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-11/12 text-center transform transition-all scale-105">
-            <h2 className="text-blue-600 font-bold text-xl mb-3">
-              ⚠️ Attention
+          <div className="bg-gradient-to-br from-blue-50 via-purple-100 to-pink-50 rounded-3xl shadow-2xl p-8 max-w-sm w-11/12 text-center transform transition-all scale-105 animate-fadeIn">
+            <h2 className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 font-extrabold text-2xl mb-4 drop-shadow-sm">
+              {modalTitle || "Notification"}
             </h2>
-            <p className="text-gray-700 text-lg mb-6">{modalMessage}</p>
+
+            <p
+              className="text-gray-700 text-lg mb-8 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: modalMessage }}
+            />
+
             <button
               onClick={() => setShowModal(false)}
-              className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-2.5 rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition duration-200"
             >
               OK
             </button>
