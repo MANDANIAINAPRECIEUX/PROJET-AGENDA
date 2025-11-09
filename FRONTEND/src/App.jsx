@@ -84,13 +84,14 @@ import Navbar from "./components/Navbar"; // Assurez-vous que le chemin est corr
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
-import ChoixDeRdv from "./pages/ChoixDeRDV";
+import ChoixDeRdv from "./pages/ChoixDeRdv";
 import FormulaireDeReservation from "./components/FormulaireDeReservation";
 import Essai from "./components/Essai";
+import TableauDeBordDentiste from "./pages/TableauDeBordDentiste";
 
 function App() {
   const location = useLocation();
-  const NoNavbarPaths = ["/FormulaireDeReservation"];
+  const NoNavbarPaths = ["/FormulaireDeReservation", "/TableauDeBordDentiste"];
   const showNavbar = !NoNavbarPaths.includes(location.pathname);
 
   return (
@@ -107,6 +108,10 @@ function App() {
         <Route
           path="/FormulaireDeReservation"
           element={<FormulaireDeReservation />}
+        />
+        <Route
+          path="/TableauDeBordDentiste"
+          element={<TableauDeBordDentiste />}
         />
       </Routes>
     </>

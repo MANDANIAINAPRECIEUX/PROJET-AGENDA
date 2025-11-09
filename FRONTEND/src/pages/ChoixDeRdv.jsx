@@ -11,9 +11,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import { setDates } from "../features/DateRendezVousSlice";
+import { useDispatch } from "react-redux";
 
 export default function ChoixDeRdv() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
@@ -106,8 +109,12 @@ export default function ChoixDeRdv() {
     if (isDateAvailable(date)) {
       setSelectedDate(date);
       setSelectedTime(null);
+      console.log("date selectionnée: ", date);
     }
   };
+
+  const [dateFormatted, setdateRDV] = useState("");
+  const [time, setheureRDV] = useState("");
 
   // Gérer la sélection d'heure
   const handleTimeClick = (hour, minute) => {
@@ -116,14 +123,22 @@ export default function ChoixDeRdv() {
         .toString()
         .padStart(2, "0")}`;
       setSelectedTime(timeString);
-
+      // ty zany le données complet annl rendez vous: heure s dates
       const appointmentData = {
         date: selectedDate.toISOString().split("T")[0],
         time: timeString,
         dateFormatted: selectedDate.toLocaleDateString("fr-FR"),
       };
+      dispatch(
+        setDates({
+          dateFormatted: appointmentData.dateFormatted,
+          time: appointmentData.time,
+        })
+      );
+
       localStorage.setItem("appointmentData", JSON.stringify(appointmentData));
       navigate("/FormulaireDeReservation");
+      console.log("données anl rdv heure s date: ", appointmentData);
     }
   };
 
@@ -208,9 +223,10 @@ export default function ChoixDeRdv() {
             {/* Grille du calendrier */}
             <div className="grid grid-cols-7 gap-2">
               {dayNames.map((day) => (
+                //les jours de la semaine
                 <div
                   key={day}
-                  className="text-center text-sm font-medium text-gray-500 p-2"
+                  className="text-center text-sm font-medium text-blue-500 p-2"
                 >
                   {day}
                 </div>

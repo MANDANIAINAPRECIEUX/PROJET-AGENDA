@@ -113,6 +113,31 @@ export default function FormulaireDeReservation() {
 
     console.log("🛑 ty le token", token);
 
+    const appointmentDataJSON = localStorage.getItem("appointmentData");
+
+    if (!appointmentDataJSON) {
+      console.log(
+        "❌ Aucune donnée de rendez-vous trouvée. Veuillez rechoisir une date et une heure."
+      );
+      return;
+    }
+
+    // On transforme la chaîne JSON en objet
+    const appointmentData = JSON.parse(appointmentDataJSON);
+
+    // On récupère les champs à l’intérieur
+    const dateHeureLocal = appointmentData.dateFormatted;
+    const heureLocal = appointmentData.time;
+
+    console.log("🕐 Date :", dateHeureLocal);
+    console.log("🕒 Heure :", heureLocal);
+    console.log("📤 Données envoyées au backend :", {
+      dateHeureLocal,
+      heureLocal,
+      motif: formData.motif || "Consultation dentaire",
+      notes: formData.description || "Aucune note",
+    });
+
     //insertion an rdv vao2
     try {
       const rendezVousRes = await axios.post(
@@ -120,8 +145,8 @@ export default function FormulaireDeReservation() {
         {
           patient: idPatientRecuperer || 21, // récupéré du formulaire ou du token
           dentiste: "6862e8f446136d62ea73498a", // ID fixe du dentiste
-          dateHeure: formData.dateHeure || new Date().toISOString(), // date choisie ou actuelle
-          dureeMinutes: formData.dureeMinutes || 30, // par défaut 30 min
+          dateHeure: dateHeureLocal, // date choisie ou actuelle
+          dureeMinutes: heureLocal, // par défaut 30 min
           motif: formData.motif || "Consultation dentaire",
           statut: "En attente",
           notes: formData.description || "Aucune note",
@@ -140,7 +165,10 @@ export default function FormulaireDeReservation() {
       console.log(" 🛑 Rendez-vous créé :", rendezVousRes.data);
       setRendezVousCree(rendezVousRes.data);
     } catch (error) {
-      console.error("❌ Erreur :", error);
+      console.error(
+        "❌ Erreur côté backend :",
+        error.response?.data || error.message
+      );
     }
 
     // eti ndray mapiditra anl dents
@@ -757,7 +785,14 @@ export default function FormulaireDeReservation() {
             />
 
             <button
-              onClick={() => setShowModal(false)}
+              onClick={() => {
+                setShowModal(false); // ferme la modale
+
+                //  redirection après un petit délai (pour fluidité)
+                setTimeout(() => {
+                  navigate("/choixDeRdv");
+                }, 100); // 400 ms = durée agréable pour une transition douce
+              }}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-2.5 rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition duration-200"
             >
               OK
