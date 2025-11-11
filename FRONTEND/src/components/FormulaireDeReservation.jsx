@@ -67,12 +67,12 @@ export default function FormulaireDeReservation() {
     e.preventDefault();
     console.log("ito lo zany an, ny contenu anl form complet", formData);
     console.log("ito ndray n typesymptome", formData.typesSymptomes);
+
     if (selectedTeeth.length === 0) {
       showAlert(
         "⚠️ Veuillez sélectionner au moins une dent avant de continuer.",
         "DENTS"
       );
-      // Fait défiler vers la section dents
       document
         .getElementById("section-dents")
         ?.scrollIntoView({ behavior: "smooth" });
@@ -109,23 +109,19 @@ export default function FormulaireDeReservation() {
       }
       idPatientRecuperer = idFromToken;
     }
-    // refa tsisy nify selectionné
 
     console.log("🛑 ty le token", token);
 
     const appointmentDataJSON = localStorage.getItem("appointmentData");
 
     if (!appointmentDataJSON) {
-      console.log(
+      showAlert(
         "❌ Aucune donnée de rendez-vous trouvée. Veuillez rechoisir une date et une heure."
       );
       return;
     }
 
-    // On transforme la chaîne JSON en objet
     const appointmentData = JSON.parse(appointmentDataJSON);
-
-    // On récupère les champs à l’intérieur
     const dateHeureLocal = appointmentData.dateFormatted;
     const heureLocal = appointmentData.time;
 
@@ -138,20 +134,19 @@ export default function FormulaireDeReservation() {
       notes: formData.description || "Aucune note",
     });
 
-    //insertion an rdv vao2
+    // ✅ Enregistrement du rendez-vous
     try {
       const rendezVousRes = await axios.post(
         "/api/rendezvous",
         {
-          patient: idPatientRecuperer || 21, // récupéré du formulaire ou du token
+          patient: idPatientRecuperer || 21,
           dentiste: "6862e8f446136d62ea73498a", // ID fixe du dentiste
-          dateHeure: dateHeureLocal, // date choisie ou actuelle
-          dureeMinutes: heureLocal, // par défaut 30 min
+          dateHeure: dateHeureLocal,
+          dureeMinutes: heureLocal,
           motif: formData.motif || "Consultation dentaire",
           statut: "En attente",
           notes: formData.description || "Aucune note",
         },
-
         {
           headers: {
             "Content-Type": "application/json",
@@ -159,42 +154,52 @@ export default function FormulaireDeReservation() {
           },
         }
       );
-      showAlert(
-        " ✅ Votre demande de rendez-vous a bien été enregistré ! <br />Nous vous contacterons très prochainement pour la confirmation. "
-      );
-      console.log(" 🛑 Rendez-vous créé :", rendezVousRes.data);
+
+      console.log("🟢 Rendez-vous créé :", rendezVousRes.data);
       setRendezVousCree(rendezVousRes.data);
+
+      // ✅ Succès : montrer alerte puis rediriger
+      showAlert(
+        "✅ Votre demande de rendez-vous a bien été enregistrée ! <br />Nous vous contacterons très prochainement pour la confirmation.",
+        "RENDEZ-VOUS",
+        () => navigate("/choixDeRdv") // 👈 redirection après clic sur OK
+      );
     } catch (error) {
       console.error(
         "❌ Erreur côté backend :",
         error.response?.data || error.message
       );
+
+      if (
+        error.response &&
+        error.response.data.message ===
+          "Le dentiste n'est pas disponible à cette heure."
+      ) {
+        showAlert(
+          "⚠️ Le dentiste n'est pas disponible à cette heure. Veuillez choisir un autre horaire.",
+          "HORAIRE INDISPONIBLE",
+          () => navigate("/choixDeRdv") // 👈 redirection après clic sur OK
+        );
+      } else {
+        showAlert(
+          "❌ Une erreur est survenue lors de l’enregistrement du rendez-vous. Veuillez réessayer.",
+          "ERREUR"
+        );
+      }
+      return;
     }
 
-    // eti ndray mapiditra anl dents
-    // Pour chaque dent sélectionnée :
+    // 🦷 Envoi des dents sélectionnées
     for (const teeth of selectedTeeth) {
       try {
-        //  On utilise les données pré-calculées dans l'objet 'teeth'
-        const secteurDentaire = teeth.secteur;
-        const nomDent = teeth.name;
-
-        // 🔍 Logs utiles
-        console.log(" 🛑 🦷 Envoi de la dent :", teeth);
-        console.log("   🛑 Patient ID :", patientData._id);
-        console.log("   🛑 Nom de la dent :", nomDent); // Nouveau log
-        console.log("   🛑 Type de dent :", teeth.type);
-        console.log("   🛑 Secteur dentaire :", secteurDentaire);
-        console.log("   🛑 Numéro :", teeth.number);
-
-        // ✅ Requête API
+        console.log("🦷 Envoi de la dent :", teeth);
         const dentRes = await axios.post(
           "/api/dents",
           {
             patient: patientData._id,
-            nomDent, // Optionnel, si votre backend l'accepte
+            nomDent: teeth.name,
             typeDent: teeth.type,
-            secteurDentaire, // Maintenant directement tiré de teeth.secteur
+            secteurDentaire: teeth.secteur,
             numero: teeth.number,
           },
           {
@@ -207,17 +212,11 @@ export default function FormulaireDeReservation() {
 
         console.log(
           "%c Dent créée avec succès :",
-          "color: red; font-weight: bold;",
+          "color: green; font-weight: bold;",
           dentRes.data
         );
       } catch (error) {
-        // ... (Gestion des erreurs inchangée)
-        console.error("❌ Erreur :", error);
-        // alert(
-        //   `⚠️ Erreur lors de l'envoi : ${
-        //     error.response?.data?.message || error.message
-        //   }`
-        // );
+        console.error("❌ Erreur lors de la création de la dent :", error);
       }
     }
 

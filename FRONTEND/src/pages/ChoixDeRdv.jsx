@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { setDates } from "../features/DateRendezVousSlice";
 import { useDispatch } from "react-redux";
+import axios from "axios";
 
 export default function ChoixDeRdv() {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ export default function ChoixDeRdv() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [appointments, setAppointments] = useState([]); // Données fictives, à remplacer par une API
-
+  const [heuresBloquees, setHeuresBloquees] = useState([]);
   // Heures de travail du cabinet (créneaux d'1 heure)
   const workingHours = [
     // Matin: 8h-12h
@@ -70,6 +71,40 @@ export default function ChoixDeRdv() {
 
     return days;
   };
+  const [rendezVousList, setRendezVousList] = useState([]);
+  //appel API pour recuperer les données du backend
+  useEffect(() => {
+    const fetchRendezVous = async () => {
+      try {
+        const token = localStorage.getItem("userToken"); // récupère le token s'il existe
+        const res = await axios.get("/api/rendezvous", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        setRendezVousList(res.data);
+        console.log("📅 Rendez-vous récupérés :", res.data);
+      } catch (error) {
+        console.error("❌ Erreur lors du chargement des rendez-vous :", error);
+      }
+    };
+
+    fetchRendezVous();
+  }, []);
+
+  // 🔍 Fonction qui vérifie la disponibilité du créneau
+  const isTimeSlotAvailable2 = (hour) => {
+    // extraire les heures des rendez-vous
+    const heuresPrises = rendezVousList.map(
+      (rdv) => parseInt(rdv.dureeMinutes.replace(":00", ""), 10) // retire ":00" et convertit en nombre
+    );
+
+    // vérifie si l'heure actuelle est dans la liste des heures prises
+    const estPris = heuresPrises.includes(hour);
+
+    return !estPris; // true = disponible, false = pris
+  };
 
   // Vérifier si une date est disponible
   const isDateAvailable = (date) => {
@@ -94,11 +129,27 @@ export default function ChoixDeRdv() {
     return dayAppointments.length < workingHours.length;
   };
 
+  // const isTimeSlotAvailable = (date, hour, minute) => {
+  //   const dateString = date.toISOString().split("T")[0];
+  //   const timeString = `${hour.toString().padStart(2, "0")}:${minute
+  //     .toString()
+  //     .padStart(2, "0")}`;
+  //   return !appointments.some(
+  //     (apt) => apt.date === dateString && apt.time === timeString
+  //   );
+  // };
+
   const isTimeSlotAvailable = (date, hour, minute) => {
     const dateString = date.toISOString().split("T")[0];
     const timeString = `${hour.toString().padStart(2, "0")}:${minute
       .toString()
       .padStart(2, "0")}`;
+
+    // 🧱 Vérifie si cette heure est dans les heures bloquées du localStorage
+    if (heuresBloquees.includes(`${dateString}-${timeString}`)) {
+      return false;
+    }
+
     return !appointments.some(
       (apt) => apt.date === dateString && apt.time === timeString
     );
@@ -116,16 +167,73 @@ export default function ChoixDeRdv() {
   const [dateFormatted, setdateRDV] = useState("");
   const [time, setheureRDV] = useState("");
 
+  const blocage = () => {
+    useEffect(() => {
+      // 🔁 Au montage du composant, lire le localStorage une fois
+      const stored = localStorage.getItem("heuresBloquees");
+      if (stored) {
+        setHeuresBloquees(JSON.parse(stored));
+      }
+    }, []);
+
+    // ✅ Quand tu veux bloquer une nouvelle heure :
+    const bloquerHeure = (heureLocal) => {
+      const updated = [...heuresBloquees];
+      if (!updated.includes(heureLocal)) {
+        updated.push(heureLocal);
+        setHeuresBloquees(updated);
+        localStorage.setItem("heuresBloquees", JSON.stringify(updated));
+      }
+    };
+  };
+
   // Gérer la sélection d'heure
+  // const handleTimeClick = (hour, minute) => {
+  //   if (selectedDate && isTimeSlotAvailable(selectedDate, hour, minute)) {
+  //     const timeString = `${hour.toString().padStart(2, "0")}:${minute
+  //       .toString()
+  //       .padStart(2, "0")}`;
+  //     setSelectedTime(timeString);
+  //     // ty zany le données complet annl rendez vous: heure s dates
+  //     const appointmentData = {
+  //       date: selectedDate.toISOString().split("T")[0],
+  //       time: timeString,
+  //       dateFormatted: selectedDate.toLocaleDateString("fr-FR"),
+  //     };
+  //     dispatch(
+  //       setDates({
+  //         dateFormatted: appointmentData.dateFormatted,
+  //         time: appointmentData.time,
+  //       })
+  //     );
+
+  //     localStorage.setItem("appointmentData", JSON.stringify(appointmentData));
+  //     navigate("/FormulaireDeReservation");
+  //     console.log("données anl rdv heure s date: ", appointmentData);
+  //   }
+  // };
+
   const handleTimeClick = (hour, minute) => {
     if (selectedDate && isTimeSlotAvailable(selectedDate, hour, minute)) {
       const timeString = `${hour.toString().padStart(2, "0")}:${minute
         .toString()
         .padStart(2, "0")}`;
       setSelectedTime(timeString);
-      // ty zany le données complet annl rendez vous: heure s dates
+
+      const dateString = selectedDate.toISOString().split("T")[0];
+
+      // 💾 Enregistrer dans le localStorage (heures bloquées)
+      const stored = JSON.parse(localStorage.getItem("heuresBloquees")) || [];
+      const key = `${dateString}-${timeString}`;
+      if (!stored.includes(key)) {
+        stored.push(key);
+        localStorage.setItem("heuresBloquees", JSON.stringify(stored));
+        setHeuresBloquees(stored);
+      }
+
+      // 🗓️ Sauvegarde complète pour FormulaireDeReservation
       const appointmentData = {
-        date: selectedDate.toISOString().split("T")[0],
+        date: dateString,
         time: timeString,
         dateFormatted: selectedDate.toLocaleDateString("fr-FR"),
       };
@@ -138,7 +246,8 @@ export default function ChoixDeRdv() {
 
       localStorage.setItem("appointmentData", JSON.stringify(appointmentData));
       navigate("/FormulaireDeReservation");
-      console.log("données anl rdv heure s date: ", appointmentData);
+
+      console.log("🕒 Données du RDV :", appointmentData);
     }
   };
 
@@ -362,11 +471,8 @@ export default function ChoixDeRdv() {
                     {workingHours
                       .filter((slot) => slot.hour >= 14)
                       .map((slot, index) => {
-                        const isAvailable = isTimeSlotAvailable(
-                          selectedDate,
-                          slot.hour,
-                          slot.minute
-                        );
+                        const isAvailable = isTimeSlotAvailable2(slot.hour);
+
                         const timeString = `${slot.hour
                           .toString()
                           .padStart(2, "0")}:${slot.minute
