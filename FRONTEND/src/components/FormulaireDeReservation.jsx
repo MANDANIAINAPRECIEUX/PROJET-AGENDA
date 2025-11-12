@@ -227,6 +227,7 @@ export default function FormulaireDeReservation() {
   };
 
   useEffect(() => {
+    //enregistrement symptomes
     const enregistrerSymptomes = async () => {
       if (!rendezVousCree) return;
 

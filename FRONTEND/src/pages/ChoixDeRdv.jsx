@@ -94,13 +94,42 @@ export default function ChoixDeRdv() {
   }, []);
 
   // 🔍 Fonction qui vérifie la disponibilité du créneau
-  const isTimeSlotAvailable2 = (hour) => {
-    // extraire les heures des rendez-vous
-    const heuresPrises = rendezVousList.map(
-      (rdv) => parseInt(rdv.dureeMinutes.replace(":00", ""), 10) // retire ":00" et convertit en nombre
+  // const isTimeSlotAvailable2 = (hour) => {
+  //   // extraire les heures des rendez-vous
+  //   const heuresPrises = rendezVousList.map(
+  //     (rdv) => parseInt(rdv.dureeMinutes.replace(":00", ""), 10) // retire ":00" et convertit en nombre
+  //   );
+
+  //   // vérifie si l'heure actuelle est dans la liste des heures prises
+  //   const estPris = heuresPrises.includes(hour);
+
+  //   return !estPris; // true = disponible, false = pris
+  // };
+
+  // Vérifie si un créneau est disponible pour une date donnée
+  const isTimeSlotAvailable2 = (hour, dateHeure) => {
+    if (!rendezVousList || !dateHeure) return true;
+
+    // Formate la date au même format que dans la base ("DD/MM/YYYY")
+    const selectedDateFormatted = dateHeure
+      .toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+      .replaceAll("-", "/");
+
+    // Filtre les rendez-vous du même jour
+    const rendezVousDuJour = rendezVousList.filter(
+      (rdv) => rdv.dateHeure === selectedDateFormatted
     );
 
-    // vérifie si l'heure actuelle est dans la liste des heures prises
+    // Extrait les heures déjà prises pour ce jour
+    const heuresPrises = rendezVousDuJour.map((rdv) =>
+      parseInt(rdv.dureeMinutes.replace(":00", ""), 10)
+    );
+
+    // Vérifie si l'heure actuelle est déjà prise pour cette date
     const estPris = heuresPrises.includes(hour);
 
     return !estPris; // true = disponible, false = pris
@@ -228,7 +257,7 @@ export default function ChoixDeRdv() {
       if (!stored.includes(key)) {
         stored.push(key);
         localStorage.setItem("heuresBloquees", JSON.stringify(stored));
-        setHeuresBloquees(stored);
+        setHeuresBloquees([...stored]);
       }
 
       // 🗓️ Sauvegarde complète pour FormulaireDeReservation
@@ -471,7 +500,10 @@ export default function ChoixDeRdv() {
                     {workingHours
                       .filter((slot) => slot.hour >= 14)
                       .map((slot, index) => {
-                        const isAvailable = isTimeSlotAvailable2(slot.hour);
+                        const isAvailable = isTimeSlotAvailable2(
+                          slot.hour,
+                          selectedDate
+                        );
 
                         const timeString = `${slot.hour
                           .toString()

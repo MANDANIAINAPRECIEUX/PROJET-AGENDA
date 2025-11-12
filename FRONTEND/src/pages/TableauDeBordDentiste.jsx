@@ -2,7 +2,7 @@
 // Tableau de bord moderne pour un cabinet dentaire
 // Style : dégradés bleus-violets-roses + effet verre dépoli + ombres douces
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -13,15 +13,19 @@ import {
 } from "recharts";
 import { Calendar, ChevronLeft, ChevronRight, User } from "lucide-react";
 import { useSelector } from "react-redux";
+import axios from "axios";
 
 export default function TableauDeBordDentiste({ initialData }) {
   // --- 1️⃣ Données de démonstration ---
   // Si le composant ne reçoit pas de données en props, on génère des données fictives
+  const [selectedDate, setSelectedDate] = useState(new Date()); // date sélectionnée
   const demoData = initialData || generateDemoData();
   const DonnéesAAffiches = useSelector((state) => state.RDV);
   const appointmentData =
     JSON.parse(localStorage.getItem("appointmentData")) || {};
   const patientData = JSON.parse(localStorage.getItem("trucPatient")) || {};
+
+  const [dentsList, setDentsList] = useState([]);
 
   const DonneeTotal = {
     ...appointmentData,
@@ -29,8 +33,141 @@ export default function TableauDeBordDentiste({ initialData }) {
   };
   console.log("données à afficher: ", DonneeTotal);
 
-  // --- 2️⃣ États principaux du composant ---
-  const [selectedDate, setSelectedDate] = useState(new Date()); // date sélectionnée
+  // donnees du bdd
+  const [ListeDonneeBdd, setlisteDonneeBdd] = useState([]);
+  //contenu bdd rendez vous
+  const DonneeBdd = useEffect(() => {
+    const FetchDonneeBdd = async () => {
+      try {
+        const token = localStorage.getItem("userToken");
+        const res = await axios.get("/api/rendezvous", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        setlisteDonneeBdd(res.data);
+        console.log("📅 Rendez-vous récupérés :", res.data);
+      } catch (error) {
+        console.error("❌ Erreur lors du chargement des rendez-vous :", error);
+      }
+    };
+    FetchDonneeBdd();
+  }, []);
+
+  ///lister tous les sympytomes
+
+  useEffect(() => {
+    const listerSymptomes = async () => {
+      const token = localStorage.getItem("userToken");
+
+      if (!token) {
+        console.warn("⚠️ Aucun token trouvé dans le localStorage");
+        return;
+      }
+
+      try {
+        const symptomesRes = await axios.get("/api/symptomes", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log("📋 Symptômes récupérés :", symptomesRes.data);
+        console.log(
+          "%c✅ Symptômes listés avec succès !",
+          "color: green; background: #eaffea; font-weight: bold;"
+        );
+      } catch (error) {
+        console.error(
+          "%c❌ Erreur lors du chargement des symptômes :",
+          "color: red; font-weight: bold;",
+          error
+        );
+      }
+    };
+
+    listerSymptomes();
+  }, []);
+
+  //merde  dents
+
+  useEffect(() => {
+    const listerToutesLesDents = async () => {
+      const token = localStorage.getItem("userToken");
+
+      try {
+        const response = await axios.get("/api/dents", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setDentsList(response.data);
+        console.log("🦷 Toutes les dents :", response.data);
+        console.log(
+          "%c✅ Dents listées avec succès !",
+          "color: green; background: #eaffea; font-weight: bold;"
+        );
+      } catch (error) {
+        console.error(
+          "%c❌ Erreur lors du chargement des dents :",
+          "color: red; font-weight: bold;",
+          error
+        );
+      }
+    };
+
+    // Appel de la fonction
+    listerToutesLesDents();
+  }, []);
+
+  // ✅ 1️⃣ Filtrer les rendez-vous du jour
+  const appointmentsToday = useMemo(() => {
+    if (!ListeDonneeBdd.length) return [];
+    const todayStr = selectedDate.toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+
+    return ListeDonneeBdd.filter((rdv) => rdv.dateHeure === todayStr);
+  }, [ListeDonneeBdd, selectedDate]);
+
+  // ✅ 2️⃣ Fusionner rendez-vous + dents par patient
+  const mergedAppointments = useMemo(() => {
+    if (!appointmentsToday.length || !dentsList.length) return [];
+
+    console.log(
+      "🔍 Vérification IDs :",
+      appointmentsToday.map((r) => ({
+        rdvPatient: r.patient?._id || r.patient,
+      })),
+      dentsList.map((d) => ({
+        dentPatient: d.patient,
+      }))
+    );
+
+    const result = appointmentsToday.map((rdv) => {
+      const rdvPatientId =
+        typeof rdv.patient === "object" ? rdv.patient?._id : rdv.patient;
+
+      const dent = dentsList.find(
+        (d) => d.patient?.toString() === rdvPatientId?.toString()
+      );
+
+      return {
+        ...rdv,
+        typeDent: dent?.typeDent || "—",
+        numeroDent: dent?.numero || "—",
+      };
+    });
+
+    console.log("🧩 Résultat fusion :", result);
+    return result;
+  }, [appointmentsToday, dentsList]);
+
   const [view, setView] = useState("day"); // mode de vue : 'day' ou 'week'
 
   // --- 3️⃣ Calculs liés aux dates ---
@@ -40,9 +177,6 @@ export default function TableauDeBordDentiste({ initialData }) {
   // --- 4️⃣ Filtrage des rendez-vous ---
   const appointmentsThisWeek = demoData.filter((r) =>
     isSameWeek(new Date(r.date), weekStart)
-  );
-  const appointmentsToday = demoData.filter((r) =>
-    isSameDay(new Date(r.date), selectedDate)
   );
 
   // --- 5️⃣ Statistiques globales ---
@@ -58,6 +192,12 @@ export default function TableauDeBordDentiste({ initialData }) {
     return { treatedToday, waitingToday, weekTotal };
   }, [appointmentsToday, appointmentsThisWeek]);
 
+  //verification
+
+  useEffect(() => {
+    console.log("🦷 Vérification — DentsList :", dentsList);
+    console.log("📅 Vérification — ListeDonneeBdd :", ListeDonneeBdd);
+  }, [dentsList, ListeDonneeBdd]);
   // --- 6️⃣ Données pour le graphique hebdomadaire ---
   const chartData = weekDays.map((d) => ({
     day: formatShortDay(d),
@@ -196,7 +336,6 @@ export default function TableauDeBordDentiste({ initialData }) {
             </div>
           </div>
         </section>
-
         {/* 🟪 SECTION DROITE : LISTE DES RENDEZ-VOUS DU JOUR */}
         <section className="lg:col-span-2">
           <div className="bg-white/70 backdrop-blur-md p-6 rounded-2xl shadow-xl">
@@ -211,7 +350,7 @@ export default function TableauDeBordDentiste({ initialData }) {
             </div>
 
             {/* Table ou message si vide */}
-            {appointmentsToday.length === 0 ? (
+            {mergedAppointments.length === 0 ? (
               <p className="text-center text-slate-500 italic py-6">
                 Aucun rendez-vous prévu pour aujourd’hui.
               </p>
@@ -222,23 +361,37 @@ export default function TableauDeBordDentiste({ initialData }) {
                     <tr>
                       <th className="p-3">Heure</th>
                       <th className="p-3">Patient</th>
-                      <th className="p-3">Motif</th>
+                      <th className="p-3">Dents</th>
                       <th className="p-3">Statut</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {appointmentsToday.map((r) => (
-                      <tr key={r.id} className="hover:bg-blue-50/40 transition">
-                        <td className="p-3">{formatTime(new Date(r.date))}</td>
+                    {mergedAppointments.map((r) => (
+                      <tr
+                        key={r._id}
+                        className="hover:bg-blue-50/40 transition"
+                      >
+                        <td className="p-3">{r.dureeMinutes || "—"}</td>
                         <td className="p-3 flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-100 to-pink-100 flex items-center justify-center text-purple-600">
                             <User className="w-4 h-4" />
                           </div>
-                          <span>{r.patient}</span>
+                          <span>
+                            {r.patient
+                              ? `${r.patient.nom || ""} ${
+                                  r.patient.prenom || ""
+                                }`
+                              : "Inconnu"}
+                          </span>
                         </td>
-                        <td className="p-3">{r.reason}</td>
                         <td className="p-3">
-                          <StatusBadge status={r.status} />
+                          {" "}
+                          {r.typeDent !== "—" || r.numeroDent !== "—"
+                            ? `${r.typeDent} ${r.numeroDent}`
+                            : "—"}
+                        </td>
+                        <td className="p-3">
+                          <StatusBadge status={r.statut} />
                         </td>
                       </tr>
                     ))}
@@ -248,6 +401,7 @@ export default function TableauDeBordDentiste({ initialData }) {
             )}
           </div>
         </section>
+        );
       </main>
     </div>
   );
