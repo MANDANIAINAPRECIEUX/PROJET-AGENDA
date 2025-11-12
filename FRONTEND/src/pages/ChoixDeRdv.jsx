@@ -129,16 +129,6 @@ export default function ChoixDeRdv() {
     return dayAppointments.length < workingHours.length;
   };
 
-  // const isTimeSlotAvailable = (date, hour, minute) => {
-  //   const dateString = date.toISOString().split("T")[0];
-  //   const timeString = `${hour.toString().padStart(2, "0")}:${minute
-  //     .toString()
-  //     .padStart(2, "0")}`;
-  //   return !appointments.some(
-  //     (apt) => apt.date === dateString && apt.time === timeString
-  //   );
-  // };
-
   const isTimeSlotAvailable = (date, hour, minute) => {
     const dateString = date.toISOString().split("T")[0];
     const timeString = `${hour.toString().padStart(2, "0")}:${minute
@@ -167,24 +157,22 @@ export default function ChoixDeRdv() {
   const [dateFormatted, setdateRDV] = useState("");
   const [time, setheureRDV] = useState("");
 
-  const blocage = () => {
-    useEffect(() => {
-      // 🔁 Au montage du composant, lire le localStorage une fois
-      const stored = localStorage.getItem("heuresBloquees");
-      if (stored) {
-        setHeuresBloquees(JSON.parse(stored));
-      }
-    }, []);
+  useEffect(() => {
+    // 🔁 Au montage du composant, lire le localStorage une fois
+    const stored = localStorage.getItem("heuresBloquees");
+    if (stored) {
+      setHeuresBloquees(JSON.parse(stored));
+    }
+  }, []);
 
-    // ✅ Quand tu veux bloquer une nouvelle heure :
-    const bloquerHeure = (heureLocal) => {
-      const updated = [...heuresBloquees];
-      if (!updated.includes(heureLocal)) {
-        updated.push(heureLocal);
-        setHeuresBloquees(updated);
-        localStorage.setItem("heuresBloquees", JSON.stringify(updated));
-      }
-    };
+  // ✅ Quand tu veux bloquer une nouvelle heure :
+  const bloquerHeure = (heureLocal) => {
+    const updated = [...heuresBloquees];
+    if (!updated.includes(heureLocal)) {
+      updated.push(heureLocal);
+      setHeuresBloquees(updated);
+      localStorage.setItem("heuresBloquees", JSON.stringify(updated));
+    }
   };
 
   // Gérer la sélection d'heure
