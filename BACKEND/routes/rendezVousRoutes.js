@@ -17,7 +17,7 @@ const authorize = require("../middlewares/authorize");
 // Route GET pour obtenir tous les rendez-vous et POST pour en créer un nouveau
 router
   .route("/")
-  .get(protect, authorize("admin", "dentiste"), getRendezVous)
+  .get(protect, authorize("admin", "dentiste", "patient"), getRendezVous)
   .post(protect, authorize("admin", "dentiste", "patient"), createRendezVous);
 
 // Route GET pour obtenir un rendez-vous par ID, PUT pour le mettre à jour, DELETE pour le supprimer

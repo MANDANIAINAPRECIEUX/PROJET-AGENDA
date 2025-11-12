@@ -3,6 +3,7 @@ const RendezVous = require("../models/RendezVous"); // Importer le modèle Rende
 const Patient = require("../models/Patient"); // Importer le modèle Patient pour la vérification
 const Dentiste = require("../models/Dentiste"); // Importer le modèle Dentiste pour la vérification
 const asyncHandler = require("express-async-handler"); // Pour gérer les erreurs asynchrones
+const User = require("../models/User");
 
 // @desc    Obtenir tous les rendez-vous
 // @route   GET /api/rendezvous
@@ -10,8 +11,8 @@ const asyncHandler = require("express-async-handler"); // Pour gérer les erreur
 const getRendezVous = asyncHandler(async (req, res) => {
   // Optionnel: Filtrer par patient ou dentiste si les IDs sont passés en query
   const query = {};
-  if (req.query.patientId) {
-    query.patient = req.query.patientId;
+  if (req.query.userId) {
+    query.patient = req.query.userId;
   }
   if (req.query.dentisteId) {
     query.dentiste = req.query.dentisteId;
@@ -57,7 +58,7 @@ const createRendezVous = asyncHandler(async (req, res) => {
   }
 
   // Vérifier si le patient et le dentiste existent
-  const patientExists = await Patient.findById(patient);
+  const patientExists = await User.findById(patient);
   if (!patientExists) {
     res.status(404);
     throw new Error("Patient non trouvé");
@@ -74,6 +75,7 @@ const createRendezVous = asyncHandler(async (req, res) => {
   // Exemple simple: vérifier si le dentiste a déjà un RDV à la même heure
   const conflictingRendezVous = await RendezVous.findOne({
     dentiste: dentiste,
+    dureeMinutes: dureeMinutes,
     dateHeure: dateHeure, // Simplifié: juste la même date/heure. Idéalement, vérifier une plage.
   });
 

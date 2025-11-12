@@ -6,7 +6,7 @@ const rendezVousSchema = mongoose.Schema(
     patient: {
       type: mongoose.Schema.Types.ObjectId, // Le type est un ObjectId de MongoDB
       required: true,
-      ref: "Patient", // Fait référence au modèle 'Patient'
+      ref: "User", // Fait référence au modèle 'Patient'
     },
     dentiste: {
       type: mongoose.Schema.Types.ObjectId, // Le type est un ObjectId de MongoDB
@@ -14,12 +14,15 @@ const rendezVousSchema = mongoose.Schema(
       ref: "Dentiste", // Fait référence au modèle 'Dentist'
     },
     dateHeure: {
-      type: Date, // Utilise le type Date pour stocker la date et l'heure
+      type: String, // Utilise le type Date pour stocker la date et l'heure
       required: [true, "Veuillez spécifier la date du rendez-vous"],
     },
     dureeMinutes: {
-      type: Number,
-      required: [false, "Veuillez spécifier la durée du rendez-vous en minutes"],
+      type: String,
+      required: [
+        false,
+        "Veuillez spécifier la durée du rendez-vous en minutes",
+      ],
       min: 1, // Un rendez-vous doit durer au moins 1 minute
     },
     motif: {

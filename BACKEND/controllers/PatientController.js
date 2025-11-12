@@ -80,31 +80,6 @@ const createPatient = asyncHandler(async (req, res) => {
 // @desc    Mettre à jour un patient
 // @route   PUT /api/patients/:id
 // @access  Public
-// const updatePatient = asyncHandler(async (req, res) => {
-//   const { nom, prenom, age, email, telephone } = req.body;
-
-//   const patient = await Patient.findById(req.params.id);
-
-//    // Logique d'autorisation supplémentaire pour le rôle 'patient'
-//   if (req.user.role === "patient" && req.user._id.toString() !== patient._id.toString()) {
-//     res.status(403); // 403 Forbidden
-//     throw new Error("Accès refusé : vous ne pouvez modifier que vos propres informations de patient.");
-//   }
-
-//   if (patient) {
-//     patient.nom = nom || patient.nom;
-//     patient.prenom = prenom || patient.prenom;
-//     patient.age = age || patient.age;
-//     patient.email = email || patient.email;
-//     patient.telephone = telephone || patient.telephone;
-
-//     const updatedPatient = await patient.save();
-//     res.status(200).json(updatedPatient);
-//   } else {
-//     res.status(404);
-//     throw new Error("Patient non trouvé");
-//   }
-// });
 
 const updatePatient = asyncHandler(async (req, res) => {
   const { nom, prenom, age, email, telephone } = req.body;
