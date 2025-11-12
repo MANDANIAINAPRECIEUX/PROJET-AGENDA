@@ -32,7 +32,7 @@ const rendezVousSchema = mongoose.Schema(
     },
     statut: {
       type: String,
-      enum: ["Confirmé", "Annulé", "Terminé", "En attente"], // Statuts possibles pour un rendez-vous
+      //enum: ["Confirmé", "Annulé", "Terminé", "En attente"], // Statuts possibles pour un rendez-vous
       default: "En attente", // Statut par défaut lors de la création
       required: true,
     },

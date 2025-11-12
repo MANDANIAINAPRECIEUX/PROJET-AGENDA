@@ -105,27 +105,47 @@ const createRendezVous = asyncHandler(async (req, res) => {
 // @desc    Mettre à jour un rendez-vous
 // @route   PUT /api/rendezvous/:id
 // @access  Public
+// const updateRendezVous = asyncHandler(async (req, res) => {
+//   const { patient, dentiste, dateHeure, dureeMinutes, motif, statut, notes } =
+//     req.body;
+
+//   const rendezVous = await RendezVous.findById(req.params.id);
+
+//   if (rendezVous) {
+//     // Mettre à jour les champs si fournis dans le corps de la requête
+//     rendezVous.patient = patient || rendezVous.patient;
+//     rendezVous.dentiste = dentiste || rendezVous.dentiste;
+//     rendezVous.dateHeure = dateHeure || rendezVous.dateHeure;
+//     rendezVous.dureeMinutes = dureeMinutes || rendezVous.dureeMinutes;
+//     rendezVous.motif = motif || rendezVous.motif;
+//     rendezVous.statut = statut || rendezVous.statut;
+//     rendezVous.notes = notes !== undefined ? notes : rendezVous.notes;
+
+//     const updatedRendezVous = await rendezVous.save();
+//     res.status(200).json(updatedRendezVous);
+//   } else {
+//     res.status(404);
+//     throw new Error("Rendez-vous non trouvé");
+//   }
+// });
+
 const updateRendezVous = asyncHandler(async (req, res) => {
-  const { patient, dentiste, dateHeure, dureeMinutes, motif, statut, notes } =
-    req.body;
+  try {
+    const rendezVous = await RendezVous.findById(req.params.id);
 
-  const rendezVous = await RendezVous.findById(req.params.id);
+    if (!rendezVous) {
+      res.status(404);
+      throw new Error("Rendez-vous non trouvé");
+    }
 
-  if (rendezVous) {
-    // Mettre à jour les champs si fournis dans le corps de la requête
-    rendezVous.patient = patient || rendezVous.patient;
-    rendezVous.dentiste = dentiste || rendezVous.dentiste;
-    rendezVous.dateHeure = dateHeure || rendezVous.dateHeure;
-    rendezVous.dureeMinutes = dureeMinutes || rendezVous.dureeMinutes;
-    rendezVous.motif = motif || rendezVous.motif;
-    rendezVous.statut = statut || rendezVous.statut;
-    rendezVous.notes = notes !== undefined ? notes : rendezVous.notes;
+    // mise à jour ciblée : fusionne seulement les champs envoyés
+    Object.assign(rendezVous, req.body);
 
     const updatedRendezVous = await rendezVous.save();
     res.status(200).json(updatedRendezVous);
-  } else {
-    res.status(404);
-    throw new Error("Rendez-vous non trouvé");
+  } catch (error) {
+    console.error("❌ Erreur updateRendezVous:", error);
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 });
 
