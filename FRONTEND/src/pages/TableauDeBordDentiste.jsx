@@ -36,7 +36,7 @@ export default function TableauDeBordDentiste({ initialData }) {
   // donnees du bdd
   const [ListeDonneeBdd, setlisteDonneeBdd] = useState([]);
   //contenu bdd rendez vous
-  const DonneeBdd = useEffect(() => {
+  useEffect(() => {
     const FetchDonneeBdd = async () => {
       try {
         const token = localStorage.getItem("userToken");
@@ -55,41 +55,77 @@ export default function TableauDeBordDentiste({ initialData }) {
     FetchDonneeBdd();
   }, []);
 
-  ///lister tous les sympytomes
+  // mise à jour status???
+  // const updateStatut = async (rdvId, newStatus) => {
+  //   try {
+  //     const token = localStorage.getItem("userToken");
+  //     await axios.put(
+  //       `/api/rendezvous/${rdvId}`,
+  //       { statut: newStatus },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
 
-  useEffect(() => {
-    const listerSymptomes = async () => {
+  //     // 🔁 Recharger les données à jour
+  //     const res = await axios.get("/api/rendezvous", {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     setlisteDonneeBdd(res.data);
+  //     console.log(`✅ Statut mis à jour pour ${rdvId} → ${newStatus}`);
+  //   } catch (error) {
+  //     console.error("❌ Erreur lors de la mise à jour du statut :", error);
+  //   }
+  // };
+  const updateStatut = async (rdvId, newStatus, patientEmail) => {
+    try {
       const token = localStorage.getItem("userToken");
 
-      if (!token) {
-        console.warn("⚠️ Aucun token trouvé dans le localStorage");
-        return;
-      }
-
-      try {
-        const symptomesRes = await axios.get("/api/symptomes", {
+      // 🔹 Étape 1 : mise à jour du statut dans la BDD
+      await axios.put(
+        `/api/rendezvous/${rdvId}`,
+        { statut: newStatus },
+        {
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
-        });
+        }
+      );
 
-        console.log("📋 Symptômes récupérés :", symptomesRes.data);
-        console.log(
-          "%c✅ Symptômes listés avec succès !",
-          "color: green; background: #eaffea; font-weight: bold;"
+      // 🔁 Recharger la liste à jour
+      const res = await axios.get("/api/rendezvous", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setlisteDonneeBdd(res.data);
+
+      console.log(`✅ Statut mis à jour pour ${rdvId} → ${newStatus}`);
+
+      // 🔹 Étape 2 : si le statut devient "Validé", envoi d’un mail au patient
+      if (newStatus === "Validé" && patientEmail) {
+        await axios.post(
+          "/api/email/confirmation",
+          {
+            email: patientEmail,
+            sujet: "Confirmation de votre rendez-vous",
+            message: `Bonjour, votre rendez-vous a été validé par votre dentiste. Merci et à bientôt.`,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
         );
-      } catch (error) {
-        console.error(
-          "%c❌ Erreur lors du chargement des symptômes :",
-          "color: red; font-weight: bold;",
-          error
-        );
+        console.log("📩 Email envoyé à :", patientEmail);
       }
-    };
-
-    listerSymptomes();
-  }, []);
+    } catch (error) {
+      console.error("❌ Erreur lors de la mise à jour du statut :", error);
+    }
+  };
 
   //merde  dents
 
@@ -391,7 +427,12 @@ export default function TableauDeBordDentiste({ initialData }) {
                             : "—"}
                         </td>
                         <td className="p-3">
-                          <StatusBadge status={r.statut} />
+                          <StatusBadge
+                            status={r.statut}
+                            onChange={(newStatus) =>
+                              updateStatut(r._id, newStatus, r.patient?.email)
+                            }
+                          />
                         </td>
                       </tr>
                     ))}
@@ -427,21 +468,21 @@ const StatCard = ({ title, value, color }) => {
 // --- Badge coloré pour indiquer le statut du rendez-vous ---
 const StatusBadge = ({ status, onChange }) => {
   const styles = {
-    done: "bg-emerald-100 text-emerald-700",
-    pending: "bg-yellow-100 text-yellow-700",
-    cancelled: "bg-red-100 text-red-700",
+    Validé: "bg-emerald-100 text-emerald-700",
+    "En attente": "bg-yellow-100 text-yellow-700",
+    Annulé: "bg-red-100 text-red-700",
   };
 
   return (
     <select
-      value={status}
-      onChange={(e) => onChange && onChange(e.target.value)} // 🔁 si une fonction de changement est passée
+      value={status || "En attente"} // valeur par défaut
+      onChange={(e) => onChange && onChange(e.target.value)}
       className={`px-2 py-1 rounded-full text-xs font-medium border-none cursor-pointer focus:ring-2 focus:ring-blue-400 transition 
         ${styles[status] || "bg-slate-100 text-slate-600"}`}
     >
-      <option value="pending">🕓 En attente</option>
-      <option value="done">✅ Validé</option>
-      <option value="cancelled">❌ Annulé</option>
+      <option value="En attente">🕓 En attente</option>
+      <option value="Validé">✅ Validé</option>
+      <option value="Annulé">❌ Annulé</option>
     </select>
   );
 };

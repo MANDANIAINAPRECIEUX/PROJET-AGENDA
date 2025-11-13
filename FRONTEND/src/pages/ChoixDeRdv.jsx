@@ -93,19 +93,6 @@ export default function ChoixDeRdv() {
     fetchRendezVous();
   }, []);
 
-  // 🔍 Fonction qui vérifie la disponibilité du créneau
-  // const isTimeSlotAvailable2 = (hour) => {
-  //   // extraire les heures des rendez-vous
-  //   const heuresPrises = rendezVousList.map(
-  //     (rdv) => parseInt(rdv.dureeMinutes.replace(":00", ""), 10) // retire ":00" et convertit en nombre
-  //   );
-
-  //   // vérifie si l'heure actuelle est dans la liste des heures prises
-  //   const estPris = heuresPrises.includes(hour);
-
-  //   return !estPris; // true = disponible, false = pris
-  // };
-
   // Vérifie si un créneau est disponible pour une date donnée
   const isTimeSlotAvailable2 = (hour, dateHeure) => {
     if (!rendezVousList || !dateHeure) return true;
@@ -163,25 +150,42 @@ export default function ChoixDeRdv() {
   //   const timeString = `${hour.toString().padStart(2, "0")}:${minute
   //     .toString()
   //     .padStart(2, "0")}`;
+
+  //   // 🧱 Vérifie si cette heure est dans les heures bloquées du localStorage
+  //   if (heuresBloquees.includes(`${dateString}-${timeString}`)) {
+  //     return false;
+  //   }
+
   //   return !appointments.some(
   //     (apt) => apt.date === dateString && apt.time === timeString
   //   );
   // };
 
   const isTimeSlotAvailable = (date, hour, minute) => {
-    const dateString = date.toISOString().split("T")[0];
+    if (!rendezVousList) return true;
+
+    // Formater la date dans le même format que celui de la BDD ("DD/MM/YYYY")
+    const dateString = date
+      .toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+      .replaceAll("-", "/");
+
     const timeString = `${hour.toString().padStart(2, "0")}:${minute
       .toString()
       .padStart(2, "0")}`;
 
-    // 🧱 Vérifie si cette heure est dans les heures bloquées du localStorage
-    if (heuresBloquees.includes(`${dateString}-${timeString}`)) {
-      return false;
-    }
-
-    return !appointments.some(
-      (apt) => apt.date === dateString && apt.time === timeString
+    // Vérifie si un rendez-vous existe à cette date et heure
+    const estPris = rendezVousList.some(
+      (rdv) =>
+        rdv.dateHeure === dateString &&
+        rdv.dureeMinutes === timeString &&
+        rdv.statut !== "cancelled" // on libère les heures annulées
     );
+
+    return !estPris; // true = dispo, false = occupé
   };
 
   // Gérer la sélection de date

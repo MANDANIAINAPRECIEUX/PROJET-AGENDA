@@ -161,9 +161,12 @@ export default function FormulaireDeReservation() {
       // ✅ Succès : montrer alerte puis rediriger
       showAlert(
         "✅ Votre demande de rendez-vous a bien été enregistrée ! <br />Nous vous contacterons très prochainement pour la confirmation.",
-        "RENDEZ-VOUS",
-        () => navigate("/choixDeRdv") // 👈 redirection après clic sur OK
+        "RENDEZ-VOUS"
       );
+      setTimeout(() => {
+        navigate("/choixDeRdv");
+      }, 1000); // 1000 ms = 1 seconde
+      // 👈 redirection après clic sur OK
     } catch (error) {
       console.error(
         "❌ Erreur côté backend :",
