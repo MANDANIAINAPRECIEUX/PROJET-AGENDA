@@ -1,4 +1,5 @@
 // backend/server.js
+
 const express = require("express");
 const dotenv = require("dotenv").config(); // Charge les variables du .env au démarrage
 const connectDB = require("./config/db"); // Importe la fonction de connexion à la DB
@@ -14,6 +15,7 @@ const symptomeRoutes = require("./routes/symptomeRoutes");
 const dentRoutes = require("./routes/dentRoutes");
 const confirmationRoutes = require("./routes/confirmationRoutes");
 const authRoutes = require("./routes/authRoutes");
+const emailRoutes = require("./routes/emailRoutes.js");
 
 const app = express();
 const PORT = process.env.PORT || 5000; // Utilise le port du .env ou 5000 par défaut
@@ -42,6 +44,7 @@ app.use("/api/symptomes", symptomeRoutes);
 app.use("/api/dents", dentRoutes);
 app.use("/api/confirmations", confirmationRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/email", emailRoutes);
 
 // Middleware de gestion des erreurs. Il doit être placé après toutes les routes
 // pour pouvoir intercepter les erreurs qui pourraient survenir dans les routes.
