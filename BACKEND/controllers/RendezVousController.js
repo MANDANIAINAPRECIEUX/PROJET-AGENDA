@@ -164,10 +164,24 @@ const deleteRendezVous = asyncHandler(async (req, res) => {
   }
 });
 
+// Récupérer tous les RDV d'un patient
+const getRendezVousByPatient = asyncHandler(async (req, res) => {
+  const patientId = req.params.patientId;
+
+  console.log("patientId reçu :", patientId);
+
+  const rdv = await RendezVous.find({ patient: patientId })
+    .populate("patient", "nom prenom email")
+    .populate("dentiste", "nom prenom specialite");
+
+  res.status(200).json(rdv);
+});
+
 module.exports = {
   getRendezVous,
   getRendezVousById,
   createRendezVous,
   updateRendezVous,
   deleteRendezVous,
+  getRendezVousByPatient,
 };

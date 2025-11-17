@@ -6,7 +6,7 @@ const rendezVousSchema = mongoose.Schema(
     patient: {
       type: mongoose.Schema.Types.ObjectId, // Le type est un ObjectId de MongoDB
       required: true,
-      ref: "User", // Fait référence au modèle 'Patient'
+      ref: "User", // Fait référence au modèle 'User'
     },
     dentiste: {
       type: mongoose.Schema.Types.ObjectId, // Le type est un ObjectId de MongoDB

@@ -98,6 +98,20 @@ const deleteDent = asyncHandler(async (req, res) => {
   }
 });
 
+const getDentsByPatient = asyncHandler(async (req, res) => {
+  const patientId = req.params.patientId;
+
+  console.log("ID patient reçu pour dents :", patientId);
+
+  const dents = await Dent.find({ patient: patientId });
+
+  if (!dents.length) {
+    return res.status(200).json([]);
+  }
+
+  res.status(200).json(dents);
+});
+
 const getDentByPatientAndNumber = asyncHandler(async (req, res, next) => {
   const { patientId, numeroDent } = req.params;
 
@@ -126,4 +140,5 @@ module.exports = {
   updateDent,
   deleteDent,
   getDentByPatientAndNumber,
+  getDentsByPatient,
 };

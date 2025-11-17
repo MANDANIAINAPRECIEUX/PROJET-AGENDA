@@ -9,6 +9,7 @@ const {
   createRendezVous,
   updateRendezVous,
   deleteRendezVous,
+  getRendezVousByPatient,
 } = require("../controllers/RendezVousController"); // Notez 'RendezVousController'
 const { protect } = require("../middlewares/authMiddleware");
 const authorize = require("../middlewares/authorize");
@@ -26,5 +27,14 @@ router
   .get(protect, authorize("admin", "dentiste", "patient"), getRendezVousById)
   .put(protect, authorize("admin", "dentiste", "patient"), updateRendezVous)
   .delete(protect, authorize("admin", "dentiste"), deleteRendezVous);
+
+  // Obtenir tous les rendez-vous d'un patient
+router.get(
+  "/patient/:patientId",
+  protect,
+  authorize("admin", "dentiste", "patient"),
+  getRendezVousByPatient
+);
+
 
 module.exports = router;
