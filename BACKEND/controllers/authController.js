@@ -152,14 +152,17 @@ const sendForgotPasswordEmail = async (req, res) => {
 
     // Génération token reset
     const resetToken = crypto.randomBytes(32).toString("hex");
-    const resetTokenHash = crypto.createHash("sha256").update(resetToken).digest("hex");
+    const resetTokenHash = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
 
     user.resetPasswordToken = resetTokenHash;
     user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // expire 10 minutes
     await user.save();
 
     // URL envoyée par email
-    const resetURL = `http://localhost:3000/reset-password/${resetToken}`;
+    const resetURL = `http://localhost:5173/reset-password?token=${resetToken}`;
 
     // email
     await sendMail({
@@ -180,6 +183,34 @@ const sendForgotPasswordEmail = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+      resetPasswordToken: tokenHash,
+      resetPasswordExpire: { $gt: Date.now() }, // pas expiré
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "delai d'attente expiré" });
+    }
+
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    res.json({ message: "Mot de passe réinitialisé avec succès" });
+  } catch (error) {
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -187,4 +218,5 @@ module.exports = {
   getUsers,
   getUserByEmail,
   sendForgotPasswordEmail,
+  resetPassword,
 };

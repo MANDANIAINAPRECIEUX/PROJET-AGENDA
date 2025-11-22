@@ -53,6 +53,8 @@ const userSchema = mongoose.Schema(
       max: [120, "L'âge maximum est de 120 ans"],
     },
     // Vous pouvez aussi ajouter une adresse si nécessaire
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
   },
   {
     timestamps: true, // Ajoute createdAt et updatedAt

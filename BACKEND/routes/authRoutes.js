@@ -7,6 +7,8 @@ const {
   getMe,
   getUsers,
   getUserByEmail,
+  sendForgotPasswordEmail,
+  resetPassword,
 } = require("../controllers/authController");
 
 // Nous ajouterons le middleware 'protect' ici plus tard pour la route '/me'
@@ -24,5 +26,7 @@ router.get(
 );
 // router.get("/email/:email", getUserByEmail);
 router.get("/users/email/:email", protect, getUserByEmail);
+router.post("/forgot-password", sendForgotPasswordEmail);
+router.post("/reset-password/:token", resetPassword);
 
 module.exports = router;
