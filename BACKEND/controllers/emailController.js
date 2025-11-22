@@ -1,31 +1,45 @@
-const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
 require("dotenv").config();
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
+});
 
+const sendMail = async ({ to, subject, text, html }) => {
+  return await transporter.sendMail({
+    from: `"Cabinet Dentaire" <${process.env.GMAIL_USER}>`,
+    to,
+    subject,
+    text,
+    html,
+  });
+};
+
+// =============================
+// 🔥 Contrôleur Express
+// =============================
 const sendConfirmationEmail = async (req, res) => {
   try {
     const { email, sujet, message } = req.body;
 
-    console.log("🔑 Clé utilisée:", process.env.RESEND_API_KEY);
-    console.log("📧 Envoi à:", email);
-
-    const data = await resend.emails.send({
-      from: "onboarding@resend.dev",
+    await sendMail({
       to: email,
       subject: sujet,
-      html: `<h3>📅 Confirmation de rendez-vous</h3><p>${message}</p>`,
+      text: message,
+      html: `<p>${message}</p>`,
     });
 
-    res.status(200).json({ success: true, data });
-  } catch (error) {
-    console.error("❌ Erreur lors de l'envoi de l'email :", error);
-    res.status(500).json({
-      success: false,
-      message: "Échec de l'envoi de l'email.",
-      error: error.message,
-    });
+    res.status(200).json({ success: true, message: "Email envoyé" });
+  } catch (err) {
+    console.error("Erreur envoi mail :", err);
+    res.status(500).json({ success: false, error: err.message });
   }
 };
 
-module.exports = { sendConfirmationEmail };
+module.exports = { sendMail, sendConfirmationEmail };

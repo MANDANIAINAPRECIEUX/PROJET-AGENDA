@@ -1,7 +1,8 @@
 // backend/controllers/authController.js
 const asyncHandler = require("express-async-handler");
 const User = require("../models/User"); // Importer le modèle User
-
+const crypto = require("crypto");
+const { sendMail } = require("../controllers/emailController");
 // @desc    Enregistrer un nouvel utilisateur
 // @route   POST /api/auth/register
 // @access  Public
@@ -140,10 +141,50 @@ const getUserByEmail = async (req, res) => {
   }
 };
 
+const sendForgotPasswordEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur introuvable" });
+    }
+
+    // Génération token reset
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetTokenHash = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+    user.resetPasswordToken = resetTokenHash;
+    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // expire 10 minutes
+    await user.save();
+
+    // URL envoyée par email
+    const resetURL = `http://localhost:3000/reset-password/${resetToken}`;
+
+    // email
+    await sendMail({
+      to: user.email,
+      subject: "Réinitialisation de votre mot de passe",
+      html: `
+        <p>Bonjour,</p>
+        <p>Cliquez sur le lien ci-dessous pour réinitialiser votre mot de passe :</p>
+        <a href="${resetURL}">${resetURL}</a>
+        <p>Ce lien expire dans 10 minutes.</p>
+      `,
+    });
+
+    res.json({ message: "Email envoyé" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getMe,
   getUsers,
   getUserByEmail,
+  sendForgotPasswordEmail,
 };
