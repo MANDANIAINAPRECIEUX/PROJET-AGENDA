@@ -427,6 +427,50 @@ const creerDentiste = async (req, res) => {
   }
 };
 
+const verifyDentiste = async (req, res) => {
+  try {
+    const { proId } = req.params;
+
+    console.log("🔍 Vérification du QR ID :", proId);
+
+    const dentiste = await Dentiste.findOne({ proId });
+
+    if (!dentiste) {
+      console.log("❌ Dentiste introuvable pour ID :", proId);
+      return res.status(404).json({ message: "Badge invalide" });
+    }
+
+    console.log("✅ Dentiste trouvé :", dentiste);
+
+    res.json({
+      message: "Badge valide",
+      dentiste,
+    });
+  } catch (error) {
+    console.error("🔥 ERREUR vérification :", error);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
+const verifierQR = async (req, res) => {
+  try {
+    const { qrData } = req.body;
+
+    const dentiste = await Dentiste.findOne({
+      proId: qrData,
+    });
+
+    if (!dentiste) {
+      return res.status(404).json({ ok: false, message: "QR invalide" });
+    }
+
+    res.json({ ok: true, dentiste });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ ok: false, message: "Erreur serveur" });
+  }
+};
+
 module.exports = {
   getDentistes,
   getDentisteById,
@@ -435,4 +479,6 @@ module.exports = {
   deleteDentiste,
   getDentisteBadge,
   creerDentiste,
+  verifyDentiste,
+  verifierQR,
 };

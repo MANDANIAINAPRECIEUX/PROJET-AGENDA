@@ -11,12 +11,18 @@ const {
   deleteDentiste,
   getDentisteBadge,
   creerDentiste,
+  verifyDentiste,
+  verifierQR,
 } = require("../controllers/DentisteController"); // Notez 'DentisteController'
 
 const { protect } = require("../middlewares/authMiddleware");
 const authorize = require("../middlewares/authorize");
 router.get("/:id/badge", getDentisteBadge);
 router.post("/ajouter", creerDentiste);
+router.get("/verify/:proId", verifyDentiste);
+router.post("/verifier-qr", verifierQR);
+
+
 // Définir les routes pour les dentistes
 
 // Route GET pour obtenir tous les dentistes et POST pour en créer un nouveau
