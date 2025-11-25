@@ -45,6 +45,7 @@ app.use("/api/dents", dentRoutes);
 app.use("/api/confirmations", confirmationRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/email", emailRoutes);
+app.use("/badges", express.static("badges"));
 
 // Middleware de gestion des erreurs. Il doit être placé après toutes les routes
 // pour pouvoir intercepter les erreurs qui pourraient survenir dans les routes.
