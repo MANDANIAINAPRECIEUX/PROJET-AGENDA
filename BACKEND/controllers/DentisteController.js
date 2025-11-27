@@ -344,13 +344,19 @@ const creerDentiste = async (req, res) => {
     const writeStream = fs.createWriteStream(badgePath);
     doc.pipe(writeStream);
 
-    doc.rect(0, 0, 550, 400).fill("#0D47A1");
+    const gradient = doc.linearGradient(0, 0, 550, 0);
+
+    gradient.stop(0, "pink"); // rose
+    gradient.stop(0.5, "purple"); // violet
+    gradient.stop(1, "blue"); // bleu
+
+    doc.rect(0, 0, 550, 400).fill(gradient);
 
     doc.fillColor("#FFFFFF").fontSize(22).text("Badge Professionnel", 20, 20);
     // Cadre autour du titre
     doc
       .lineWidth(2) // épaisseur du contour
-      .strokeColor("#00AEEF") // couleur du contour (bleu moderne)
+      .strokeColor("#FFFFFF") // couleur du contour (bleu moderne)
       .rect(15, 12, 270, 35) // X, Y, largeur, hauteur du cadre
       .stroke(); // dessine seulement le contour
 
@@ -375,7 +381,7 @@ const creerDentiste = async (req, res) => {
 
     infos.forEach((item) => {
       // Label en noir
-      doc.fillColor("#000000").text(item.label, xLabel, y);
+      doc.fillColor("#FFFFFF").text(item.label, xLabel, y);
 
       // Valeur en blanc
       doc.fillColor("#FFFFFF").text(item.value, xValue, y);
@@ -409,6 +415,8 @@ const creerDentiste = async (req, res) => {
     writeStream.on("finish", () => {
       console.log("✅ Badge PDF généré :", badgePath);
     });
+    dentiste.badgePdfUrl = `/badges/${dentiste.proId}.pdf`;
+    await dentiste.save();
 
     writeStream.on("error", (err) => {
       console.log("❌ ERREUR lors de la génération du badge PDF :", err);
@@ -464,7 +472,11 @@ const verifierQR = async (req, res) => {
       return res.status(404).json({ ok: false, message: "QR invalide" });
     }
 
-    res.json({ ok: true, dentiste });
+    return res.json({
+      ok: true,
+       isAdmin: dentiste.isAdmin ,
+      dentiste,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ ok: false, message: "Erreur serveur" });

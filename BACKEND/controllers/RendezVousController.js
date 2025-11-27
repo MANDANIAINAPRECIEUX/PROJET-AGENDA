@@ -177,6 +177,45 @@ const getRendezVousByPatient = asyncHandler(async (req, res) => {
   res.status(200).json(rdv);
 });
 
+const countByDentiste = async (req, res) => {
+  try {
+    const result = await RendezVous.aggregate([
+      {
+        $group: {
+          _id: "$dentiste",
+          totalPatients: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: "dentistes",
+          localField: "_id",
+          foreignField: "_id",
+          as: "dentiste",
+        },
+      },
+      { $unwind: "$dentiste" },
+      {
+        $project: {
+          _id: 0,
+          dentisteId: "$_id",
+          nom: "$dentiste.nom",
+          prenom: "$dentiste.prenom",
+          totalPatients: 1,
+        },
+      },
+    ]);
+
+    res.json({
+      totalPatients: result.reduce((s, r) => s + r.totalPatients, 0),
+      patientsParDentiste: result,
+    });
+  } catch (error) {
+    console.error("⚠️ Erreur dans countByDentiste:", error);
+    res.status(500).json({ message: "Erreur interne count-by-dentiste" });
+  }
+};
+
 module.exports = {
   getRendezVous,
   getRendezVousById,
@@ -184,4 +223,5 @@ module.exports = {
   updateRendezVous,
   deleteRendezVous,
   getRendezVousByPatient,
+  countByDentiste,
 };

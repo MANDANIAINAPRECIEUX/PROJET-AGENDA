@@ -18,11 +18,13 @@ const dentisteSchema = mongoose.Schema(
         return "DENT-" + crypto.randomBytes(4).toString("hex").toUpperCase();
       },
     },
+
     specialite: {
       type: String,
       // required: [true, 'Veuillez spécifier la spécialité du dentiste'],
       // enum: ['Généraliste', 'Orthodontiste', 'Parodontiste', 'Endodontiste', 'Pédodontiste'],
     },
+
     password: {
       type: String,
       required: false, // tu choisis selon ton type d’authentification
@@ -43,7 +45,6 @@ const dentisteSchema = mongoose.Schema(
     isAdmin: {
       type: Boolean,
       required: true, // Un dentiste doit avoir un statut admin ou non
-      default: false, // Par défaut, un dentiste n'est pas administrateur
     },
     badgePdfUrl: {
       type: String,

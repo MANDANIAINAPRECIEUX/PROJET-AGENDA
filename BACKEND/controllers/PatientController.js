@@ -1,5 +1,6 @@
 // backend/controllers/PatientController.js
 const Patient = require("../models/Patient"); // Importer le modèle Patient
+const Dentiste = require("../models/Dentiste");
 const asyncHandler = require("express-async-handler"); // Pour gérer les erreurs asynchrones
 
 // @desc    Obtenir tous les patients
@@ -146,6 +147,44 @@ const getPatientByEmail = asyncHandler(async (req, res) => {
   }
 });
 
+const countByDentiste = async (req, res) => {
+  try {
+    const result = await Patient.aggregate([
+      {
+        $group: {
+          _id: "$dentisteId",
+          totalPatients: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: "dentistes",
+          localField: "_id",
+          foreignField: "_id",
+          as: "dentiste",
+        },
+      },
+      {
+        $unwind: "$dentiste",
+      },
+      {
+        $project: {
+          _id: 0,
+          dentisteId: "$_id",
+          nom: "$dentiste.nom",
+          prenom: "$dentiste.prenom",
+          totalPatients: 1,
+        },
+      },
+    ]);
+
+    res.json(result);
+  } catch (error) {
+    console.error("⚠️ Erreur dans countByDentiste :", error);
+    res.status(500).json({ message: "Erreur interne count-by-dentiste" });
+  }
+};
+
 module.exports = {
   getPatients,
   getPatientById,
@@ -153,4 +192,5 @@ module.exports = {
   updatePatient,
   deletePatient,
   getPatientByEmail,
+  countByDentiste,
 };

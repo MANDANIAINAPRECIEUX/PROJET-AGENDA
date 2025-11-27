@@ -29,35 +29,44 @@ const getDentById = asyncHandler(async (req, res) => {
 // @route   POST /api/dents
 // @access  Public
 const createDent = asyncHandler(async (req, res) => {
-  const { patient, typeDent, secteurDentaire, numero } = req.body;
+  try {
+    console.log("📥 Données reçues :", req.body);
 
-  // Validation des champs obligatoires
-  if (!patient || !typeDent || !numero || !secteurDentaire) {
-    res.status(400);
-    throw new Error(
-      "Veuillez ajouter tous les champs obligatoires : nomDent, typeDent, numero"
-    );
-  }
+    const { patient, nomDent, typeDent, secteurDentaire, numero } = req.body;
 
-  // Optionnel: Vérifier si une dent avec le même numéro et type existe déjà
-  const dentExists = await Dent.findOne({ numero, typeDent });
-  if (dentExists) {
-    res.status(400);
-    throw new Error("Une dent avec ce numéro et ce type existe déjà.");
-  }
+    // Validation des champs obligatoires
+    if (!patient || !nomDent || !typeDent || !secteurDentaire || !numero) {
+      return res.status(400).json({
+        message:
+          "Champs obligatoires manquants : patient, nomDent, typeDent, secteurDentaire, numero",
+      });
+    }
 
-  const dent = await Dent.create({
-    typeDent,
-    numero,
-    patient,
-    secteurDentaire,
-  });
+    // Vérification doublons : même numéro de dent pour le MÊME patient
+    const dentExists = await Dent.findOne({ patient, numero });
+    if (dentExists) {
+      return res.status(400).json({
+        message: "Cette dent existe déjà pour ce patient.",
+      });
+    }
 
-  if (dent) {
+    // Création
+    const dent = await Dent.create({
+      patient,
+      nomDent,
+      typeDent,
+      secteurDentaire,
+      numero,
+    });
+
+    console.log("✅ Dent créée :", dent);
     res.status(201).json(dent);
-  } else {
-    res.status(400);
-    throw new Error("Données de la dent invalides");
+  } catch (error) {
+    console.error("🔥 ERREUR createDent :", error);
+    res.status(500).json({
+      message: "Erreur interne lors de la création de la dent",
+      error: error.message,
+    });
   }
 });
 

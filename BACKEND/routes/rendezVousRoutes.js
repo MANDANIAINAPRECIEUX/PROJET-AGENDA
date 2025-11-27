@@ -10,11 +10,12 @@ const {
   updateRendezVous,
   deleteRendezVous,
   getRendezVousByPatient,
+  countByDentiste,
 } = require("../controllers/RendezVousController"); // Notez 'RendezVousController'
 const { protect } = require("../middlewares/authMiddleware");
 const authorize = require("../middlewares/authorize");
 // Définir les routes pour les rendez-vous
-
+router.get("/count-by-dentiste", countByDentiste);
 // Route GET pour obtenir tous les rendez-vous et POST pour en créer un nouveau
 router
   .route("/")
@@ -28,13 +29,12 @@ router
   .put(protect, authorize("admin", "dentiste", "patient"), updateRendezVous)
   .delete(protect, authorize("admin", "dentiste"), deleteRendezVous);
 
-  // Obtenir tous les rendez-vous d'un patient
+// Obtenir tous les rendez-vous d'un patient
 router.get(
   "/patient/:patientId",
   protect,
   authorize("admin", "dentiste", "patient"),
   getRendezVousByPatient
 );
-
 
 module.exports = router;
