@@ -1,7 +1,19 @@
 import React from "react";
+import useSound from "use-sound";
+import { useNavigate } from "react-router-dom";
 import aze1 from "../assets/images/aze1.png";
 
 const YokCountLanding = () => {
+  const navigate = useNavigate();
+  const [play] = useSound("/sounds/click.wav", { volume: 1 });
+  const handleClick = () => {
+    play(); // jouer le son
+
+    setTimeout(() => {
+      navigate("/Login"); // redirection React
+    }, 150);
+  };
+
   return (
     <div className=" w-full h-screen bg-gradient-to-br from-pink-500 via-purple-500 to-blue-600 relative overflow-hidden">
       {/* Background decorative elements */}
@@ -10,43 +22,7 @@ const YokCountLanding = () => {
       {/* Navigation */}
       <nav className="relative z-10 px-6 py-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            {/* <div className="text-white text-2xl font-bold">YokCount</div> */}
-
-            {/* Navigation Links */}
-            {/* <div className="hidden md:flex items-center space-x-8 bg-white/10 backdrop-blur-md rounded-full px-8 py-3 border border-white/20">
-              <a
-                href="#"
-                className="text-white hover:text-white/80 transition-colors"
-              >
-                Home
-              </a>
-              <a
-                href="#"
-                className="text-white hover:text-white/80 transition-colors"
-              >
-                Business
-              </a>
-              <a
-                href="#"
-                className="text-white hover:text-white/80 transition-colors"
-              >
-                Growing State
-              </a>
-              <a
-                href="#"
-                className="text-white hover:text-white/80 transition-colors"
-              >
-                Support
-              </a>
-            </div> */}
-
-            {/* Contact Button */}
-            {/* <button className="bg-white text-gray-800 px-6 py-3 rounded-full font-semibold hover:bg-white/90 transition-colors">
-              Contact Us
-            </button> */}
-          </div>
+          <div className="flex items-center justify-between"></div>
         </div>
       </nav>
 
@@ -70,9 +46,14 @@ const YokCountLanding = () => {
                   nos dentistes qualifiés.
                 </p>
 
-                <button className="bg-white/20 backdrop-blur-md text-white px-8 py-4 rounded-full font-semibold border border-white/30 hover:bg-white/30 transition-all duration-300">
-                  Prenez Un Rendez-Vous
-                </button>
+                <div className="py-5">
+                  <button
+                    onClick={handleClick}
+                    className="bg-white/20 backdrop-blur-md text-white px-8 py-4 rounded-full font-semibold border border-white/30 hover:bg-white/30 transition-all duration-300"
+                  >
+                    Prenez Un Rendez-Vous
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -83,7 +64,7 @@ const YokCountLanding = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-white/5 rounded-full transform rotate-12 scale-110"></div>
 
                 {/* Main image container */}
-                <div className="relative bg-white/10 backdrop-blur-md rounded-full p-4 border border-white/20">
+                <div className="relative bg-white/10 backdrop-blur-md rounded-full p-4 border border-white/20 py-20">
                   <div className="aspect-square rounded-full overflow-hidden">
                     <img
                       src={aze1}

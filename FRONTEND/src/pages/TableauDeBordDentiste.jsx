@@ -56,30 +56,7 @@ export default function TableauDeBordDentiste({ initialData }) {
   }, []);
 
   // mise à jour status???
-  // const updateStatut = async (rdvId, newStatus) => {
-  //   try {
-  //     const token = localStorage.getItem("userToken");
-  //     await axios.put(
-  //       `/api/rendezvous/${rdvId}`,
-  //       { statut: newStatus },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
 
-  //     // 🔁 Recharger les données à jour
-  //     const res = await axios.get("/api/rendezvous", {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-  //     setlisteDonneeBdd(res.data);
-  //     console.log(`✅ Statut mis à jour pour ${rdvId} → ${newStatus}`);
-  //   } catch (error) {
-  //     console.error("❌ Erreur lors de la mise à jour du statut :", error);
-  //   }
-  // };
   const updateStatut = async (rdvId, newStatus, patientEmail) => {
     try {
       const token = localStorage.getItem("userToken");
@@ -121,6 +98,27 @@ export default function TableauDeBordDentiste({ initialData }) {
           }
         );
         console.log("📩 Email envoyé à :", patientEmail);
+      }
+
+      // =====================================================
+      // ✉️ ÉTAPE 3 : Email si le statut devient "Annulé"
+      // =====================================================
+      if (newStatus === "Annulé" && patientEmail) {
+        await axios.post(
+          "/api/email/confirmation",
+          {
+            email: patientEmail,
+            sujet: "Annulation de votre rendez-vous",
+            message: `Bonjour, votre rendez-vous a été annulé par le cabinet. Veuillez nous contacter pour un nouveau créneau. Merci.`,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log("📩 Email envoyé (ANNULÉ) à :", patientEmail);
       }
     } catch (error) {
       console.error("❌ Erreur lors de la mise à jour du statut :", error);
@@ -219,10 +217,10 @@ export default function TableauDeBordDentiste({ initialData }) {
   // Calcule le nombre de patients traités, en attente, et le total hebdomadaire
   const stats = useMemo(() => {
     const treatedToday = appointmentsToday.filter(
-      (r) => r.status === "done"
+      (r) => r.statut === "Validé"
     ).length;
     const waitingToday = appointmentsToday.filter(
-      (r) => r.status === "pending"
+      (r) => r.statut === "Annulé"
     ).length;
     const weekTotal = appointmentsThisWeek.length;
     return { treatedToday, waitingToday, weekTotal };
@@ -235,12 +233,20 @@ export default function TableauDeBordDentiste({ initialData }) {
     console.log("📅 Vérification — ListeDonneeBdd :", ListeDonneeBdd);
   }, [dentsList, ListeDonneeBdd]);
   // --- 6️⃣ Données pour le graphique hebdomadaire ---
+
   const chartData = weekDays.map((d) => ({
     day: formatShortDay(d),
-    treated: demoData.filter(
-      (r) => isSameDay(new Date(r.date), d) && r.status === "done"
-    ).length,
+
+    treated: ListeDonneeBdd.filter((r) => {
+      // convertir dd/mm/yyyy → Date JS
+      const [dayStr, monthStr, yearStr] = r.dateHeure.split("/");
+      const dateObj = new Date(`${yearStr}-${monthStr}-${dayStr}`);
+
+      return isSameDay(dateObj, d) && r.statut === "Validé";
+    }).length,
   }));
+
+  const LeDentiste = ListeDonneeBdd[0]?.dentiste;
 
   // --- 7️⃣ Navigation entre semaines ---
   const prevWeek = () => setSelectedDate(addDays(weekStart, -7));
@@ -248,49 +254,91 @@ export default function TableauDeBordDentiste({ initialData }) {
   const gotoToday = () => setSelectedDate(new Date());
 
   // --- 8️⃣ Interface utilisateur ---
+
+  // const mergedAppointments = useMemo(() => {
+  //   if (!appointmentsToday.length || !dentsList.length) return [];
+
+  //   return appointmentsToday.map((rdv) => {
+  //     const rdvPatientId =
+  //       typeof rdv.patient === "object" ? rdv.patient?._id : rdv.patient;
+
+  //     // 🔎 Toutes les dents pour ce patient ET créées le même jour
+  //     const dentsAssociees = dentsList.filter((d) => {
+  //       const dentCreated = new Date(d.createdAt).toLocaleDateString("fr-FR");
+  //       return (
+  //         d.patient?.toString() === rdvPatientId?.toString() &&
+  //         dentCreated === rdv.dateHeure
+  //       );
+  //     });
+
+  //     // 🔎 1 dent principale (si tu veux afficher juste une)
+  //     const dent = dentsAssociees[0] || null;
+
+  //     return {
+  //       ...rdv,
+
+  //       // 🦷 Liste complète des dents pour ce RDV
+  //       dentsAssociees,
+
+  //       // 🦷 Dent principale (optionnel)
+  //       typeDent: dent?.typeDent || "—",
+  //       numeroDent: dent?.numero || "—",
+  //     };
+  //   });
+  // }, [appointmentsToday, dentsList]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 p-8 font-inter">
+    <div className="min-h-screen bg-gradient-to-br from-pink-500 via-purple-500 to-blue-600 flex flex-col items-center py-6 px-4">
       {/* --- HEADER --- */}
-      <header className="flex flex-col md:flex-row justify-between items-center mb-8">
-        <div className="text-center md:text-left mb-4 md:mb-0">
-          <h1 className="text-3xl font-extrabold text-blue-800 drop-shadow-sm">
-            Tableau de bord — Cabinet dentaire
+      <header
+        className="w-full max-w-6xl flex flex-col md:flex-row justify-between items-center 
+                     bg-white/10 backdrop-blur-xl border border-white/20 
+                     rounded-2xl px-6 py-5 shadow-[0_8px_30px_rgb(255,255,255,0.25)] mb-10"
+      >
+        {/* TITRE À GAUCHE */}
+        <div className="text-center md:text-left">
+          <h1 className="text-3xl font-extrabold text-white drop-shadow">
+            gestion des rendez - vous
           </h1>
-          <p className="text-sm text-blue-600 mt-1">
+          <p className="text-sm text-white/80 mt-1">
             {view === "day" ? "Vue journalière" : "Vue hebdomadaire"} •{" "}
             {formatDate(selectedDate)}
           </p>
         </div>
 
-        {/* Bouton "Aujourd’hui" et profil du dentiste */}
-        <div className="flex items-center gap-3">
+        {/* BOUTONS À DROITE */}
+        <div className="flex items-center gap-4 mt-4 md:mt-0">
           <button
             onClick={gotoToday}
-            className="px-4 py-2 rounded-xl bg-white/70 backdrop-blur-md shadow hover:bg-white/90 transition text-blue-700"
+            className="px-5 py-2 rounded-xl bg-white/80 text-blue-700 
+                   backdrop-blur-md shadow hover:bg-white transition"
           >
             Aujourd’hui
           </button>
-          <div className="flex items-center gap-3 bg-white/60 backdrop-blur-md rounded-xl px-3 py-2 shadow">
-            <Calendar className="text-blue-600 w-5 h-5" />
-            <div>
-              <p className="font-medium text-slate-700 text-sm">
-                Dr. Andriamatoa
-              </p>
-              <p className="text-xs text-slate-400">Dentiste</p>
-            </div>
-          </div>
+          {/* Bouton Retour */}
+          <button
+            onClick={() => window.history.back()}
+            className="px-5 py-2 rounded-xl bg-white/60 text-purple-700 
+               backdrop-blur-md shadow hover:bg-white/90 transition"
+          >
+            Retour
+          </button>
         </div>
       </header>
 
-      {/* --- CONTENU PRINCIPAL --- */}
-      <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* 🟦 SECTION GAUCHE : STATISTIQUES + NAVIGATION SEMAINE */}
+      {/* --- MAIN CONTENT --- */}
+      <main className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* --- COLONNE GAUCHE --- */}
         <section className="space-y-6">
-          {/* Carte Statistiques rapides */}
-          <div className="bg-white/60 backdrop-blur-md p-5 rounded-2xl shadow-xl">
-            <h3 className="text-sm font-semibold text-slate-600 mb-4">
+          {/* STATISTIQUES RAPIDES */}
+          <div
+            className="bg-white/10 backdrop-blur-xl border border-white/20 p-6 
+                      rounded-2xl shadow-[0_8px_30px_rgb(255,255,255,0.25)]"
+          >
+            <h3 className="text-sm font-semibold text-white/90 mb-4">
               Statistiques rapides
             </h3>
+
             <div className="grid grid-cols-3 gap-4">
               <StatCard
                 title="Patients"
@@ -298,51 +346,55 @@ export default function TableauDeBordDentiste({ initialData }) {
                 color="blue"
               />
               <StatCard
-                title="À valider"
-                value={stats.waitingToday}
+                title="Validés"
+                value={stats.treatedToday}
                 color="purple"
               />
               <StatCard
-                title="Traités"
-                value={stats.treatedToday}
+                title="Annulés"
+                value={stats.waitingToday}
                 color="pink"
               />
             </div>
           </div>
 
-          {/* Semaine et graphique hebdo */}
-          <div className="bg-white/60 backdrop-blur-md p-5 rounded-2xl shadow-xl">
-            {/* Navigation entre semaines */}
+          {/* SEMAINE + GRAPHIQUE */}
+          <div
+            className="bg-white/10 backdrop-blur-xl border border-white/20 p-6 
+                      rounded-2xl shadow-[0_8px_30px_rgb(255,255,255,0.25)]"
+          >
+            {/* Titres + navigation */}
             <div className="flex justify-between items-center mb-4">
-              <h4 className="font-semibold text-blue-700">Semaine en cours</h4>
+              <h4 className="font-semibold text-white">Semaine en cours</h4>
               <div className="flex gap-2">
                 <button
                   onClick={prevWeek}
-                  className="p-2 rounded-full hover:bg-blue-50"
+                  className="p-2 rounded-full bg-white/20 hover:bg-white/30"
                 >
-                  <ChevronLeft className="text-blue-700" />
+                  <ChevronLeft className="text-white" />
                 </button>
                 <button
                   onClick={nextWeek}
-                  className="p-2 rounded-full hover:bg-blue-50"
+                  className="p-2 rounded-full bg-white/20 hover:bg-white/30"
                 >
-                  <ChevronRight className="text-blue-700" />
+                  <ChevronRight className="text-white" />
                 </button>
               </div>
             </div>
 
-            {/* Liste des jours de la semaine */}
+            {/* Jours de la semaine */}
             <div className="grid grid-cols-7 gap-2">
               {weekDays.map((d, idx) => (
                 <button
                   key={idx}
                   onClick={() => setSelectedDate(d)}
-                  className={`rounded-xl p-3 text-xs font-medium shadow-sm transition 
-                    ${
-                      isSameDay(d, selectedDate)
-                        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                        : "bg-white/70 text-slate-700 hover:bg-blue-50"
-                    }`}
+                  className={`rounded-xl p-2.5 text-xs font-medium 
+                shadow-sm transition backdrop-blur 
+                ${
+                  isSameDay(d, selectedDate)
+                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                    : "bg-white/30 text-white hover:bg-white/40"
+                }`}
                 >
                   <div>{formatShortDay(d)}</div>
                   <div className="text-[10px]">{formatDayNumber(d)}</div>
@@ -350,82 +402,95 @@ export default function TableauDeBordDentiste({ initialData }) {
               ))}
             </div>
 
-            {/* Graphique des patients traités */}
-            <div className="mt-4">
-              <h5 className="text-sm text-blue-600 mb-2">
+            {/* Graphique */}
+            <div className="mt-5">
+              <h5 className="text-sm text-white/90 mb-2">
                 Activité hebdomadaire
               </h5>
-              <div style={{ width: "100%", height: 120 }}>
-                <ResponsiveContainer>
+              <div className="w-full h-28">
+                <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData}>
-                    <XAxis dataKey="day" tickLine={false} axisLine={false} />
+                    <XAxis
+                      dataKey="day"
+                      tickLine={false}
+                      axisLine={false}
+                      stroke="#fff"
+                    />
                     <YAxis hide />
-                    <Tooltip />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "blue",
+                        borderRadius: 8,
+                      }}
+                      labelStyle={{ color: "#fff" }}
+                      itemStyle={{ color: "#ffffff" }}
+                    />
                     <Bar
                       dataKey="treated"
-                      fill="#6366F1"
-                      radius={[6, 6, 0, 0]}
+                      fill="#ffffff"
+                      opacity={0.9}
+                      radius={[8, 8, 0, 0]}
                     />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+              ;
             </div>
           </div>
         </section>
-        {/* 🟪 SECTION DROITE : LISTE DES RENDEZ-VOUS DU JOUR */}
+
+        {/* --- COLONNE DROITE --- */}
         <section className="lg:col-span-2">
-          <div className="bg-white/70 backdrop-blur-md p-6 rounded-2xl shadow-xl">
-            {/* En-tête de la table */}
+          <div
+            className="bg-white/10 backdrop-blur-xl border border-white/40 p-6 
+                      rounded-2xl shadow-[0_8px_30px_rgb(255,255,255,0.5)]"
+          >
             <div className="flex justify-between items-center mb-5">
-              <h3 className="text-lg font-semibold text-slate-800">
+              <h3 className="text-lg font-semibold text-white">
                 Rendez-vous du {formatDate(selectedDate)}
               </h3>
-              <button className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl shadow hover:opacity-90 transition">
-                + Nouveau RDV
-              </button>
             </div>
 
-            {/* Table ou message si vide */}
             {mergedAppointments.length === 0 ? (
-              <p className="text-center text-slate-500 italic py-6">
+              <p className="text-center text-white/80 italic py-6">
                 Aucun rendez-vous prévu pour aujourd’hui.
               </p>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-left">
-                  <thead className="bg-gradient-to-r from-blue-50 to-purple-50 text-slate-600">
+                <table className="w-full border-collapse text-left text-white/90">
+                  <thead className="bg-white/10">
                     <tr>
                       <th className="p-3">Heure</th>
                       <th className="p-3">Patient</th>
-                      <th className="p-3">Dents</th>
+                      <th className="p-3">Dent</th>
                       <th className="p-3">Statut</th>
                     </tr>
                   </thead>
+
                   <tbody>
                     {mergedAppointments.map((r) => (
-                      <tr
-                        key={r._id}
-                        className="hover:bg-blue-50/40 transition"
-                      >
+                      <tr key={r._id} className="hover:bg-white/10 transition">
+                        {/* Heure */}
                         <td className="p-3">{r.dureeMinutes || "—"}</td>
+
+                        {/* Patient */}
                         <td className="p-3 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-100 to-pink-100 flex items-center justify-center text-purple-600">
-                            <User className="w-4 h-4" />
+                          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                            <User className="w-4 h-4 text-white" />
                           </div>
-                          <span>
-                            {r.patient
-                              ? `${r.patient.nom || ""} ${
-                                  r.patient.prenom || ""
-                                }`
-                              : "Inconnu"}
-                          </span>
+                          {r.patient
+                            ? `${r.patient.nom} ${r.patient.prenom}`
+                            : "Inconnu"}
                         </td>
+
+                        {/* Dent */}
                         <td className="p-3">
-                          {" "}
-                          {r.typeDent !== "—" || r.numeroDent !== "—"
+                          {r.typeDent && r.numeroDent
                             ? `${r.typeDent} ${r.numeroDent}`
                             : "—"}
                         </td>
+
+                        {/* Statut */}
                         <td className="p-3">
                           <StatusBadge
                             status={r.statut}
@@ -442,7 +507,6 @@ export default function TableauDeBordDentiste({ initialData }) {
             )}
           </div>
         </section>
-        );
       </main>
     </div>
   );
@@ -468,21 +532,21 @@ const StatCard = ({ title, value, color }) => {
 // --- Badge coloré pour indiquer le statut du rendez-vous ---
 const StatusBadge = ({ status, onChange }) => {
   const styles = {
-    Validé: "bg-emerald-100 text-emerald-700",
-    "En attente": "bg-yellow-100 text-yellow-700",
-    Annulé: "bg-red-100 text-red-700",
+    Validé: "bg-blue-500/90 text-white",
+    "En attente": "bg-gray-500/80 text-white",
+    Annulé: "bg-purple-500/90 text-white",
   };
 
   return (
     <select
       value={status || "En attente"} // valeur par défaut
       onChange={(e) => onChange && onChange(e.target.value)}
-      className={`px-2 py-1 rounded-full text-xs font-medium border-none cursor-pointer focus:ring-2 focus:ring-blue-400 transition 
+      className={`px-2 py-1  text-l font-medium border-none cursor-pointer focus:ring-2 focus:ring-blue-400 transition 
         ${styles[status] || "bg-slate-100 text-slate-600"}`}
     >
-      <option value="En attente">🕓 En attente</option>
-      <option value="Validé">✅ Validé</option>
-      <option value="Annulé">❌ Annulé</option>
+      <option value="En attente"> En attente</option>
+      <option value="Validé"> Validé</option>
+      <option value="Annulé"> Annulé</option>
     </select>
   );
 };

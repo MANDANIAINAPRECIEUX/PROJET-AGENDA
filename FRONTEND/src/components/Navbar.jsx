@@ -1,7 +1,13 @@
 // frontend/src/components/Navbar.jsx
 "use client";
 
-import { Menu, Stethoscope, HelpCircle } from "lucide-react"; // Importez l'icône d'aide
+import {
+  Menu,
+  Stethoscope,
+  HelpCircle,
+  CalendarPlus,
+  LogOut,
+} from "lucide-react"; // Importez l'icône d'aide
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
@@ -11,6 +17,11 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 // Le composant Navbar reçoit la prop "currentPage"
 export default function Navbar({ currentPage }) {
   const [isOpen, setIsOpen] = useState(false);
+  const handleLogout = () => {
+    // plus tard tu mettras removeToken(), clearUser(), etc.
+
+    window.location.href = "/login";
+  };
 
   // Définissons les différents ensembles de boutons pour le bureau et le mobile
   let desktopButtons;
@@ -19,30 +30,53 @@ export default function Navbar({ currentPage }) {
   let mobileMainLinks;
 
   // LOGIQUE CONDITIONNELLE pour les différents chemins d'URL
-  if (currentPage === "/ChoixDeRdv") {
+  if (
+    currentPage === "/choixDeRdv" ||
+    currentPage === "/TableauDeBordPatient"
+  ) {
     // Cas où l'utilisateur est sur la page de choix de RDV
     desktopButtons = (
       <>
-        <Link to="/historique">
+        <Link to="/TableauDeBordPatient" onClick={() => setIsOpen(false)}>
           <Button
-            variant="ghost"
-            className="text-white hover:text-blue-300 hover:bg-white/10"
+            variant="secondary"
+            className="w-full flex items-center gap-2 bg-white/60 
+               text-blue-700 hover:bg-white/80 shadow-sm 
+               rounded-xl backdrop-blur-sm"
           >
             Historique
           </Button>
         </Link>
-        <Link to="/nouveau-rdv">
-          <Button className="bg-white text-gray-800 px-6 py-3 rounded-full font-semibold hover:bg-white/90 transition-all duration-300 ease-in-out hover:scale-105">
-            Nouveau RDV
+
+        <Link to="/choixDeRdv" onClick={() => setIsOpen(false)}>
+          <Button
+            variant="secondary"
+            className="w-full flex items-center gap-2 bg-white/60 
+               text-blue-700 hover:bg-white/80 shadow-sm 
+               rounded-xl backdrop-blur-sm"
+          >
+            <CalendarPlus className="w-5 h-5" />
+            Nouveau Rendez - Vous
           </Button>
         </Link>
+
+        <button
+          onClick={handleLogout}
+          className="flex items-center w-full gap-2 px-4 py-1 rounded-xl font-semibold
+            bg-white/60 
+               text-blue-700 hover:bg-white/80 shadow-sm 
+               rounded-xl backdrop-blur-sm "
+        >
+          <LogOut className="w-5 h-5" />
+          Quitter
+        </button>
       </>
     );
 
     // Pour le menu mobile, nous allons modifier les liens principaux et les liens d'auth
     mobileMainLinks = (
       <>
-        <Link to="/historique" onClick={() => setIsOpen(false)}>
+        <Link to="/TableauDeBordPatient" onClick={() => setIsOpen(false)}>
           <Button
             variant="ghost"
             className="w-full justify-start text-slate-700 hover:text-blue-600 hover:bg-blue-50"
@@ -50,12 +84,12 @@ export default function Navbar({ currentPage }) {
             Historique
           </Button>
         </Link>
-        <Link to="/nouveau-rdv" onClick={() => setIsOpen(false)}>
+        <Link to="/choixDeRdv" onClick={() => setIsOpen(false)}>
           <Button
             variant="ghost"
             className="w-full justify-start text-slate-700 hover:text-blue-600 hover:bg-blue-50"
           >
-            Nouveau RDV
+            Nouveau Rendez - Vous
           </Button>
         </Link>
       </>
@@ -104,13 +138,19 @@ export default function Navbar({ currentPage }) {
             S'inscrire
           </Button>
         </Link>
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-slate-700 hover:text-blue-600 hover:bg-blue-50"
-        >
-          <HelpCircle className="h-5 w-5 mr-2" />
-          Besoin d'aide ?
-        </Button>
+       <div className="pt-4 border-t border-white/30 mt-3">
+  <button
+    onClick={handleLogout}
+    className="w-full flex items-center gap-3 justify-start 
+               px-4 py-2 rounded-lg font-medium
+               bg-white/20 text-white backdrop-blur-sm
+               hover:bg-white/30 transition border border-white/40"
+  >
+    <LogOut className="w-5 h-5" />
+    Quitter
+  </button>
+</div>
+
       </div>
     );
   } else {
@@ -137,51 +177,53 @@ export default function Navbar({ currentPage }) {
 
     // Boutons de navigation mobile par défaut
     mobileMainLinks = (
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col space-y-3 p-4 rounded-xl bg-gradient-to-br from-pink-300 via-purple-500 to-blue-500 shadow-xl">
         <Link to="/services" onClick={() => setIsOpen(false)}>
           <Button
             variant="ghost"
-            className="w-full justify-start text-slate-700 hover:text-blue-600 hover:bg-blue-50"
+            className="w-full justify-start text-white/90 hover:text-white hover:bg-white/20"
           >
-            Services
+            CONNEXION
           </Button>
         </Link>
+
         <Link to="/about" onClick={() => setIsOpen(false)}>
           <Button
             variant="ghost"
-            className="w-full justify-start text-slate-700 hover:text-blue-600 hover:bg-blue-50"
+            className="w-full justify-start text-white/90 hover:text-white hover:bg-white/20"
           >
-            À propos
+            S'INSCRIRE
           </Button>
         </Link>
+
         <Link to="/contact" onClick={() => setIsOpen(false)}>
           <Button
             variant="ghost"
-            className="w-full justify-start text-slate-700 hover:text-blue-600 hover:bg-blue-50"
+            className="w-full justify-start text-white/90 hover:text-white hover:bg-white/20"
           >
-            Contact
+            À propos
           </Button>
         </Link>
       </div>
     );
     // Boutons d'authentification mobile par défaut
-    mobileAuthButtons = (
-      <div className="flex flex-col space-y-3 pt-4 border-t border-slate-200">
-        <Link to="/login" onClick={() => setIsOpen(false)}>
-          <Button
-            variant="outline"
-            className="w-full border-blue-200 text-blue-700 hover:bg-blue-50 bg-transparent"
-          >
-            Connexion
-          </Button>
-        </Link>
-        <Link to="/register" onClick={() => setIsOpen(false)}>
-          <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">
-            S'inscrire
-          </Button>
-        </Link>
-      </div>
-    );
+    // mobileAuthButtons = (
+    //   <div className="flex flex-col space-y-3 pt-4 border-t border-slate-200">
+    //     <Link to="/login" onClick={() => setIsOpen(false)}>
+    //       <Button
+    //         variant="outline"
+    //         className="w-full border-blue-200 text-blue-700 hover:bg-blue-50 bg-transparent"
+    //       >
+    //         Connexion
+    //       </Button>
+    //     </Link>
+    //     <Link to="/register" onClick={() => setIsOpen(false)}>
+    //       <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">
+    //         S'inscrire
+    //       </Button>
+    //     </Link>
+    //   </div>
+    // );
   }
 
   return (
@@ -218,14 +260,17 @@ export default function Navbar({ currentPage }) {
                   <span className="sr-only">Ouvrir le menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                <div className="flex flex-col space-y-4 mt-6">
+              <SheetContent
+                side="right"
+                className="h-screen w-[300px] sm:w-[400px] overflow-y-auto"
+              >
+                <div className="flex flex-col  px-6 bg-gradient-to-br from-pink-300 via-purple-500 to-blue-500 ">
                   {/* Mobile Logo */}
-                  <div className="flex items-center space-x-2 pb-4 border-b border-slate-200">
+                  <div className="flex items-center space-x-2 pb-4  ">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-blue-700">
                       <Stethoscope className="h-4 w-4 text-white" />
                     </div>
-                    <span className="text-lg font-bold text-slate-900">
+                    <span className="text-lg font-bold text-white text-slate-900">
                       Agenda Dentaire
                     </span>
                   </div>
@@ -236,7 +281,7 @@ export default function Navbar({ currentPage }) {
                   </div>
 
                   {/* Mobile Auth Buttons */}
-                  <div className="flex flex-col space-y-3 pt-4 border-t border-slate-200">
+                  <div className="flex flex-col space-y-3 pt-4 ">
                     {mobileAuthButtons}
                   </div>
                 </div>

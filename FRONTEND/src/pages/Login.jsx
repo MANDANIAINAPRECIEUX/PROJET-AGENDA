@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -26,8 +26,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Html5QrcodeScanner } from "html5-qrcode";
 
 export default function Login() {
+  const [showScanner, setShowScanner] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -116,6 +118,48 @@ export default function Login() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!showScanner) return;
+
+    const div = document.getElementById("qr-reader");
+    if (!div) return;
+
+    const scanner = new Html5QrcodeScanner(
+      "qr-reader",
+      { fps: 10, qrbox: 250 },
+      false
+    );
+
+    scanner.render(
+      async (decodedText) => {
+        console.log("QR Code détecté :", decodedText);
+
+        try {
+          const res = await axios.post("/api/dentistes/verifier-qr", {
+            qrData: decodedText,
+          });
+
+          if (res.data.ok === true) {
+            if (res.data.isAdmin === true) {
+              window.location.href = "/CreateDentiste";
+            } else {
+              window.location.href = "/TableauDeBordDentiste";
+            }
+          } else {
+            alert("QR Code invalide !");
+          }
+        } catch (err) {
+          console.error(err);
+        }
+
+        scanner.clear();
+      },
+      (err) => console.warn("scan error :", err)
+    );
+
+    return () => scanner.clear();
+  }, [showScanner]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-500 via-purple-500 to-blue-600 flex items-center justify-center p-4 relative overflow-hidden">
@@ -328,6 +372,7 @@ export default function Login() {
                 type="button"
                 variant="outline"
                 className="w-full h-12 border-white/30 text-white hover:bg-white/10 transition-all duration-300 bg-white/5 backdrop-blur-sm rounded-xl hover:border-white/50 group relative overflow-hidden"
+                onClick={() => setShowScanner(true)}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
                 <UserCheck className="h-5 w-5 mr-3 relative z-10" />
@@ -335,6 +380,12 @@ export default function Login() {
                   Connexion avec badge professionnel
                 </span>
               </Button>
+              {showScanner && (
+                <div
+                  id="qr-reader"
+                  className="mt-6 p-4 rounded-xl bg-white shadow-lg"
+                ></div>
+              )}
 
               {/* Enhanced Registration Link */}
               <div className="text-center pt-6 border-t border-white/20">
@@ -361,32 +412,10 @@ export default function Login() {
             </p>
             <Heart className="h-4 w-4 text-pink-300" />
           </div>
-          <div className="flex justify-center items-center gap-6 mt-3">
-            <a
-              href="/privacy"
-              className="text-sm hover:text-white transition-colors hover:underline"
-            >
-              Confidentialité
-            </a>
-            <span className="w-1 h-1 bg-white/50 rounded-full"></span>
-            <a
-              href="/support"
-              className="text-sm hover:text-white transition-colors hover:underline"
-            >
-              Support
-            </a>
-            <span className="w-1 h-1 bg-white/50 rounded-full"></span>
-            <a
-              href="/terms"
-              className="text-sm hover:text-white transition-colors hover:underline"
-            >
-              Conditions
-            </a>
-          </div>
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes float {
           0%,
           100% {

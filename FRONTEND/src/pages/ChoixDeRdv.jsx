@@ -220,31 +220,7 @@ export default function ChoixDeRdv() {
     };
   };
 
-  // Gérer la sélection d'heure
-  // const handleTimeClick = (hour, minute) => {
-  //   if (selectedDate && isTimeSlotAvailable(selectedDate, hour, minute)) {
-  //     const timeString = `${hour.toString().padStart(2, "0")}:${minute
-  //       .toString()
-  //       .padStart(2, "0")}`;
-  //     setSelectedTime(timeString);
-  //     // ty zany le données complet annl rendez vous: heure s dates
-  //     const appointmentData = {
-  //       date: selectedDate.toISOString().split("T")[0],
-  //       time: timeString,
-  //       dateFormatted: selectedDate.toLocaleDateString("fr-FR"),
-  //     };
-  //     dispatch(
-  //       setDates({
-  //         dateFormatted: appointmentData.dateFormatted,
-  //         time: appointmentData.time,
-  //       })
-  //     );
-
-  //     localStorage.setItem("appointmentData", JSON.stringify(appointmentData));
-  //     navigate("/FormulaireDeReservation");
-  //     console.log("données anl rdv heure s date: ", appointmentData);
-  //   }
-  // };
+  
 
   const handleTimeClick = (hour, minute) => {
     if (selectedDate && isTimeSlotAvailable(selectedDate, hour, minute)) {

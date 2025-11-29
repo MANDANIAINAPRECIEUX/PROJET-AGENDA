@@ -136,10 +136,16 @@ export default function FormulaireDeReservation() {
 
     // ✅ Enregistrement du rendez-vous
     try {
+      if (!idPatientRecuperer) {
+        showAlert("❌ Impossible de récupérer votre compte patient.");
+        return;
+      }
+
       const rendezVousRes = await axios.post(
         "/api/rendezvous",
+
         {
-          patient: idPatientRecuperer || 21,
+          patient: idPatientRecuperer,
           dentiste: "6862e8f446136d62ea73498a", // ID fixe du dentiste
           dateHeure: dateHeureLocal,
           dureeMinutes: heureLocal,
@@ -199,7 +205,7 @@ export default function FormulaireDeReservation() {
         const dentRes = await axios.post(
           "/api/dents",
           {
-            patient: patientData._id,
+            patient: idPatientRecuperer,
             nomDent: teeth.name,
             typeDent: teeth.type,
             secteurDentaire: teeth.secteur,
@@ -223,10 +229,10 @@ export default function FormulaireDeReservation() {
       }
     }
 
-    console.log(
-      "%c Toutes les dents sélectionnées ont été enregistrées avec succès !",
-      "color: #ff4d4d; background: #ffe6e6; font-weight: bold; padding: 4px 8px; border-radius: 6px;"
-    );
+    // console.log(
+    //   "%c Toutes les dents sélectionnées ont été enregistrées avec succès !",
+    //   "color: #ff4d4d; background: #ffe6e6; font-weight: bold; padding: 4px 8px; border-radius: 6px;"
+    // );
   };
 
   useEffect(() => {

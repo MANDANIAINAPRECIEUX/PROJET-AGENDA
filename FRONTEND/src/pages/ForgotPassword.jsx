@@ -37,10 +37,26 @@ export default function ForgotPassword() {
     setError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const response = await fetch(
+        "/api/auth/forgot-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Erreur lors de l'envoi de l'email");
+      }
+
       setIsEmailSent(true);
     } catch (error) {
-      setError("Erreur lors de l'envoi. Veuillez réessayer.");
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +64,7 @@ export default function ForgotPassword() {
 
   if (isEmailSent) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-white flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-pink-500 via-purple-500 to-blue-300 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
@@ -90,7 +106,7 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-pink-500 via-purple-500 to-blue-300 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
