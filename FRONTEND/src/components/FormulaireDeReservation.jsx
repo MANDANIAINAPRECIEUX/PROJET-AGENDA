@@ -9,6 +9,9 @@ import {
   Stethoscope,
   Activity,
   AlertCircle,
+  Mail,
+  Phone,
+  Search,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -696,19 +699,6 @@ const emojiOptions = [
 ];
 
 export default function FormulaireDeReservation() {
-  /**
-   * Composant de formulaire de réservation dentaire
-   *
-   * Récupération automatique des données patient :
-   * - ID Patient : patientData?.id || patientData?._id ou généré automatiquement
-   * - Nom Patient : patientData?.prenom + " " + patientData?.nom
-   * - Email : patientData?.email
-   * - Téléphone : patientData?.telephone
-   * - Âge : patientData?.age
-   *
-   * Les données sont récupérées depuis localStorage après la connexion
-   */
-
   const navigate = useNavigate();
   const [appointmentData, setAppointmentData] = useState(null);
   const [selectedTeeth, setSelectedTeeth] = useState([]);
@@ -737,7 +727,6 @@ export default function FormulaireDeReservation() {
 
 
 
-  // [Données des dents complètes - non répétées ici]
   const allTeethData = [
     // Quadrant 1
     {
@@ -966,7 +955,7 @@ export default function FormulaireDeReservation() {
       name: "Fracture",
       icon: <img src={fracture} alt="fracture" className="w-8 h-8" />,
     },
-    { name: "Autre", icon: "💙" },
+    { name: "Autre", icon: "?" },
   ];
 
   // Charger les données du rendez-vous depuis localStorage
@@ -1074,19 +1063,6 @@ export default function FormulaireDeReservation() {
     }
   };
 
-  const getNiveauColor = (niveau) => {
-    switch (niveau) {
-      case 1:
-        return "from-emerald-400 to-teal-500";
-      case 2:
-        return "from-amber-400 to-orange-500";
-      case 3:
-        return "from-red-400 to-rose-500";
-      default:
-        return "from-emerald-400 to-teal-500";
-    }
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -1122,11 +1098,12 @@ export default function FormulaireDeReservation() {
         description: formData.description,
       };
 
-      console.log("Rendez-vous confirmé :", finalAppointment);
-      localStorage.removeItem("appointmentData");
-      alert("Votre rendez-vous a été confirmé avec succès !");
-      navigate("/ChoixDeRdv");
-    }
+    console.log("Rendez-vous confirmé :", finalAppointment);
+
+    // TODO: Envoyer au backend ici avant suppression
+    localStorage.removeItem("appointmentData");
+    alert("Votre rendez-vous a été confirmé avec succès !");
+    navigate("/ChoixDeRdv");
   };
 
   const handleGoBack = () => {
@@ -1137,7 +1114,7 @@ export default function FormulaireDeReservation() {
   return (
     <>
       <style>{modernStyles}</style>
-      <div className="ultra-modern-bg">
+      <div className="min-h-screen bg-gradient-to-br from-pink-500 via-purple-500 to-blue-600 flex items-center justify-center p-4 relative overflow-hidden">
         <div className="max-w-6xl mx-auto p-6 lg:p-12">
           {/* [En-tête et titre] */}
 
@@ -1148,7 +1125,7 @@ export default function FormulaireDeReservation() {
                 <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl">
                   <User className="h-6 w-6 text-white" />
                 </div>
-                <h2 className="subsection-title">Identification Patient</h2>
+                <h2 className="subsection-title">Mon Profil</h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1157,7 +1134,7 @@ export default function FormulaireDeReservation() {
                     htmlFor="patient"
                     className="text-slate-700 font-semibold text-lg mb-3 block"
                   >
-                    Identifiant Patient *
+                    Identifiant
                   </Label>
                   <Input
                     id="patient"
@@ -1194,50 +1171,50 @@ export default function FormulaireDeReservation() {
                 </div>
 
                 {/* Informations supplémentaires du patient */}
-                {patientData && (
-                  <div className="md:col-span-2">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <h4 className="text-blue-800 font-semibold mb-2">
-                        Informations Patient
-                      </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        {patientData.email && (
-                          <div>
-                            <span className="text-blue-600 font-medium">
-                              Email:
-                            </span>
-                            <br />
-                            <span className="text-slate-700">
-                              {patientData.email}
-                            </span>
-                          </div>
-                        )}
-                        {patientData.telephone && (
-                          <div>
-                            <span className="text-blue-600 font-medium">
-                              Téléphone:
-                            </span>
-                            <br />
-                            <span className="text-slate-700">
-                              {patientData.telephone}
-                            </span>
-                          </div>
-                        )}
-                        {patientData.age && (
-                          <div>
-                            <span className="text-blue-600 font-medium">
-                              Âge:
-                            </span>
-                            <br />
-                            <span className="text-slate-700">
-                              {patientData.age} ans
-                            </span>
-                          </div>
-                        )}
+                {patientData &&
+                  (patientData.email ||
+                    patientData.telephone ||
+                    patientData.age) && (
+                    <div className="md:col-span-2">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                          {patientData.email && (
+                            <div>
+                              <span className="text-blue-600 font-medium">
+                                Email:
+                              </span>
+                              <br />
+                              <span className="text-slate-700">
+                                {patientData.email}
+                              </span>
+                            </div>
+                          )}
+                          {patientData.telephone && (
+                            <div>
+                              <span className="text-blue-600 font-medium">
+                                Téléphone:
+                              </span>
+                              <br />
+                              <span className="text-slate-700">
+                                {patientData.telephone}
+                              </span>
+                            </div>
+                          )}
+                          {patientData.age && (
+                            <div>
+                              <span className="text-blue-600 font-medium">
+                                Âge:
+                              </span>
+                              <br />
+                              <span className="text-slate-700">
+                                {patientData.age} ans
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
             </div>
 
