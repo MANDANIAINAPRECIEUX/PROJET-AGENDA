@@ -19,7 +19,10 @@ const userSchema = mongoose.Schema(
     password: {
       type: String,
       required: [true, "Veuillez ajouter un mot de passe"],
-      minlength: [6, "Le mot de passe doit contenir au moins 6 petits caractères"],
+      minlength: [
+        6,
+        "Le mot de passe doit contenir au moins 6 petits caractères",
+      ],
       select: false, // Ne pas renvoyer le mot de passe par défaut dans les requêtes de lecture
     },
     role: {
@@ -30,7 +33,7 @@ const userSchema = mongoose.Schema(
     prenom: {
       // Correspond à `prenom` dans votre formData du frontend
       type: String,
-      required: [true, "Veuillez ajouter un prénom"],
+      required: [true, "Veuillez ajouter au moins un prénom"],
       trim: true,
     },
     nom: {
@@ -58,7 +61,7 @@ const userSchema = mongoose.Schema(
   },
   {
     timestamps: true, // Ajoute automatiquement createdAt et updatedAt
-  }
+  },
 );
 // --- Méthodes du Schéma ---
 
@@ -76,7 +79,7 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.getSignedJwtToken = function () {
   console.log(
     "User.js JWT_SECRET utilisé pour la signature :",
-    process.env.JWT_SECRET
+    process.env.JWT_SECRET,
   );
   return jwt.sign({ id: this._id, role: this.role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE,
