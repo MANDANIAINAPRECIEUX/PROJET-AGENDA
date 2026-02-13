@@ -45,7 +45,7 @@ const userSchema = mongoose.Schema(
     telephone: {
       // Correspond à `telephone` dans votre formData du frontend
       type: String,
-      required: [true, "Veuillez ajouter un numéro de téléphone"],
+      required: [true, "Veuillez ajouter au moins un numéro de téléphone"],
       trim: true,
     },
     age: {
