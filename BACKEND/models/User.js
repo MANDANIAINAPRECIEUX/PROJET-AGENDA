@@ -8,9 +8,9 @@ const userSchema = mongoose.Schema(
     email: {
       type: String,
       required: [true, "Veuillez ajouter une adresse email"],
-      unique: true, // L'email doit être unique pour chaque utilisateur
+      unique: true,
       trim: true,
-      lowercase: true, // Stocke l'email en minuscules pour la cohérence
+      lowercase: true,
       match: [
         /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
         "Veuillez ajouter une adresse email valide",
@@ -24,8 +24,8 @@ const userSchema = mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "dentiste", "patient"], // Les rôles possibles
-      default: "patient", // Rôle par défaut si non spécifié
+      enum: ["admin", "dentiste", "patient"],
+      default: "patient",
     },
     prenom: {
       // Correspond à `prenom` dans votre formData du frontend
@@ -57,10 +57,9 @@ const userSchema = mongoose.Schema(
     resetPasswordExpire: Date,
   },
   {
-    timestamps: true, // Ajoute createdAt et updatedAt
+    timestamps: true, // Ajoute automatiquement createdAt et updatedAt
   }
 );
-
 // --- Méthodes du Schéma ---
 
 // Crypter le mot de passe avant de le sauvegarder (middleware Mongoose 'pre-save')
