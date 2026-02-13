@@ -19,7 +19,7 @@ const userSchema = mongoose.Schema(
     password: {
       type: String,
       required: [true, "Veuillez ajouter un mot de passe"],
-      minlength: [6, "Le mot de passe doit contenir au moins 6 caractères"],
+      minlength: [6, "Le mot de passe doit contenir au moins 6 petits caractères"],
       select: false, // Ne pas renvoyer le mot de passe par défaut dans les requêtes de lecture
     },
     role: {
