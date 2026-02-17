@@ -53,7 +53,7 @@ const userSchema = mongoose.Schema(
       type: Number,
       required: [true, "Veuillez ajouter l'âge"],
       min: [0, "L'âge ne peut pas être négatif"],
-      max: [120, "L'âge maximum est de 120 ans"],
+      max: [120, "L'âge maximum est de 150 ans"],
     },
     // Vous pouvez aussi ajouter une adresse si nécessaire
     resetPasswordToken: String,
