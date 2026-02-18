@@ -7,7 +7,7 @@ const userSchema = mongoose.Schema(
   {
     email: {
       type: String,
-      required: [true, "Veuillez ajouter une adresse email"],
+      required: [true, "réponse vide, Veuillez ajouter une adresse email"],
       unique: true,
       trim: true,
       lowercase: true,
