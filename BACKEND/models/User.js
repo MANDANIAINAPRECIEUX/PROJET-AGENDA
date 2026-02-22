@@ -13,7 +13,7 @@ const userSchema = mongoose.Schema(
       lowercase: true,
       match: [
         /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-        "Veuillez ajouter (1) une  adresse email valide",
+        "Veuillez ajouter  une  adresse email valide",
       ],
     },
     password: {
@@ -21,7 +21,7 @@ const userSchema = mongoose.Schema(
       required: [true, "Veuillez  ajouter un mot de passe"],
       minlength: [
         6,
-        "Le mot de passe doit contenir plus six (6 caractères",
+        "Le mot de passe doit contenir plus six  caractères",
       ],
       select: false, // Ne pas renvoyer le mot de passe par défaut dans les requêtes de lecture
     },
