@@ -20,7 +20,7 @@ export default function Footer() {
     >
       {/* Nom & copyright */}
       <p className=" flex items-center gap-2">
-        © 2025 — Mandaniaina Précieux. Tous droits réservés.
+        © 2025 — A Mandaniaina Précieux. Tous droits réservés.
       </p>
 
       {/* Infos contact */}
