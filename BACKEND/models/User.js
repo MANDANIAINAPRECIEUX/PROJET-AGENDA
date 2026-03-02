@@ -18,12 +18,9 @@ const userSchema = mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Veuillez  un mot de passe"],
-      minlength: [
-        6,
-        "Le mot de passe doit contenir plus six caractères",
-      ],
-      select: false, 
+      required: [true, "Veuillez  un mot passe"],
+      minlength: [6, "Le mot de passe doit contenir plus six caractères"],
+      select: false,
     },
     role: {
       type: String,
