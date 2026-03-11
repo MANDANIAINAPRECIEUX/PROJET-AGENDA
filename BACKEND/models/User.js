@@ -27,7 +27,7 @@ const userSchema = mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "dentiste", "patient"],rzeezfef 
+      enum: ["admin", "dentiste", "patient"],
       default: "patient",
     },
     prenom: {
