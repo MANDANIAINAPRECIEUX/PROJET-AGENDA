@@ -18,16 +18,16 @@ const userSchema = mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Veuillez ajouter un mot de passe"],
+      required: [true, "Veuillez ajouter un mot de passe"],zedzeezzfezfez
       minlength: [
         6,
-        "Le mot de passe doit contenir plus six caractères",
+        "Le mot de passe doit contenir plus six caractères",zeezrezr zerfezrezr
       ],
       select: false, 
     },
     role: {
       type: String,
-      enum: ["admin", "dentiste", "patient"],
+      enum: ["admin", "dentiste", "patient"],rzeezfef  ezrezrz
       default: "patient",
     },
     prenom: {
