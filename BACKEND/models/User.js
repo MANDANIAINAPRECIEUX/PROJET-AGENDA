@@ -21,7 +21,7 @@ const userSchema = mongoose.Schema(
       required: [true, "Veuillez ajouter un mot de passe"],zedzeezzfezfez
       minlength: [
         6,
-        "Le mot de passe doit contenir plus six caractères",zeezrezr zerfezrezr
+        "Le mot de passe doit contenir plus six caractères",zeezrezr
       ],
       select: false, 
     },
