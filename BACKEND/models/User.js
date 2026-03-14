@@ -23,7 +23,7 @@ const userSchema = mongoose.Schema(
         6,
         "Le mot de passe doit contenir plus six caractères",
       ],
-      select: false, svdvsd qsdfsdf
+      select: false, svdvsd
     },
     role: {
       type: String,
