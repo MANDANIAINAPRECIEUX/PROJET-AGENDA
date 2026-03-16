@@ -24,7 +24,7 @@ const userSchema = mongoose.Schema(
         "Le mot de passe doit contenir plus six caractères",
       ],
       select: false, 
-    },xqsxqsx qcczcec cezcezcz zcezczc zgftgytbgrv
+    },xqsxqsx qcczcec cezcezcz zcezczc
     role: {
       type: String,
       enum: ["admin", "dentiste", "patient"],
