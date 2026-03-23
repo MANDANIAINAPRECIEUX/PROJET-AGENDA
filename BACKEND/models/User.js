@@ -33,7 +33,7 @@ const userSchema = mongoose.Schema(
     prenom: {
       // Correspond à `prenom` dans votre formData du frontend
       type: String,
-      required: [true, "Veuillez ajouter  un prénom"],sdfsdfsd sdf qssdffsdfsd
+      required: [true, "Veuillez ajouter  un prénom"],sdfsdfsd sdf
       trim: true,
     },
     nom: {
