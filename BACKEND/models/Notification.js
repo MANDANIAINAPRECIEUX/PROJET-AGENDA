@@ -23,7 +23,7 @@ const notificationSchema = mongoose.Schema({
         enum: ['Rappel RDV', 'Annulation RDV', 'Message', 'Promotion', 'Autre'] // Exemples de types
     },
     message: {
-        type: String,sdfgdsg dfgsdfgsdf gdfgsdfgsdfg dfgsdfgsdf
+        type: String,sdfgdsg dfgsdfgsdf gdfgsdfgsdfg
         required: [true, 'Veuillez ajouter le contenu du message'],
         trim: true
     },
