@@ -13,7 +13,7 @@ const confirmationSchema = mongoose.Schema({
         ref: 'Dentist' // Fait référence au modèle 'Dentist'
     },
     dateAction: { // Mappe à dateAction
-        type: Date,dgdgsdg
+        type: Date,
         required: [true, 'Veuillez spécifier la date de l\'action de confirmation'],
         default: Date.now // Définit la date actuelle par défaut si non spécifiée
     },
