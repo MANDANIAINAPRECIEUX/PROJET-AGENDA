@@ -2,35 +2,35 @@
 const mongoose = require('mongoose');
 
 const confirmationSchema = mongoose.Schema({
-    rendezVous: { // Mappe à idRendezVous (FK vers RDV)
+    rendezVous: { 
         type: mongoose.Schema.Types.ObjectId,
         required: [true, 'Une confirmation doit être liée à un rendez-vous'],
-        ref: 'RendezVous' // Fait référence au modèle 'RendezVous'
+        ref: 'RendezVous' 
     },
-    dentist: { // Mappe à idDentiste (FK vers DENTISTE)
+    dentist: { 
         type: mongoose.Schema.Types.ObjectId,
         required: [true, 'Une confirmation doit être liée à un dentiste'],
-        ref: 'Dentist' // Fait référence au modèle 'Dentist'
+        ref: 'Dentist' 
     },
-    dateAction: { // Mappe à dateAction
+    dateAction: { 
         type: Date,
         required: [true, 'Veuillez spécifier la date de l\'action de confirmation'],
-        default: Date.now // Définit la date actuelle par défaut si non spécifiée
+        default: Date.now 
     },
-    typeAction: { // Mappe à typeAction (ex: 'Création RDV', 'Modification RDV', 'Annulation RDV')
+    typeAction: { 
         type: String,
         required: [true, 'Veuillez spécifier le type d\'action'],
         trim: true
        
     },
-    commentaire: { // Mappe à commentaire
+    commentaire: { 
         type: String,
         trim: true,
-        // required: false // Le commentaire est optionnel
+        
     }
-    // idConfirmation sera géré par Mongoose via le champ _id par défaut
+    
 }, {
-    timestamps: true // Ajoute automatiquement 'createdAt' et 'updatedAt'
+    timestamps: true 
 });
 
 module.exports = mongoose.model('Confirmation', confirmationSchema);
