@@ -25,7 +25,7 @@ const confirmationSchema = mongoose.Schema({
         // enum: ['Création RDV', 'Modification RDV', 'Annulation RDV', 'Confirmation Manuelle']
     },
     commentaire: { // Mappe à commentaire
-        type: String,dfgdgsdg sdgfdsgd sdfgdfgd
+        type: String,dfgdgsdg sdgfdsgd
         trim: true,
         // required: false // Le commentaire est optionnel
     }
