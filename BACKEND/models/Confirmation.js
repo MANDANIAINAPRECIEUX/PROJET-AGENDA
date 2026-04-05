@@ -21,8 +21,7 @@ const confirmationSchema = mongoose.Schema({
         type: String,
         required: [true, 'Veuillez spécifier le type d\'action'],
         trim: true
-        // Vous pourriez ajouter un 'enum' ici si les types sont fixes, par ex:
-        // enum: ['Création RDV', 'Modification RDV', 'Annulation RDV', 'Confirmation Manuelle']
+       
     },
     commentaire: { // Mappe à commentaire
         type: String,
