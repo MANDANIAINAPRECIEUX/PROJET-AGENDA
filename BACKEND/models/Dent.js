@@ -15,7 +15,7 @@ const dentSchema = mongoose.Schema(
       required: [true, "Veuillez spécifier le nom de la dent"],
       trim: true,
     },
-    typeDent: {
+    typeDent: {gdgfdsgf dfgdsfgsdfg dfgsdfgsdg dfgsdgsdfg dfgsdgsdgsdg dfgsdgfsdgds gd
       // Mappe à typeDent
       type: String,
       required: [true, "Veuillez spécifier le type de dent "],
