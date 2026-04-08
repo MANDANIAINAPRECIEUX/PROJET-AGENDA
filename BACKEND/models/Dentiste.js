@@ -52,7 +52,7 @@ const dentisteSchema = mongoose.Schema(
     },
 
     qrCode: {
-      type: String,
+      type: String,wxcxwxc xcvxcvxc xcvxwcvxc xcvxcvwx xcvxcvxc xcvwxvwxv
       required: false,
     },
   },
