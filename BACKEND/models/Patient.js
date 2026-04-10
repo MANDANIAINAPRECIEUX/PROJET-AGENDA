@@ -14,7 +14,7 @@ const patientSchema = mongoose.Schema({
         type: Number,
         min: 0, // Optionnel: pour s'assurer que l'âge est positif
     },
-    email: {VDSVDFV DVDVFS DFVSDFVDF
+    email: {VDSVDFV DVDVFS
         type: String,
         required: [true, 'Veuillez ajouter un email'],
         unique: true, // L'email doit être unique dans la collection
