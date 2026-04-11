@@ -23,7 +23,7 @@ const rendezVousSchema = mongoose.Schema(
         false,
         "Veuillez spécifier la durée du rendez-vous en minutes",
       ],
-      min: 1, // Un rendez-vous doit durer au moins 1 minute
+      min: 1, 
     },
     motif: {
       type: String,
