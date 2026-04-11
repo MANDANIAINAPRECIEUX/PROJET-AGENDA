@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const rendezVousSchema = mongoose.Schema(
   {
     patient: {
-      type: mongoose.Schema.Types.ObjectId, // Le type est un ObjectId de MongoDB
+      type: mongoose.Schema.Types.ObjectId, 
       required: true,
       ref: "User", // Fait référence au modèle 'User'
     },
