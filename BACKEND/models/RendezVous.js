@@ -11,7 +11,7 @@ const rendezVousSchema = mongoose.Schema(
     dentiste: {
       type: mongoose.Schema.Types.ObjectId, 
       required: true,
-      ref: "Dentiste", // Fait référence au modèle 'Dentist'
+      ref: "Dentiste", 
     },
     dateHeure: {
       type: String, // Utilise le type Date pour stocker la date et l'heure
