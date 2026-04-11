@@ -14,7 +14,7 @@ const rendezVousSchema = mongoose.Schema(
       ref: "Dentiste", 
     },
     dateHeure: {
-      type: String, // Utilise le type Date pour stocker la date et l'heure
+      type: String, 
       required: [true, "Veuillez spécifier la date du rendez-vous"],
     },
     dureeMinutes: {
