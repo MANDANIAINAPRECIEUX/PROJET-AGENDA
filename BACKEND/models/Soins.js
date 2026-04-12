@@ -16,7 +16,8 @@ const soinSchema = mongoose.Schema(
       trim: true,
       
       
-      // Pour l'instant, c'est une chaîne de caractères libre.
+      
+      
     },
     duree: {
       // Mappe à Durée
