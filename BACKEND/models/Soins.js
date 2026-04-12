@@ -14,7 +14,7 @@ const soinSchema = mongoose.Schema(
       type: String,
       required: [true, "Veuillez spécifier le type de soin"],
       trim: true,
-      // Si plus tard vous avez un catalogue de soins disponibles,
+      
       // 'typeDeSoin' pourrait devenir une référence à ce catalogue.
       // Pour l'instant, c'est une chaîne de caractères libre.
     },
