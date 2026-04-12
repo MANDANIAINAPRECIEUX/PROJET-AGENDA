@@ -10,7 +10,7 @@ const soinSchema = mongoose.Schema(
       ref: "RendezVous", 
     },
     typeDeSoin: {
-      // Mappe à TypeDeSoin
+      
       type: String,
       required: [true, "Veuillez spécifier le type de soin"],
       trim: true,
