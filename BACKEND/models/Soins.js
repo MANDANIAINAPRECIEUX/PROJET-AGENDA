@@ -7,7 +7,7 @@ const soinSchema = mongoose.Schema(
       
       type: mongoose.Schema.Types.ObjectId,
       required: [true, "Un soin doit être lié à un rendez-vous"],
-      ref: "RendezVous", // Fait référence au modèle 'RendezVous'
+      ref: "RendezVous", 
     },
     typeDeSoin: {
       // Mappe à TypeDeSoin
