@@ -10,7 +10,7 @@ const symptomeSchema = mongoose.Schema(
       ref: "RendezVous", // Fait référence au modèle 'Dent'
     },
     typeSymptome: {
-      // Mappe à typeSymptome
+      
       type: String,
       required: [true, "Veuillez spécifier le type de symptôme"],
       trim: true,
