@@ -16,7 +16,7 @@ const symptomeSchema = mongoose.Schema(
       trim: true,
     },
     niveauSymptome: {
-      // Mappe à niveauSymptome
+      
       type: String,
       // Considérez un 'enum' ici si les niveaux sont prédéfinis (ex: 'Faible', 'Modéré', 'Sévère')
       // enum: ['Faible', 'Modéré', 'Sévère'],
