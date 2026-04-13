@@ -24,7 +24,7 @@ const symptomeSchema = mongoose.Schema(
       trim: true,
     },
     description: {
-      // Mappe à description
+      
       type: String,
       trim: true,
       required: false, // La description est optionnelle
