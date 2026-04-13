@@ -29,7 +29,7 @@ const symptomeSchema = mongoose.Schema(
       trim: true,
       required: false, // La description est optionnelle
     },
-    // idSymptome sera géré par Mongoose via le champ _id par défaut
+    
   },
   {
     timestamps: true, // Ajoute automatiquement 'createdAt' et 'updatedAt'
