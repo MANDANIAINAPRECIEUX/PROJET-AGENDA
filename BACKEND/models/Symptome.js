@@ -19,7 +19,7 @@ const symptomeSchema = mongoose.Schema(
       
       type: String,
       
-      // enum: ['Faible', 'Modéré', 'Sévère'],
+      
       required: [true, "Veuillez spécifier le niveau du symptôme"],
       trim: true,
     },
