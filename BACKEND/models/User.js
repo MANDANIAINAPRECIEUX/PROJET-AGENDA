@@ -31,7 +31,7 @@ const userSchema = mongoose.Schema(
       default: "patient",
     },
     prenom: {
-      // Correspond à `prenom` dans votre formData du frontend
+     
       type: String,
       required: [true, "Veuillez ajouter  un prénom"],
       trim: true,
