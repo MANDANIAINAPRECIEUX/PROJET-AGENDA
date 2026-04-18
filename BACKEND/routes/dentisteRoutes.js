@@ -11,7 +11,7 @@ const {
   deleteDentiste,
   getDentisteBadge,
   creerDentiste,
-  verifyDentiste,
+  verifyDentiste,sdfsdfsdf sdfsdfsdfs sdfsdfsdf sdfsdfsdf sdfsfsfsd
   verifierQR,
 } = require("../controllers/DentisteController"); // Notez 'DentisteController'
 
