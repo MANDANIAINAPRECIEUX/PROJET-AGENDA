@@ -11,7 +11,7 @@ const {
   deleteDent,
   getDentByPatientAndNumber,
   getDentsByPatient,
-} = require("../controllers/DentController"); // Notez 'DentController'
+} = require("../controllers/DentController"); 
 const { protect } = require("../middlewares/authMiddleware");
 const authorize = require("../middlewares/authorize");
 // Définir les routes pour les dents
