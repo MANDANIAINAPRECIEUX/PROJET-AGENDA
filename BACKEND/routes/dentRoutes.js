@@ -1,6 +1,6 @@
 // backend/routes/dentRoutes.js
 const express = require("express");
-const router = express.Router(); // Créer un routeur Express
+const router = express.Router(); 
 
 // Importer les fonctions du contrôleur Dent
 const {
