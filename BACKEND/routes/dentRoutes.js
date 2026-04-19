@@ -39,4 +39,4 @@ router
 router.get("/patient/:patientId", getDentsByPatient);
 
 module.exports = router;
-xcvxcvxcv xwcvxcvwxvc wxcvxvwxv wxcvxcvxcv
+xcvxcvxcv xwcvxcvwxvc wxcvxvwxv
