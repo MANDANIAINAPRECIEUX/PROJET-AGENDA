@@ -1,0 +1,149 @@
+[33mcommit 0e973c90ba443a6ef885c8bc21187800bc0b978a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfrontend[m[33m, [m[1;31morigin/frontend[m[33m)[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Thu Aug 14 10:21:49 2025 +0300
+
+    modification schema dent et dentcontroller: suppression nomDent; mise à jour enregistrement
+
+[33mcommit 8935847d07add95ece4811710f73af5f0c809120[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Mon Aug 11 16:01:01 2025 +0300
+
+    essai
+
+[33mcommit c76772360fb3c47c52f97c4ade8d640effa3cb44[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Mon Aug 11 15:37:49 2025 +0300
+
+    modifications de authroutes, authcontroler, et mise à jour de formulaire de reservation
+
+[33mcommit 59ef9cb2370f65d896e4b960d850ee94d0603658[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Sun Aug 3 09:44:59 2025 +0300
+
+    rectifications erreurs
+
+[33mcommit 6b9f7ac3fdcf03c088bd8d8f622fdb31bcdc76b2[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Sat Aug 2 01:15:09 2025 +0300
+
+    choix de rendez vous modifié
+
+[33mcommit 058e364992be26fc9144521f366a0b7817eea2c6[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Fri Aug 1 21:20:24 2025 +0300
+
+    mise à jour des pages login, du navbar,et choisderendezvous
+
+[33mcommit ad6e2dbdca2fef5450953be0070a13a658037a6b[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Tue Jul 8 00:18:52 2025 +0300
+
+    amelioration page rendez vous
+
+[33mcommit a0b0ef7775313f8a3c265f6e3cca993add696867[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Sun Jul 6 21:06:24 2025 +0300
+
+    mise à jour de formulaire De reservation...tec
+
+[33mcommit 8ed6aa000f80c6798a1aa821133492cdf4bf2468[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Fri Jul 4 13:33:35 2025 +0300
+
+    enregistrement ok
+
+[33mcommit 0e6d7101ce2a904434cdeae3fc3bc2dc3fb523ab[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Thu Jul 3 17:14:50 2025 +0300
+
+    esai 1
+
+[33mcommit c284d2338104d944039440cfd1c0761fa35a737a[m[33m ([m[1;32mtemporaire[m[33m)[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Thu Jul 3 16:56:21 2025 +0300
+
+    changements dans app js; creation page DentalAppointment; mise à jour de User.js
+
+[33mcommit 41deb302f0b31751789ca38bfbf0084eeaafc6b3[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Thu Jul 3 01:11:18 2025 +0300
+
+    frontend: register - login - forgot pasword
+
+[33mcommit 79cace372fc506c24fd8a52892de99e530167c96[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Wed Jul 2 11:19:55 2025 +0300
+
+    debut frontend
+
+[33mcommit a2e8ac82438b366049a2291bfad4989d0270fba4[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Wed Jul 2 11:08:37 2025 +0300
+
+    a
+
+[33mcommit e2239e2824ce332419431b37ba36104879c20a1b[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Wed Jul 2 11:07:07 2025 +0300
+
+    finalisation avec creation frontend
+
+[33mcommit ea0f72c65906f902755ec48a1ccd41dee7878e71[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Wed Jul 2 00:42:35 2025 +0300
+
+    partager les auth, creer authorize
+
+[33mcommit cf34cd129cad5fbb46ce9bfa2cfcf76745d3e994[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Tue Jul 1 23:08:09 2025 +0300
+
+    Implémentation de l'authentification JWT (modèle User, routes auth, middleware protect) et modification du .env pour la durée des token
+
+[33mcommit a3166fc1ee8251e83c128a20aba529321277534e[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Tue Jul 1 13:05:43 2025 +0300
+
+    test crud backend complet avec modification du controllerSymptome
+
+[33mcommit 9f9b733861d7536a303b5b4249a6711fc703821f[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Mon Jun 30 23:41:53 2025 +0300
+
+    nommage dans  RendezVousController ete dans model/rendeVous:dateHeure et Dentiste
+
+[33mcommit 24e1d20dd5e9811a1b6a3fb45485117451545a56[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Mon Jun 30 22:55:05 2025 +0300
+
+    correction de DentistController: modification de specialiste en specialite
+
+[33mcommit 2e5aedf4d5f38a6c429a369c54dc250cd0761c59[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Mon Jun 30 16:01:31 2025 +0300
+
+    controller et routes complet
+
+[33mcommit e4c63cd387e7496889e86d2f9ece5eab4c3fc27d[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Mon Jun 30 09:50:48 2025 +0300
+
+    manambotra anl nom ts nety
+
+[33mcommit ace2b4cb83286efc5d3cef1fc70b074143551aa7[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Sun Jun 29 23:45:20 2025 +0300
+
+    implementation de tous les modeles Mongoose dans models
+
+[33mcommit 6f2455f7c94ca5c2288fe987d7124e7ca92869cc[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Sat Jun 28 00:11:18 2025 +0300
+
+    backend: initialisation et debut
+
+[33mcommit 24a2e17b822e8001dbebfd3f7aa65bac6f0e7a42[m[33m ([m[1;32mmain[m[33m)[m
+Author: MANDANIAINAPRECIEUX <parasybe@gmail.com>
+Date:   Fri Jun 27 10:10:25 2025 +0300
+
+    premier commit anle dossier vide

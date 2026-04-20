@@ -1,0 +1,49 @@
+// backend/models/RendezVous.js
+const mongoose = require("mongoose");
+
+const rendezVousSchema = mongoose.Schema(
+  {
+    patient: {
+      type: mongoose.Schema.Types.ObjectId, 
+      required: true,
+      ref: "User", 
+    },
+    dentiste: {
+      type: mongoose.Schema.Types.ObjectId, 
+      required: true,
+      ref: "Dentiste", 
+    },
+    dateHeure: {
+      type: String, 
+      required: [true, "Veuillez spécifier la date du rendez-vous"],
+    },
+    dureeMinutes: {
+      type: String,
+      required: [
+        false,
+        "Veuillez spécifier la durée du rendez-vous en minutes",
+      ],
+      min: 1, 
+    },
+    motif: {
+      type: String,
+      required: [true, "Veuillez spécifier le motif du rendez-vous"],
+      trim: true,
+    },
+    statut: {
+      type: String,
+      //enum: ["Confirmé", "Annulé", "Terminé", "En attente"], // Statuts possibles pour un rendez-vous
+      default: "En attente", // Statut par défaut lors de la création
+      required: true,
+    },
+    notes: {
+      type: String,
+      // required: false // Les notes sont optionnelles
+    },
+  },
+  {
+    timestamps: true, // Ajoute automatiquement les champs 'createdAt' et 'updatedAt'
+  }
+);
+
+module.exports = mongoose.model("RendezVous", rendezVousSchema);
