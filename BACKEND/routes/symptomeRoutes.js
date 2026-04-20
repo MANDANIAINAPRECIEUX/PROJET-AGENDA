@@ -9,7 +9,7 @@ const {
   createSymptome,
   updateSymptome,
   deleteSymptome,
-} = require("../controllers/SymptomeController"); // Notez 'SymptomeController'
+} = require("../controllers/SymptomeController"); 
 const { protect } = require("../middlewares/authMiddleware");
 
 // Définir les routes pour les symptômes
