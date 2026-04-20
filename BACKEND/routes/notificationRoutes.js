@@ -9,7 +9,7 @@ const {
   createNotification,
   updateNotification,
   deleteNotification,
-} = require("../controllers/NotificationController"); // Notez 'NotificationController'
+} = require("../controllers/NotificationController"); 
 
 // Définir les routes pour les notifications
 
