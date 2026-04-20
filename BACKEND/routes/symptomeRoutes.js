@@ -1,6 +1,6 @@
 
 const express = require("express");
-const router = express.Router(); // Créer un routeur Express
+const router = express.Router(); 
 
 // Importer les fonctions du contrôleur Symptome
 const {
