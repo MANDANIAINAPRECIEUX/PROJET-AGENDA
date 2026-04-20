@@ -11,7 +11,7 @@ const {
   deleteNotification,
 } = require("../controllers/NotificationController"); 
 
-// Définir les routes pour les notifications
+
 
 // Route GET pour obtenir toutes les notifications et POST pour en créer une nouvelle
 router.route("/").get(getNotifications).post(createNotification);
