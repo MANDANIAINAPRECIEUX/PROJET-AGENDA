@@ -25,4 +25,3 @@ router
   .delete(deleteSymptome);
 
 module.exports = router;
-wxcwxcwxcwx
