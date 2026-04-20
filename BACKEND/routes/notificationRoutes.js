@@ -21,6 +21,6 @@ router
   .route("/:id")
   .get(getNotificationById)
   .put(updateNotification)
-  .delete(deleteNotification);WXCWXCWXC QSDSDS
+  .delete(deleteNotification);WXCWXCWXC 
 
 module.exports = router;
