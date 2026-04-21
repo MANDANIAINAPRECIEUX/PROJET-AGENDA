@@ -44,7 +44,7 @@ const userSchema = mongoose.Schema(
     },
     telephone: {
       
-      type: String,sfsdfds
+      type: String,sfsdfds sfsdfsdf
       required: [true, "Veuillez ajouter  un numéro de téléphone"],
       trim: true,
     },
