@@ -4,23 +4,26 @@ const mongoose = require("mongoose");
 const rendezVousSchema = mongoose.Schema(
   {
     patient: {
-      type: mongoose.Schema.Types.ObjectId, // Le type est un ObjectId de MongoDB
+      type: mongoose.Schema.Types.ObjectId, 
       required: true,
-      ref: "Patient", // Fait référence au modèle 'Patient'
+      ref: "User", 
     },
     dentiste: {
-      type: mongoose.Schema.Types.ObjectId, // Le type est un ObjectId de MongoDB
+      type: mongoose.Schema.Types.ObjectId, 
       required: true,
-      ref: "Dentiste", // Fait référence au modèle 'Dentist'
+      ref: "Dentiste", 
     },
     dateHeure: {
-      type: Date, // Utilise le type Date pour stocker la date et l'heure
+      type: String, 
       required: [true, "Veuillez spécifier la date du rendez-vous"],
     },
     dureeMinutes: {
-      type: Number,
-      required: [true, "Veuillez spécifier la durée du rendez-vous en minutes"],
-      min: 1, // Un rendez-vous doit durer au moins 1 minute
+      type: String,
+      required: [
+        false,
+        "Veuillez spécifier la durée du rendez-vous en minutes",
+      ],
+      min: 1, 
     },
     motif: {
       type: String,
@@ -29,7 +32,7 @@ const rendezVousSchema = mongoose.Schema(
     },
     statut: {
       type: String,
-      enum: ["Confirmé", "Annulé", "Terminé", "En attente"], // Statuts possibles pour un rendez-vous
+      //enum: ["Confirmé", "Annulé", "Terminé", "En attente"], // Statuts possibles pour un rendez-vous
       default: "En attente", // Statut par défaut lors de la création
       required: true,
     },

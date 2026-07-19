@@ -1,4 +1,5 @@
 // backend/server.js
+
 const express = require("express");
 const dotenv = require("dotenv").config(); // Charge les variables du .env au démarrage
 const connectDB = require("./config/db"); // Importe la fonction de connexion à la DB
@@ -14,6 +15,7 @@ const symptomeRoutes = require("./routes/symptomeRoutes");
 const dentRoutes = require("./routes/dentRoutes");
 const confirmationRoutes = require("./routes/confirmationRoutes");
 const authRoutes = require("./routes/authRoutes");
+const emailRoutes = require("./routes/emailRoutes.js");
 
 const app = express();
 const PORT = process.env.PORT || 5000; // Utilise le port du .env ou 5000 par défaut
@@ -24,8 +26,9 @@ connectDB();
 // Middlewares pour parser le corps des requêtes (JSON et URL-encodé) et gérer CORS
 app.use(express.json()); // Permet de parser le corps des requêtes au format JSON
 app.use(express.urlencoded({ extended: false })); // Permet de parser les données d'URL encodées
-app.use(cors()); // Active le partage de ressources entre origines (CORS) pour permettre au frontend de communiquer
-
+//app.use(cors()); // Active le partage de ressources entre origines (CORS) pour permettre au frontend de communiquer
+// avec cors, impossible d'injecter les info vers coockies. utiliser des proxy au niveau frontend. avela n cors fa ca bloque le truc.
+// ao am vite.config
 // Route de test simple pour vérifier que le serveur démarre et répond
 app.get("/", (req, res) => {
   res.status(200).send("API is running..."); // Envoyer une réponse 200 OK
@@ -41,6 +44,9 @@ app.use("/api/symptomes", symptomeRoutes);
 app.use("/api/dents", dentRoutes);
 app.use("/api/confirmations", confirmationRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/email", emailRoutes);
+app.use("/badges", express.static("badges"));
+
 // Middleware de gestion des erreurs. Il doit être placé après toutes les routes
 // pour pouvoir intercepter les erreurs qui pourraient survenir dans les routes.
 app.use(errorHandler);

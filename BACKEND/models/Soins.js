@@ -4,19 +4,20 @@ const mongoose = require("mongoose");
 const soinSchema = mongoose.Schema(
   {
     rendezVous: {
-      // Mappe à IdRendezVous (FK vers RDV)
+      
       type: mongoose.Schema.Types.ObjectId,
       required: [true, "Un soin doit être lié à un rendez-vous"],
-      ref: "RendezVous", // Fait référence au modèle 'RendezVous'
+      ref: "RendezVous", 
     },
     typeDeSoin: {
-      // Mappe à TypeDeSoin
+      
       type: String,
       required: [true, "Veuillez spécifier le type de soin"],
       trim: true,
-      // Si plus tard vous avez un catalogue de soins disponibles,
-      // 'typeDeSoin' pourrait devenir une référence à ce catalogue.
-      // Pour l'instant, c'est une chaîne de caractères libre.
+      
+      
+      
+      
     },
     duree: {
       // Mappe à Durée

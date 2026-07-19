@@ -1,6 +1,6 @@
 // backend/routes/dentRoutes.js
 const express = require("express");
-const router = express.Router(); // Créer un routeur Express
+const router = express.Router(); 
 
 // Importer les fonctions du contrôleur Dent
 const {
@@ -9,7 +9,9 @@ const {
   createDent,
   updateDent,
   deleteDent,
-} = require("../controllers/DentController"); // Notez 'DentController'
+  getDentByPatientAndNumber,
+  getDentsByPatient,
+} = require("../controllers/DentController"); 
 const { protect } = require("../middlewares/authMiddleware");
 const authorize = require("../middlewares/authorize");
 // Définir les routes pour les dents
@@ -26,5 +28,14 @@ router
   .get(protect, authorize("admin", "dentiste", "patient"), getDentById)
   .put(protect, authorize("patient"), updateDent)
   .delete(protect, authorize("patient"), deleteDent);
+
+router
+  .route("/patient/:patientId/numero/:numeroDent")
+  .get(
+    protect,
+    authorize("admin", "dentiste", "patient"),
+    getDentByPatientAndNumber
+  );
+router.get("/patient/:patientId", getDentsByPatient);
 
 module.exports = router;

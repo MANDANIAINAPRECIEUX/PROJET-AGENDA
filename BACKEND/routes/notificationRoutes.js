@@ -1,4 +1,4 @@
-// backend/routes/notificationRoutes.js
+
 const express = require("express");
 const router = express.Router(); // Créer un routeur Express
 
@@ -9,9 +9,9 @@ const {
   createNotification,
   updateNotification,
   deleteNotification,
-} = require("../controllers/NotificationController"); // Notez 'NotificationController'
+} = require("../controllers/NotificationController"); 
 
-// Définir les routes pour les notifications
+
 
 // Route GET pour obtenir toutes les notifications et POST pour en créer une nouvelle
 router.route("/").get(getNotifications).post(createNotification);

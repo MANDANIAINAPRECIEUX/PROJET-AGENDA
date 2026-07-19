@@ -1,6 +1,7 @@
 // backend/controllers/SymptomeController.js
 const Symptome = require("../models/Symptome"); // Importer le modèle Symptome
-const Dent = require("../models/Dent"); // Importer le modèle Dent (nécessaire pour la validation et la population)
+//const Dent = require("../models/Dent");  Importer le modèle Dent (nécessaire pour la validation et la population)
+const RendezVous = require("../models/RendezVous");
 const asyncHandler = require("express-async-handler"); // Pour gérer les erreurs asynchrones
 
 // @desc    Obtenir tous les symptômes
@@ -8,19 +9,19 @@ const asyncHandler = require("express-async-handler"); // Pour gérer les erreur
 // @access  Public (pour l'instant)
 const getSymptomes = asyncHandler(async (req, res) => {
   const query = {};
-  // Si vous voulez filtrer les symptômes par l'ID d'un patient,
+  // Si vous voulez filtrer les symptômes par l'ID dans un rendez vous,
   // il faudrait une logique plus complexe car le lien est Symptome -> Dent -> Patient.
-  // Pour l'instant, on filtre par l'ID de la dent si fourni.
+  // Pour l'instant, on filtre par l'ID du rendez vous si fourni.
   if (req.query.dentId) {
     // Exemple de filtrage par ID de dent
-    query.dent = req.query.dentId;
+    query.RendezVous = req.query.RendezVousId;
   }
 
   // Population : Inclure les détails de la dent liée au symptôme.
   // Si vous avez aussi besoin du patient, il faudra une population imbriquée.
   const symptomes = await Symptome.find(query).populate(
-    "dent",
-    "nomDent typeDent numero patient"
+    "rendezVous",
+    "dateHeure dureeMinutes motif statut patient dentiste"
   ); // Popule la dent, et inclut l'ID du patient de la dent
 
   res.status(200).json(symptomes);
@@ -49,25 +50,25 @@ const getSymptomeById = asyncHandler(async (req, res) => {
 // @access  Public
 const createSymptome = asyncHandler(async (req, res) => {
   // Déstructuration : Utilisez les noms de champs EXACTS de votre modèle Symptome.js
-  const { dent, typeSymptome, niveauSymptome, description } = req.body;
+  const { rendezVous, typeSymptome, niveauSymptome, description } = req.body;
 
   // Validation des champs obligatoires (selon le modèle Symptome.js)
-  if (!dent || !typeSymptome || !niveauSymptome) {
+  if (!rendezVous || !typeSymptome || !niveauSymptome) {
     res.status(400);
     throw new Error(
-      "Veuillez ajouter tous les champs obligatoires : dent, typeSymptome, niveauSymptome"
+      "Veuillez ajouter tous les champs obligatoires : RendezVous, typeSymptome, niveauSymptome"
     );
   }
 
   // Vérifier si la DENT associée existe
-  const dentExists = await Dent.findById(dent);
-  if (!dentExists) {
+  const RendezVousExists = await RendezVous.findById(rendezVous);
+  if (!RendezVousExists) {
     res.status(404); // Ou 400 Bad Request, selon votre préférence pour ce type d'erreur de FK
-    throw new Error("Dent associée non trouvée");
+    throw new Error("RendezVous associée non trouvée");
   }
 
   const symptome = await Symptome.create({
-    dent,
+    rendezVous,
     typeSymptome,
     niveauSymptome,
     description, // Le champ est 'description' dans le modèle, pas 'descriptionSymptome'

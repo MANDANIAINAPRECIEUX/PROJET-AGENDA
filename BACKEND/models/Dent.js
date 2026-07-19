@@ -4,11 +4,11 @@ const mongoose = require("mongoose");
 const dentSchema = mongoose.Schema(
   {
     patient: {
-      // Mappe à idPatient (FK vers PATIENT)
       type: mongoose.Schema.Types.ObjectId,
-      required: [true, "Une dent doit être associée à un patient"],
-      ref: "Patient", // Fait référence au modèle 'Patient'
+      required: true,
+      ref: "User", // Fait référence au modèle 'User'
     },
+
     nomDent: {
       // Mappe à nomDent
       type: String,

@@ -3,6 +3,7 @@ const RendezVous = require("../models/RendezVous"); // Importer le modèle Rende
 const Patient = require("../models/Patient"); // Importer le modèle Patient pour la vérification
 const Dentiste = require("../models/Dentiste"); // Importer le modèle Dentiste pour la vérification
 const asyncHandler = require("express-async-handler"); // Pour gérer les erreurs asynchrones
+const User = require("../models/User");
 
 // @desc    Obtenir tous les rendez-vous
 // @route   GET /api/rendezvous
@@ -10,8 +11,8 @@ const asyncHandler = require("express-async-handler"); // Pour gérer les erreur
 const getRendezVous = asyncHandler(async (req, res) => {
   // Optionnel: Filtrer par patient ou dentiste si les IDs sont passés en query
   const query = {};
-  if (req.query.patientId) {
-    query.patient = req.query.patientId;
+  if (req.query.userId) {
+    query.patient = req.query.userId;
   }
   if (req.query.dentisteId) {
     query.dentiste = req.query.dentisteId;
@@ -57,7 +58,7 @@ const createRendezVous = asyncHandler(async (req, res) => {
   }
 
   // Vérifier si le patient et le dentiste existent
-  const patientExists = await Patient.findById(patient);
+  const patientExists = await User.findById(patient);
   if (!patientExists) {
     res.status(404);
     throw new Error("Patient non trouvé");
@@ -74,6 +75,7 @@ const createRendezVous = asyncHandler(async (req, res) => {
   // Exemple simple: vérifier si le dentiste a déjà un RDV à la même heure
   const conflictingRendezVous = await RendezVous.findOne({
     dentiste: dentiste,
+    dureeMinutes: dureeMinutes,
     dateHeure: dateHeure, // Simplifié: juste la même date/heure. Idéalement, vérifier une plage.
   });
 
@@ -103,27 +105,47 @@ const createRendezVous = asyncHandler(async (req, res) => {
 // @desc    Mettre à jour un rendez-vous
 // @route   PUT /api/rendezvous/:id
 // @access  Public
+// const updateRendezVous = asyncHandler(async (req, res) => {
+//   const { patient, dentiste, dateHeure, dureeMinutes, motif, statut, notes } =
+//     req.body;
+
+//   const rendezVous = await RendezVous.findById(req.params.id);
+
+//   if (rendezVous) {
+//     // Mettre à jour les champs si fournis dans le corps de la requête
+//     rendezVous.patient = patient || rendezVous.patient;
+//     rendezVous.dentiste = dentiste || rendezVous.dentiste;
+//     rendezVous.dateHeure = dateHeure || rendezVous.dateHeure;
+//     rendezVous.dureeMinutes = dureeMinutes || rendezVous.dureeMinutes;
+//     rendezVous.motif = motif || rendezVous.motif;
+//     rendezVous.statut = statut || rendezVous.statut;
+//     rendezVous.notes = notes !== undefined ? notes : rendezVous.notes;
+
+//     const updatedRendezVous = await rendezVous.save();
+//     res.status(200).json(updatedRendezVous);
+//   } else {
+//     res.status(404);
+//     throw new Error("Rendez-vous non trouvé");
+//   }
+// });
+
 const updateRendezVous = asyncHandler(async (req, res) => {
-  const { patient, dentiste, dateHeure, dureeMinutes, motif, statut, notes } =
-    req.body;
+  try {
+    const rendezVous = await RendezVous.findById(req.params.id);
 
-  const rendezVous = await RendezVous.findById(req.params.id);
+    if (!rendezVous) {
+      res.status(404);
+      throw new Error("Rendez-vous non trouvé");
+    }
 
-  if (rendezVous) {
-    // Mettre à jour les champs si fournis dans le corps de la requête
-    rendezVous.patient = patient || rendezVous.patient;
-    rendezVous.dentiste = dentiste || rendezVous.dentiste;
-    rendezVous.dateHeure = dateHeure || rendezVous.dateHeure;
-    rendezVous.dureeMinutes = dureeMinutes || rendezVous.dureeMinutes;
-    rendezVous.motif = motif || rendezVous.motif;
-    rendezVous.statut = statut || rendezVous.statut;
-    rendezVous.notes = notes !== undefined ? notes : rendezVous.notes;
+    // mise à jour ciblée : fusionne seulement les champs envoyés
+    Object.assign(rendezVous, req.body);
 
     const updatedRendezVous = await rendezVous.save();
     res.status(200).json(updatedRendezVous);
-  } else {
-    res.status(404);
-    throw new Error("Rendez-vous non trouvé");
+  } catch (error) {
+    console.error("❌ Erreur updateRendezVous:", error);
+    res.status(500).json({ message: "Erreur serveur", error: error.message });
   }
 });
 
@@ -142,10 +164,64 @@ const deleteRendezVous = asyncHandler(async (req, res) => {
   }
 });
 
+// Récupérer tous les RDV d'un patient
+const getRendezVousByPatient = asyncHandler(async (req, res) => {
+  const patientId = req.params.patientId;
+
+  console.log("patientId reçu :", patientId);
+
+  const rdv = await RendezVous.find({ patient: patientId })
+    .populate("patient", "nom prenom email")
+    .populate("dentiste", "nom prenom specialite");
+
+  res.status(200).json(rdv);
+});
+
+const countByDentiste = async (req, res) => {
+  try {
+    const result = await RendezVous.aggregate([
+      {
+        $group: {
+          _id: "$dentiste",
+          totalPatients: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: "dentistes",
+          localField: "_id",
+          foreignField: "_id",
+          as: "dentiste",
+        },
+      },
+      { $unwind: "$dentiste" },
+      {
+        $project: {
+          _id: 0,
+          dentisteId: "$_id",
+          nom: "$dentiste.nom",
+          prenom: "$dentiste.prenom",
+          totalPatients: 1,
+        },
+      },
+    ]);
+
+    res.json({
+      totalPatients: result.reduce((s, r) => s + r.totalPatients, 0),
+      patientsParDentiste: result,
+    });
+  } catch (error) {
+    console.error("⚠️ Erreur dans countByDentiste:", error);
+    res.status(500).json({ message: "Erreur interne count-by-dentiste" });
+  }
+};
+
 module.exports = {
   getRendezVous,
   getRendezVousById,
   createRendezVous,
   updateRendezVous,
   deleteRendezVous,
+  getRendezVousByPatient,
+  countByDentiste,
 };

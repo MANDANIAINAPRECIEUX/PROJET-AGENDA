@@ -7,36 +7,61 @@ const userSchema = mongoose.Schema(
   {
     email: {
       type: String,
-      required: [true, "Veuillez ajouter une adresse email"],
+      required: [true, " Veuillez  ajouter une (1) adresse email"],
       unique: true,
       trim: true,
       lowercase: true,
       match: [
         /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-        "Veuillez ajouter une adresse email valide",
+        "Veuillez ajouter  une  adresse email valide",
       ],
     },
     password: {
       type: String,
       required: [true, "Veuillez ajouter un mot de passe"],
-      minlength: [6, "Le mot de passe doit contenir au moins 6 caractères"],
-      select: false, // Important: ne pas renvoyer le mot de passe par défaut dans les requêtes
+      minlength: [
+        6,
+        "Le mot de passe doit contenir plus six (6) caractères",
+      ],
+      select: false, 
     },
     role: {
       type: String,
       enum: ["admin", "dentiste", "patient"],
       default: "patient",
     },
-    // Ajoutez des champs patient ici si vous décidez de les stocker
-    // Par exemple:
-    // firstName: { type: String, required: false },
-    // lastName: { type: String, required: false },
-    // phone: { type: String, required: false },
-    // age: { type: Number, required: false },
+    prenom: {
+     
+      type: String,
+      required: [true, "Veuillez ajouter  un prénom"],
+      trim: true,
+    },
+    nom: {
+      
+      type: String,
+      required: [true, "Veuillez ajouter  un nom"],
+      trim: true,
+    },
+    telephone: {
+      
+      type: String,
+      required: [true, "Veuillez ajouter  un numéro de téléphone"],
+      trim: true,
+    },
+    age: {
+      // Correspond à `age` dans votre formData du frontend
+      type: Number,
+      required: [true, "Veuillez ajouter l'âge"],
+      min: [0, "L'âge ne peut pas être négatif"],
+      max: [120, "L'âge maximum est de 150 ans"],
+    },
+    // Vous pouvez aussi ajouter une adresse si nécessaire
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
   },
   {
     timestamps: true, // Ajoute automatiquement createdAt et updatedAt
-  }
+  },
 );
 // --- Méthodes du Schéma ---
 
@@ -54,7 +79,7 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.getSignedJwtToken = function () {
   console.log(
     "User.js JWT_SECRET utilisé pour la signature :",
-    process.env.JWT_SECRET
+    process.env.JWT_SECRET,
   );
   return jwt.sign({ id: this._id, role: this.role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE,
